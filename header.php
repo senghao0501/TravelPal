@@ -5,34 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelPal 旅行助手</title>
-    
-    <!-- 全局样式 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="app">
-    
-    <!-- ===== 导航栏 ===== -->
-    <header class="navbar">
-        
-        <!-- Logo -->
-        <div class="logo">
-            ✈️ TravelPal
-        </div>
+<nav class="navbar">
+    <a href="#" class="logo">
+        <img src="logo.png" alt="TravelPal Logo">
+    </a>
 
-        <!-- 导航菜单 -->
-        <nav class="nav-links">
-            <a href="index.php">Home</a>
-            <a href="flights/index.php">Flights</a>
-            <a href="hotels/index.php">Hotels</a>
-            <a href="restaurants/index.php">Restaurants</a>
-            <a href="attractions/index.php">Attractions</a>
-            <a href="trips/index.php">My Trips</a>
-            <a href="auth/login.php" class="btn-login">Login / Sign Up</a>
-        </nav>
+    <!-- 右侧 导航菜单 -->
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Flights</a>
+        <a href="#">Hotels</a>
+        <a href="#">Restaurants</a>
+        <a href="#">Attractions</a>
+        <a href="#">My Trips</a>
+        <a href="#" class="btn-login">Sign in</a>
+    </div>
+</nav>
 
-    </header>
-
-    <!-- ===== 页面主要内容从这里开始 ===== -->
-    <main>
+<main>

@@ -1,37 +1,41 @@
 /* =========================================
-   Auth Pages (Login & Register)
+   Auth Pages Module (Login & Register)
    ========================================= */
 
+/* 1. 调整外层容器，缩小上下留白 */
 .auth-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 110px); 
-    padding: 2rem;
+    min-height: calc(100vh - 80px); 
+    padding: 2rem 1.5rem;
+    background-color: #f4f7fc;
+    background-image: radial-gradient(#2a7de1 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    background-position: 0 0;
 }
 
-/* 中间的大边框卡片 */
+/* 2. 把大卡片加宽到 1050px，高度调大，整体变成宽敞的长方形 */
 .auth-container {
     display: flex;
     background: white;
-    max-width: 900px;
+    max-width: 1050px; /* 👈 卡片加宽，减少两侧空白 */
     width: 100%;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    min-height: 560px; /* 👈 加高卡片，显得更大气 */
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     border: 1px solid #e8ecf1;
     overflow: hidden;
 }
 
-/* 左侧 轮播图区域 */
+/* 3. 左侧：图片占 60% (flex: 6) */
 .auth-left.slideshow-container {
-    flex: 1;
+    flex: 6; /* 👈 图片占比 6 成 */
     position: relative;
     background: #1e2b3c;
-    min-height: 480px;
     overflow: hidden;
 }
 
-/* 单张 Slide */
 .slide {
     position: absolute;
     top: 0;
@@ -39,7 +43,7 @@
     width: 100%;
     height: 100%;
     opacity: 0;
-    transition: opacity 1s ease-in-out;
+    transition: opacity 0.8s ease-in-out;
 }
 
 .slide.active {
@@ -53,168 +57,280 @@
     display: block;
 }
 
-/* 图片下方的文字蒙版与描述 */
+/* 4. 左下角文字与蒙版优化（字号放大） */
 .caption {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 2rem 1.5rem 1.5rem;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    padding: 3.5rem 2.5rem 2rem; /* 加深底部的过度渐变区 */
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.88));
     color: white;
     text-align: left;
 }
 
-.caption h3 {
-    font-size: 1.25rem;
+.caption .badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+    font-size: 0.85rem; /* 👈 标签字号放大 */
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
     font-weight: 600;
+}
+
+.caption h3 {
+    font-size: 2rem; /* 👈 城市名字号放大 (原本是 1.35rem) */
+    font-weight: 700;
     margin-bottom: 0.2rem;
     color: #ffffff;
+    line-height: 1.2;
 }
 
 .caption p {
-    font-size: 0.9rem;
-    color: #d1d5db;
+    font-size: 1.1rem; /* 👈 国家名字号放大 */
+    color: #f1f5f9;
+    font-weight: 500;
 }
 
-/* 右侧 表单区域 */
+.caption .rating {
+    margin-top: 0.6rem;
+    font-size: 0.95rem; /* 👈 评分字号放大 */
+    color: #facc15;
+}
+
+.caption .rating span {
+    color: #cbd5e1;
+    margin-left: 6px;
+}
+
+/* 5. 右侧：填写区占 40% (flex: 4) */
 .auth-right {
-    flex: 1;
-    padding: 3rem;
+    flex: 4; /* 👈 填写区占比 4 成 */
+    padding: 3rem 2.8rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.auth-right h2 {
-    color: #1e3a5f;
+.auth-header {
     margin-bottom: 1.5rem;
-    font-size: 1.8rem;
 }
 
-/* 提示框 (Success / Error) */
+.auth-header h2 {
+    color: #1e3a5f;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.auth-header .sub-title {
+    color: #64748b;
+    font-size: 0.92rem;
+    margin-top: 0.3rem;
+}
+
+/* 提示框 */
 .auth-alert {
     padding: 0.75rem 1rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    margin-bottom: 1.2rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 1rem;
 }
 
 .auth-alert.error {
-    background-color: #fde8e8;
-    color: #9b1c1c;
-    border: 1px solid #fbd5d5;
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
 }
 
 .auth-alert.success {
-    background-color: #def7ec;
-    color: #03543f;
-    border: 1px solid #bcf0da;
+    background-color: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
 }
 
+/* 表单与输入框 */
 .input-group {
     margin-bottom: 1.2rem;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    color: #1e2b3c;
-    font-weight: 500;
-    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.88rem;
 }
 
-.input-group input {
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    stroke: #94a3b8;
+    pointer-events: none;
+}
+
+.input-wrapper input {
     width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid #e8ecf1;
-    border-radius: 6px;
-    font-size: 1rem;
-    background: #f9fbfc;
-    transition: all 0.2s;
+    padding: 0.8rem 2.5rem 0.8rem 2.4rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    transition: all 0.2s ease;
 }
 
-.input-group input:focus {
+.input-wrapper input:focus {
     outline: none;
     border-color: #2a7de1;
     background: white;
-    box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.1);
+    box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.12);
 }
 
-/* 主按钮样式 */
+.eye-btn {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.eye-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke: #94a3b8;
+    transition: stroke 0.2s;
+}
+
+.eye-btn:hover svg {
+    stroke: #1e3a5f;
+}
+
+/* Remember Me & Forgot Password */
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.4rem;
+    font-size: 0.85rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #475569;
+    cursor: pointer;
+}
+
+.remember-me input {
+    accent-color: #1e3a5f;
+    cursor: pointer;
+}
+
+.forgot-link {
+    color: #2a7de1;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* 主提交按钮 */
 .btn-primary {
     width: 100%;
-    background: #1e3a5f;
+    background: #24406D;
     color: white;
     padding: 0.8rem;
     border: none;
-    border-radius: 30px;
+    border-radius: 8px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 0.5rem;
+    transition: background 0.25s, transform 0.1s;
 }
 
 .btn-primary:hover {
-    background: #2a4d78;
+    background: #1d3457;
 }
 
-/* 分割线 "OR" */
+.btn-primary:active {
+    transform: scale(0.99);
+}
+
+/* 分割线 */
 .divider {
     display: flex;
     align-items: center;
     text-align: center;
-    margin: 1.5rem 0;
-    color: #9aaebd;
+    margin: 1.4rem 0;
+    color: #94a3b8;
 }
 
 .divider::before,
 .divider::after {
     content: '';
     flex: 1;
-    border-bottom: 1px solid #e8ecf1;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .divider span {
-    padding: 0 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
+    padding: 0 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 /* Google 按钮 */
 .btn-google {
     width: 100%;
     background: white;
-    color: #1e2b3c;
-    border: 1px solid #e8ecf1;
-    padding: 0.8rem;
-    border-radius: 30px;
-    font-size: 1rem;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: background 0.2s;
+    transition: all 0.2s;
 }
 
 .btn-google:hover {
-    background: #f4f7fc;
+    border-color: #2a7de1;
+    box-shadow: 0 3px 10px rgba(42, 125, 225, 0.12);
+    background: #ffffff;
 }
 
 .btn-google img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 /* 底部切换链接 */
 .auth-switch {
     text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.95rem;
-    color: #5a7a98;
+    margin-top: 1.4rem;
+    font-size: 0.9rem;
+    color: #64748b;
 }
 
 .auth-switch a {
@@ -227,17 +343,19 @@
     text-decoration: underline;
 }
 
-/* 响应式手机端布局 */
-@media (max-width: 768px) {
+/* 响应式 */
+@media (max-width: 850px) {
     .auth-container {
         flex-direction: column;
     }
     
     .auth-left.slideshow-container {
-        min-height: 250px;
+        flex: none;
+        min-height: 280px;
     }
     
     .auth-right {
-        padding: 2rem;
+        flex: none;
+        padding: 2rem 1.5rem;
     }
 }

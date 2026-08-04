@@ -10,48 +10,64 @@ body {
     color: #1e2b3c;
 }
 
+/* =========================================
+   Header Navbar (一行展示)
+   ========================================= */
+
 .navbar {
+    background: #ffffff;
+    border-bottom: 1px solid #e8ecf1;
+    height: 100px; /* 稍微提升 Navbar 高度以容纳大 Logo */
     display: flex;
     align-items: center;
-    justify-content: space-between; 
-    padding: 0.8rem 10rem 0.8rem 10rem;
-    background: white;
-    border-bottom: 1px solid #e8ecf1;
+    justify-content: center;
+    width: 100%;
+}
+
+.navbar-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 2rem;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important; 
+    flex-wrap: nowrap !important;
 }
 
 .logo {
     display: flex;
     align-items: center;
     text-decoration: none;
+    flex-shrink: 0;
 }
 
+/* 1. 这里恢复 Logo 大小 */
 .logo img {
-    height: 80px;
+    height: 75px; /* 👈 改这里！想要更大可以改成 60px */
     width: auto;
     display: block;
     object-fit: contain;
 }
 
-.logo-text {
-    font-size: 1.3rem;     
-    font-weight: 700;
-    color: #0b2b44;
-}
-
+/* 2. 这里缩小间距，确保右边不会被挤下去 */
 .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1.5rem; /* 👈 缩减间距，给左边大 Logo 留空间 */
+    flex-shrink: 0;
 }
 
 .nav-links a {
     text-decoration: none;
     color: #1e3a5f;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 500;
-    padding: 0.4rem 0;
+    padding: 0.3rem 0;
     border-bottom: 2px solid transparent;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .nav-links a:hover {
@@ -61,14 +77,13 @@ body {
 .btn-login {
     background: #1e3a5f !important;
     color: white !important;
-    padding: 0.4rem 1.4rem !important;
-    border-radius: 30px;
+    padding: 0.45rem 1.2rem !important;
+    border-radius: 20px;
     border-bottom: none !important;
 }
 
 .btn-login:hover {
-    background: #2a4d78 !important;
-    border-bottom: none !important;
+    background: #24406D !important;
 }
 
 .content {
@@ -77,46 +92,26 @@ body {
     padding: 2rem;
 }
 
-
+/* 响应式调整：移动端仅缩小间距与字号，绝对不变成上下两行 */
 @media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.8rem;
-        padding: 0.8rem 1rem;
+    .navbar-container {
+        padding: 0 1rem;
     }
 
-    .logo {
-        justify-content: center;
+    .logo img {
+        height: 32px;
     }
 
     .nav-links {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 0.5rem 1rem;
-    }
-
-    .btn-login {
-        padding: 0.3rem 1rem !important;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .logo img {
-        height: 30px;
-    }
-
-    .logo-text {
-        font-size: 1.2rem;
+        gap: 0.6rem;
     }
 
     .nav-links a {
-        font-size: 0.85rem;
-        padding: 0.2rem 0;
+        font-size: 0.8rem;
     }
 
-    .content {
-        padding: 1rem;
+    .btn-login {
+        padding: 0.3rem 0.8rem !important;
+        font-size: 0.8rem;
     }
 }

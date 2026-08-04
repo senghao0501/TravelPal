@@ -1,0 +1,243 @@
+/* =========================================
+   Auth Pages (Login & Register)
+   ========================================= */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 110px); 
+    padding: 2rem;
+}
+
+/* 中间的大边框卡片 */
+.auth-container {
+    display: flex;
+    background: white;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e8ecf1;
+    overflow: hidden;
+}
+
+/* 左侧 轮播图区域 */
+.auth-left.slideshow-container {
+    flex: 1;
+    position: relative;
+    background: #1e2b3c;
+    min-height: 480px;
+    overflow: hidden;
+}
+
+/* 单张 Slide */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 图片下方的文字蒙版与描述 */
+.caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 1.5rem 1.5rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    text-align: left;
+}
+
+.caption h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: #ffffff;
+}
+
+.caption p {
+    font-size: 0.9rem;
+    color: #d1d5db;
+}
+
+/* 右侧 表单区域 */
+.auth-right {
+    flex: 1;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-right h2 {
+    color: #1e3a5f;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+/* 提示框 (Success / Error) */
+.auth-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+}
+
+.auth-alert.error {
+    background-color: #fde8e8;
+    color: #9b1c1c;
+    border: 1px solid #fbd5d5;
+}
+
+.auth-alert.success {
+    background-color: #def7ec;
+    color: #03543f;
+    border: 1px solid #bcf0da;
+}
+
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #1e2b3c;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid #e8ecf1;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f9fbfc;
+    transition: all 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #2a7de1;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(42, 125, 225, 0.1);
+}
+
+/* 主按钮样式 */
+.btn-primary {
+    width: 100%;
+    background: #1e3a5f;
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-primary:hover {
+    background: #2a4d78;
+}
+
+/* 分割线 "OR" */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #9aaebd;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #e8ecf1;
+}
+
+.divider span {
+    padding: 0 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Google 按钮 */
+.btn-google {
+    width: 100%;
+    background: white;
+    color: #1e2b3c;
+    border: 1px solid #e8ecf1;
+    padding: 0.8rem;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.btn-google:hover {
+    background: #f4f7fc;
+}
+
+.btn-google img {
+    width: 20px;
+    height: 20px;
+}
+
+/* 底部切换链接 */
+.auth-switch {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: #5a7a98;
+}
+
+.auth-switch a {
+    color: #2a7de1;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* 响应式手机端布局 */
+@media (max-width: 768px) {
+    .auth-container {
+        flex-direction: column;
+    }
+    
+    .auth-left.slideshow-container {
+        min-height: 250px;
+    }
+    
+    .auth-right {
+        padding: 2rem;
+    }
+}

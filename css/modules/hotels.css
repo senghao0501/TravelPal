@@ -1,0 +1,286 @@
+
+.hotels-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.price-tag {
+    color: #00aa6c;
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.price-unit {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.rating-badge {
+    background-color: #00aa6c;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   2. 酒店列表页样式 (index.php)
+   -------------------------------------------------------------------------- */
+.hotel-header {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.hotel-header h1 {
+    font-size: 2.2rem;
+    color: #1e293b;
+    font-weight: 800;
+}
+
+/* 筛选与搜索栏 */
+.hotel-filter-bar {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 180px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.btn-filter {
+    background-color: #00aa6c;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-end;
+    transition: background 0.2s;
+}
+
+.btn-filter:hover {
+    background-color: #008856;
+}
+
+/* 酒店卡片网格 */
+.hotel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.hotel-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.hotel-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hotel-card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.hotel-card-body {
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.hotel-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.4rem;
+}
+
+.hotel-card-location {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.hotel-card-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.8rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. 酒店详情页样式 (details.php)
+   -------------------------------------------------------------------------- */
+.hotel-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+/* 图片展示画廊 */
+.hotel-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    height: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-thumbs {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+}
+
+.gallery-thumbs img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 详情布局：左侧信息，右侧预订/价格卡片 */
+.hotel-details-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.hotel-info-section h3 {
+    font-size: 1.3rem;
+    color: #1e293b;
+    margin: 1.5rem 0 0.8rem;
+}
+
+.hotel-description {
+    color: #475569;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* 设施列表 */
+.amenities-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+}
+
+.amenity-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 右侧预订卡片 Sticky Sidebar */
+.booking-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 2rem;
+}
+
+.btn-book-now {
+    width: 100%;
+    background-color: #00aa6c;
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-book-now:hover {
+    background-color: #008856;
+}
+
+/* --------------------------------------------------------------------------
+   4. 响应式适配 (Responsive Design)
+   -------------------------------------------------------------------------- */
+@media (max-width: 850px) {
+    .hotel-gallery,
+    .hotel-details-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .hotel-gallery {
+        height: auto;
+    }
+    
+    .gallery-thumbs {
+        display: none; /* 移动端隐藏侧边缩略图，保持简洁 */
+    }
+    
+    .booking-card {
+        position: static;
+        margin-top: 2rem;
+    }
+}

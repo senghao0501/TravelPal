@@ -1,0 +1,536 @@
+:root {
+    --lime: #C6FF34;
+    --black: #000000;
+    --ink: #000000;
+    --muted: #505050;
+    --surface: #FFFFFF;
+    --background: #F7F8F2;
+    --line: #DDE2D0;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.11);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 8% 16%, rgba(198, 255, 52, 0.18), transparent 25rem),
+        radial-gradient(circle at 92% 45%, rgba(0, 0, 0, 0.04), transparent 28rem),
+        var(--background);
+    color: var(--ink);
+    line-height: 1.5;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem max(2rem, calc((100% - 1440px) / 2));
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--lime), var(--black)) 1;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+}
+
+.logo img {
+    width: auto;
+    height: 76px;
+    display: block;
+    object-fit: contain;
+}
+
+.logo-text {
+    color: var(--ink);
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    position: relative;
+    padding: 0.4rem 0;
+    color: var(--ink);
+    font-size: 1rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--lime);
+    border-radius: 3px;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--black);
+}
+
+.nav-links a:hover::after {
+    transform: scaleX(1);
+}
+
+.btn-login {
+    padding: 0.5rem 1.4rem !important;
+    border-radius: 999px;
+    background: var(--black) !important;
+    color: white !important;
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.22);
+}
+
+.btn-login:hover {
+    background: var(--lime) !important;
+    color: var(--ink) !important;
+}
+
+.content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+#scrollingView {
+    max-width: 1500px;
+    margin: 24px auto;
+    padding: 38px 30px 30px;
+    overflow: hidden;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(198, 255, 52, 0.20), rgba(255, 255, 255, 0.92));
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+}
+
+#scrollingView h2 {
+    margin-bottom: 22px;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.25;
+}
+
+.images {
+    display: flex;
+    gap: 15px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.images img {
+    flex: 0 0 350px;
+    width: 350px;
+    height: 250px;
+    object-fit: cover;
+    border: 3px solid white;
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+}
+
+.search {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 600px;
+    margin: 28px auto 40px;
+    padding: 0 20px;
+}
+
+#searchBar {
+    width: min(420px, calc(100% - 60px));
+    min-height: 48px;
+    padding: 0 16px;
+    background: white;
+    border: 2px solid var(--lime);
+    border-radius: 999px;
+    color: var(--ink);
+    font-size: 1rem;
+    outline: none;
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.07);
+}
+
+#searchBar:focus {
+    border-color: var(--black);
+    box-shadow: 0 0 0 4px rgba(198, 255, 52, 0.45);
+}
+
+#searching,
+.view-card button,
+#travelPopup button {
+    border: 0;
+    background: var(--black);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+#searching {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.22);
+}
+
+#searching img {
+    vertical-align: middle;
+    mix-blend-mode: multiply;
+}
+
+#searching:hover,
+.view-card button:hover,
+#travelPopup button:hover {
+    background: var(--lime);
+    color: var(--ink);
+    transform: translateY(-2px);
+}
+
+.error-message {
+    flex: 0 0 100%;
+    color: #B00020;
+    font-weight: 700;
+    text-align: center;
+}
+
+.viewMore {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 10px 24px 30px;
+}
+
+.view-card,
+.pick-card {
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.view-card {
+    width: 330px;
+    padding: 15px;
+    text-align: center;
+    border-top: 5px solid var(--lime);
+}
+
+.view-card:nth-of-type(even) {
+    border-top-color: var(--black);
+}
+
+.view-card:hover,
+.pick-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.14);
+}
+
+.view-card h3 {
+    margin: 2px 0 12px;
+    font-size: 1.25rem;
+}
+
+.view-card pre {
+    margin: 12px 0;
+    color: var(--muted);
+    white-space: pre-wrap;
+}
+
+.view-card button,
+#travelPopup button {
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-weight: 750;
+}
+
+#travelPopup {
+    width: min(390px, calc(100% - 32px));
+    margin: auto;
+    padding: 28px;
+    background: white;
+    border: 3px solid var(--lime);
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+#travelPopup::backdrop {
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+}
+
+.popup-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.popup-links a {
+    padding: 11px;
+    background: var(--black);
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.popup-links a:hover {
+    background: var(--lime);
+    color: var(--ink);
+}
+
+.place-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.section-title {
+    width: fit-content;
+    margin: 42px auto 28px;
+    padding: 8px 22px;
+    color: var(--ink);
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    text-align: center;
+    background: var(--lime);
+    border: 2px solid var(--black);
+    border-radius: 999px;
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.14);
+}
+
+.top-picks-wrapper {
+    position: relative;
+    max-width: 1440px;
+    margin: auto;
+    padding: 0 4px;
+}
+
+#topPicks {
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+    padding: 8px 4px 18px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+.pick-card {
+    flex: 0 0 330px;
+    padding: 15px;
+    text-align: center;
+    border-top: 5px solid var(--black);
+}
+
+.pick-card p {
+    min-height: 3rem;
+    margin-top: 10px;
+    font-weight: 700;
+}
+
+.rating {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    color: var(--black);
+    font-weight: 800;
+}
+
+.rating img {
+    width: 20px;
+    height: 20px;
+}
+
+.next-arrow {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 48px;
+    height: 48px;
+    border: 3px solid white;
+    border-radius: 50%;
+    background: var(--black);
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.30);
+    transform: translateY(-50%);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.next-arrow:hover {
+    background: var(--lime);
+    color: var(--ink);
+    transform: translateY(-50%) scale(1.08);
+}
+
+#travelPalFooter {
+    margin-top: 90px;
+    background: var(--ink);
+    color: white;
+}
+
+.footerSection {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px 38px;
+}
+
+.footer-card {
+    width: 100%;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.footerTitle {
+    margin-bottom: 16px;
+    color: var(--lime);
+    text-align: center;
+    text-decoration-color: var(--lime);
+    text-underline-offset: 6px;
+}
+
+.footer-card ul {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.footer-card li + li {
+    margin-top: 8px;
+}
+
+.footer-card a {
+    color: white;
+    text-decoration-color: var(--lime);
+    text-underline-offset: 4px;
+}
+
+.footer-card a:hover {
+    color: var(--lime);
+}
+
+.ending {
+    padding: 22px 24px;
+    border-top: 1px solid rgba(198, 255, 52, 0.35);
+    text-align: center;
+}
+
+.ending .logo {
+    justify-content: center;
+    gap: 18px;
+}
+
+.ending .logo img {
+    height: 64px;
+    padding: 5px;
+    background: white;
+    border-radius: 10px;
+}
+
+.ending span {
+    color: #D7E0EB;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.7rem 1rem 1rem;
+    }
+
+    .logo {
+        justify-content: center;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem 1rem;
+    }
+
+    #scrollingView {
+        margin: 16px;
+        padding: 30px 18px 20px;
+    }
+
+    .footerSection {
+        flex-direction: column;
+        gap: 34px;
+    }
+}
+
+@media (max-width: 600px) {
+    .logo img {
+        height: 54px;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem;
+    }
+
+    .images img {
+        flex-basis: 82vw;
+        width: 82vw;
+        height: 220px;
+    }
+
+    .viewMore {
+        padding-inline: 16px;
+    }
+
+    .view-card {
+        width: 100%;
+    }
+
+    .pick-card {
+        flex-basis: calc(100vw - 44px);
+    }
+
+    #topPicks {
+        gap: 16px;
+        padding-inline: 16px;
+    }
+
+    .next-arrow {
+        right: 14px;
+    }
+
+    .ending .logo {
+        flex-direction: column;
+    }
+}

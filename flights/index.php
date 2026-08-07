@@ -465,6 +465,174 @@
             </div>
         </section>
 
+        <!-- 3. SPECIAL FLIGHT PACKAGES (优惠套餐) -->
+        <section class="packages-section">
+            <div class="section-title-box">
+                <h2>FEATURED FLIGHT PACKAGES</h2>
+                <p>Exclusive flight + baggage bundles tailored for your trip</p>
+            </div>
+
+            <div class="packages-grid">
+                <div class="package-card">
+                    <span class="pkg-badge">HOT DEAL</span>
+                    <div class="pkg-header">
+                        <h3>Southeast Asia Flexi Pass</h3>
+                        <p class="route">KUL ✈️ BKK / DPS / DAD</p>
+                    </div>
+                    <div class="pkg-body">
+                        <ul class="pkg-features">
+                            <li>✔ Includes 20kg Checked Baggage</li>
+                            <li>✔ Free Date Change (1x)</li>
+                            <li>✔ Standard Seat Selection</li>
+                        </ul>
+                        <div class="pkg-price-box">
+                            <span class="from">Save up to 25%</span>
+                            <div class="price">RM 499 <span>/ person</span></div>
+                        </div>
+                        <a href="#" class="pkg-btn">Book Package</a>
+                    </div>
+                </div>
+
+                <div class="package-card featured">
+                    <span class="pkg-badge gold">BEST VALUE</span>
+                    <div class="pkg-header">
+                        <h3>Weekend Getaway Express</h3>
+                        <p class="route">KUL ✈️ HKT / PEN / KBV</p>
+                    </div>
+                    <div class="pkg-body">
+                        <ul class="pkg-features">
+                            <li>✔ Priority Boarding Included</li>
+                            <li>✔ In-flight Meal Included</li>
+                            <li>✔ Express Check-in Counter</li>
+                        </ul>
+                        <div class="pkg-price-box">
+                            <span class="from">Save up to 30%</span>
+                            <div class="price">RM 388 <span>/ person</span></div>
+                        </div>
+                        <a href="#" class="pkg-btn">Book Package</a>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <span class="pkg-badge">POPULAR</span>
+                    <div class="pkg-header">
+                        <h3>Island Hopper Bundle</h3>
+                        <p class="route">KUL ✈️ LGK / USM / PQC</p>
+                    </div>
+                    <div class="pkg-body">
+                        <ul class="pkg-features">
+                            <li>✔ Direct Flights Only</li>
+                            <li>✔ Cabin Bag 7kg + Carry-on</li>
+                            <li>✔ Instant Confirmation</li>
+                        </ul>
+                        <div class="pkg-price-box">
+                            <span class="from">Save up to 20%</span>
+                            <div class="price">RM 299 <span>/ person</span></div>
+                        </div>
+                        <a href="#" class="pkg-btn">Book Package</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 4. TIPS ON BOOKING CHEAP FLIGHTS (手风琴折叠板块) -->
+        <section class="tips-section">
+            <h2 class="tips-main-title">Tips on Booking Cheap Flights</h2>
+            
+            <div class="accordion-container">
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Fly during the working week</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Mid-week flights (Tuesday and Wednesday) are often cheaper than weekend flights due to lower demand from leisure travelers.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Have a look at airline websites</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Comparing price aggregator results directly with official airline sites can sometimes unlock exclusive member discounts or free baggage upgrades.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item active">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Consider flights with less-popular departure times</span>
+                        <span class="acc-icon">∧</span>
+                    </button>
+                    <div class="accordion-content" style="display: block;">
+                        <p>You may also get a bargain flight if you're willing to fly at an early hour. It may well be less expensive to fly at 6 am than at later times due to that time spot being less popular. The only problem you could face is getting to the airport at this time; make sure that public transport is running if you can't take a taxi or get a lift to the airport.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Find a better price on the app</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Exclusive mobile app promotions and promo codes often offer additional discounts compared to desktop web prices.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Book early instead of waiting until the last minute</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Airfares generally rise within 3 weeks of departure. Booking 1 to 3 months in advance usually gets you the best rates.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Use a credit card in a wiser way</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Check for travel credit card perks, airport lounge access, complimentary flight insurance, and air mile reward points.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Choose flights with a connection</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Connecting flights with short layovers are frequently lower in price than direct non-stop flights for long-haul routes.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Book package holidays which may offer cheap flight tickets</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Bundling flights with hotel bookings often unlocks wholesale rates not available when purchasing separately.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Be aware of hidden costs of cheap flights</span>
+                        <span class="acc-icon">∨</span>
+                    </button>
+                    <div class="accordion-content">
+                        <p>Always factor in additional fees like checked baggage, seat selection, airport transfers, and payment processing charges.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
 </main>
 
@@ -501,6 +669,27 @@ window.addEventListener('scroll', function() {
         searchHero.classList.remove('sticky');
     }
 });
+
+function toggleAccordion(button) {
+    const item = button.parentElement;
+    const content = item.querySelector('.accordion-content');
+    const icon = button.querySelector('.acc-icon');
+    
+    const isOpen = item.classList.contains('active');
+    
+    // 关闭其他手风琴
+    document.querySelectorAll('.accordion-item').forEach(acc => {
+        acc.classList.remove('active');
+        acc.querySelector('.accordion-content').style.display = 'none';
+        acc.querySelector('.acc-icon').textContent = '∨';
+    });
+
+    if (!isOpen) {
+        item.classList.add('active');
+        content.style.display = 'block';
+        icon.textContent = '∧';
+    }
+}
 </script>
 
 </body>

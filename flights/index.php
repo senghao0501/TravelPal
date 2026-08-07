@@ -1,0 +1,507 @@
+<?php include '../header.php'; ?>
+<link rel="stylesheet" href="../css/modules/flights.css">
+
+<main class="flights-page">
+
+    <!-- 1. English Airbnb-Style Floating Search Bar -->
+    <section class="search-hero-container" id="searchHero">
+        <div class="airbnb-search-bar" id="airbnbSearchBar">
+            
+            <!-- Destination Field -->
+            <div class="search-segment destination-trigger" onclick="toggleDropdown('destDropdown')">
+                <span class="label">✈️ Where</span>
+                <span class="value" id="selectedDest">Search destinations</span>
+                
+                <div class="airbnb-dropdown dest-dropdown" id="destDropdown">
+                    <div class="dropdown-title">Popular Flight Routes</div>
+                    <a href="../destinations/malaysia.php" class="dest-item">
+                        <div class="icon-box">🇲🇾</div>
+                        <div><strong>Malaysia</strong><span>KUL - Kuala Lumpur / Penang / Sabah</span></div>
+                    </a>
+                    <a href="../destinations/thailand.php" class="dest-item">
+                        <div class="icon-box">🇹🇭</div>
+                        <div><strong>Thailand</strong><span>BKK - Bangkok / Phuket / Chiang Mai</span></div>
+                    </a>
+                    <a href="../destinations/indonesia.php" class="dest-item">
+                        <div class="icon-box">🇮🇩</div>
+                        <div><strong>Indonesia</strong><span>DPS - Bali / Jakarta / Lombok</span></div>
+                    </a>
+                    <a href="../destinations/vietnam.php" class="dest-item">
+                        <div class="icon-box">🇻🇳</div>
+                        <div><strong>Vietnam</strong><span>DAD - Da Nang / Hanoi / Ho Chi Minh</span></div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Date Field -->
+            <div class="search-segment" onclick="toggleDropdown('dateDropdown')">
+                <span class="label">📅 Dates</span>
+                <span class="value">Add departure date</span>
+
+                <div class="airbnb-dropdown date-dropdown" id="dateDropdown" onclick="event.stopPropagation()">
+                    <div class="picker-tabs">
+                        <span class="active">Exact Dates</span>
+                        <span>Flexible Dates</span>
+                    </div>
+                    <div class="dummy-calendar">
+                        <div class="cal-month">
+                            <h4>August 2026</h4>
+                            <div class="cal-days">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+                                <span>8</span><span class="sel">9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Guests Field -->
+            <div class="search-segment" onclick="toggleDropdown('guestDropdown')">
+                <span class="label">👤 Passengers</span>
+                <span class="value">Add passengers</span>
+
+                <div class="airbnb-dropdown guest-dropdown" id="guestDropdown" onclick="event.stopPropagation()">
+                    <div class="guest-row">
+                        <div><strong>Adults</strong><span>Age 13+</span></div>
+                        <div class="counter"><span>-</span> 1 <span>+</span></div>
+                    </div>
+                    <div class="guest-row">
+                        <div><strong>Children</strong><span>Ages 2-12</span></div>
+                        <div class="counter"><span>-</span> 0 <span>+</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <button class="search-btn" aria-label="Search Flights">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- Ticker Info Bar -->
+    <div class="flight-ticker">
+        <span>✈️ DIRECT FLIGHTS FROM KUL HUB • DAILY REAL-TIME FARES UPDATED</span>
+    </div>
+
+
+    <!-- 2. Magazine Editorial Layout -->
+    <div class="magazine-container">
+
+        <!-- ISSUE 01: MALAYSIA -->
+        <section class="magazine-issue">
+            <div class="editorial-header">
+                <div class="issue-meta">
+                    <span class="issue-tag">ISSUE 01 — FLIGHTS TO MALAYSIA</span>
+                    <span class="flight-route-badge">✈️ KUL HUB</span>
+                </div>
+                <h2 class="editorial-title">DISCOVER<br>MALAYSIA</h2>
+                <div class="editorial-line"></div>
+            </div>
+
+            <div class="magazine-layout">
+                <!-- Main Featured Hero Card -->
+                <a href="../destinations/malaysia.php" class="hero-card">
+                    <button class="fav-btn" title="Save to Favorites" onclick="toggleFav(event, this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </button>
+                    <div class="hero-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1200&auto=format&fit=crop" alt="Kuala Lumpur">
+                        <span class="card-badge">✈️ KUL • MAIN HUB</span>
+                    </div>
+                    <div class="hero-caption">
+                        <div class="card-meta-line">
+                            <span class="flight-tag">Direct Flight • Daily</span>
+                            <span class="rating-pill">★ 4.9 <small>(1,280 reviews)</small></span>
+                        </div>
+                        <span class="city-name">Kuala Lumpur</span>
+                        <p class="quote">“Where modern skyline meets authentic Malaysian heritage.”</p>
+                        <div class="flight-schedule">📅 Daily departures • 08:30 AM | 02:15 PM</div>
+                        <span class="explore-link">Explore Flights from RM 118 →</span>
+                    </div>
+                </a>
+
+                <!-- 4 Small Cards -->
+                <div class="small-cards-grid">
+                    <a href="../destinations/malaysia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 10m</span>
+                        <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop" alt="Langkawi">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(412)</span></div>
+                            <h4>Langkawi (LGK)</h4>
+                            <p class="flight-time">Fri, 14 Aug • Direct</p>
+                            <p class="price">from <strong>RM 142</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/malaysia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 00m</span>
+                        <img src="https://images.unsplash.com/photo-1584281722572-8820c744f9c6?w=600&auto=format&fit=crop" alt="Penang">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.9 <span>(630)</span></div>
+                            <h4>Penang (PEN)</h4>
+                            <p class="flight-time">Sat, 15 Aug • Direct</p>
+                            <p class="price">from <strong>RM 118</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/malaysia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 30m</span>
+                        <img src="https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=600&auto=format&fit=crop" alt="Kota Kinabalu">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.7 <span>(290)</span></div>
+                            <h4>Kota Kinabalu (BKI)</h4>
+                            <p class="flight-time">Thu, 20 Aug • Direct</p>
+                            <p class="price">from <strong>RM 238</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/malaysia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 45m</span>
+                        <img src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&auto=format&fit=crop" alt="Kuching">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(180)</span></div>
+                            <h4>Kuching (KCH)</h4>
+                            <p class="flight-time">Sun, 23 Aug • Direct</p>
+                            <p class="price">from <strong>RM 189</strong></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ISSUE 02: THAILAND -->
+        <section class="magazine-issue reverse-layout">
+            <div class="editorial-header">
+                <div class="issue-meta">
+                    <span class="issue-tag">ISSUE 02 — FLIGHTS TO THAILAND</span>
+                    <span class="flight-route-badge">✈️ KUL → BKK / HKT</span>
+                </div>
+                <h2 class="editorial-title">EXPLORE<br>THAILAND</h2>
+                <div class="editorial-line"></div>
+            </div>
+
+            <div class="magazine-layout">
+                <a href="../destinations/thailand.php" class="hero-card">
+                    <button class="fav-btn" title="Save to Favorites" onclick="toggleFav(event, this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </button>
+                    <div class="hero-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=1200&auto=format&fit=crop" alt="Bangkok">
+                        <span class="card-badge">✈️ KUL → BKK • 2h 10m</span>
+                    </div>
+                    <div class="hero-caption">
+                        <div class="card-meta-line">
+                            <span class="flight-tag">12+ Flights Daily</span>
+                            <span class="rating-pill">★ 4.9 <small>(2,150 reviews)</small></span>
+                        </div>
+                        <span class="city-name">Bangkok (BKK)</span>
+                        <p class="quote">“Vibrant night markets, golden temples, and street food paradises.”</p>
+                        <div class="flight-schedule">📅 Departures every 2 hours starting at 06:10 AM</div>
+                        <span class="explore-link">Explore Flights from RM 298 →</span>
+                    </div>
+                </a>
+
+                <div class="small-cards-grid">
+                    <a href="../destinations/thailand.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 25m</span>
+                        <img src="https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?w=600&auto=format&fit=crop" alt="Phuket">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.9 <span>(950)</span></div>
+                            <h4>Phuket (HKT)</h4>
+                            <p class="flight-time">Wed, 19 Aug • Non-stop</p>
+                            <p class="price">from <strong>RM 312</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/thailand.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 45m</span>
+                        <img src="https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?w=600&auto=format&fit=crop" alt="Chiang Mai">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(520)</span></div>
+                            <h4>Chiang Mai (CNX)</h4>
+                            <p class="flight-time">Fri, 21 Aug • Direct</p>
+                            <p class="price">from <strong>RM 365</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/thailand.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 40m</span>
+                        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&auto=format&fit=crop" alt="Koh Samui">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.7 <span>(310)</span></div>
+                            <h4>Koh Samui (USM)</h4>
+                            <p class="flight-time">Mon, 24 Aug • Direct</p>
+                            <p class="price">from <strong>RM 520</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/thailand.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 15m</span>
+                        <img src="https://images.unsplash.com/photo-1506665531195-3566af2b4dfa?w=600&auto=format&fit=crop" alt="Krabi">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(430)</span></div>
+                            <h4>Krabi (KBV)</h4>
+                            <p class="flight-time">Thu, 27 Aug • Non-stop</p>
+                            <p class="price">from <strong>RM 280</strong></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ISSUE 03: INDONESIA -->
+        <section class="magazine-issue">
+            <div class="editorial-header">
+                <div class="issue-meta">
+                    <span class="issue-tag">ISSUE 03 — FLIGHTS TO INDONESIA</span>
+                    <span class="flight-route-badge">✈️ KUL → DPS / CGK</span>
+                </div>
+                <h2 class="editorial-title">ESCAPE TO<br>INDONESIA</h2>
+                <div class="editorial-line"></div>
+            </div>
+
+            <div class="magazine-layout">
+                <a href="../destinations/indonesia.php" class="hero-card">
+                    <button class="fav-btn" title="Save to Favorites" onclick="toggleFav(event, this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </button>
+                    <div class="hero-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200&auto=format&fit=crop" alt="Bali">
+                        <span class="card-badge">✈️ KUL → DPS • 3h 05m</span>
+                    </div>
+                    <div class="hero-caption">
+                        <div class="card-meta-line">
+                            <span class="flight-tag">Top Pick • Island Getaway</span>
+                            <span class="rating-pill">★ 4.95 <small>(3,410 reviews)</small></span>
+                        </div>
+                        <span class="city-name">Bali (Denpasar)</span>
+                        <p class="quote">“Tropical paradise, volcanic cliffs, and tranquil spirituality.”</p>
+                        <div class="flight-schedule">📅 Daily non-stop flights at 09:45 AM & 06:20 PM</div>
+                        <span class="explore-link">Explore Flights from RM 388 →</span>
+                    </div>
+                </a>
+
+                <div class="small-cards-grid">
+                    <a href="../destinations/indonesia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 10m</span>
+                        <img src="https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=600&auto=format&fit=crop" alt="Jakarta">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.6 <span>(820)</span></div>
+                            <h4>Jakarta (CGK)</h4>
+                            <p class="flight-time">Tue, 18 Aug • Direct</p>
+                            <p class="price">from <strong>RM 275</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/indonesia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 3h 15m</span>
+                        <img src="https://images.unsplash.com/photo-1570789210967-2cac24af3449?w=600&auto=format&fit=crop" alt="Lombok">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(340)</span></div>
+                            <h4>Lombok (LOP)</h4>
+                            <p class="flight-time">Sat, 22 Aug • Direct</p>
+                            <p class="price">from <strong>RM 430</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/indonesia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 35m</span>
+                        <img src="https://images.unsplash.com/photo-1584810359583-96fc3448beaa?w=600&auto=format&fit=crop" alt="Yogyakarta">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.7 <span>(210)</span></div>
+                            <h4>Yogyakarta (YIA)</h4>
+                            <p class="flight-time">Tue, 25 Aug • Direct</p>
+                            <p class="price">from <strong>RM 340</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/indonesia.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 05m</span>
+                        <img src="https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=600&auto=format&fit=crop" alt="Medan">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.6 <span>(190)</span></div>
+                            <h4>Medan (KNO)</h4>
+                            <p class="flight-time">Fri, 28 Aug • Direct</p>
+                            <p class="price">from <strong>RM 195</strong></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ISSUE 04: VIETNAM -->
+        <section class="magazine-issue reverse-layout">
+            <div class="editorial-header">
+                <div class="issue-meta">
+                    <span class="issue-tag">ISSUE 04 — FLIGHTS TO VIETNAM</span>
+                    <span class="flight-route-badge">✈️ KUL → DAD / HAN</span>
+                </div>
+                <h2 class="editorial-title">UNCOVER<br>VIETNAM</h2>
+                <div class="editorial-line"></div>
+            </div>
+
+            <div class="magazine-layout">
+                <a href="../destinations/vietnam.php" class="hero-card">
+                    <button class="fav-btn" title="Save to Favorites" onclick="toggleFav(event, this)">
+                        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    </button>
+                    <div class="hero-img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=1200&auto=format&fit=crop" alt="Da Nang">
+                        <span class="card-badge">✈️ KUL → DAD • 2h 45m</span>
+                    </div>
+                    <div class="hero-caption">
+                        <div class="card-meta-line">
+                            <span class="flight-tag">Coastal Route • Direct</span>
+                            <span class="rating-pill">★ 4.88 <small>(1,840 reviews)</small></span>
+                        </div>
+                        <span class="city-name">Da Nang (DAD)</span>
+                        <p class="quote">“Golden bridges suspending above mist and coastal marvels.”</p>
+                        <div class="flight-schedule">📅 Daily morning flights at 10:15 AM</div>
+                        <span class="explore-link">Explore Flights from RM 325 →</span>
+                    </div>
+                </a>
+
+                <div class="small-cards-grid">
+                    <a href="../destinations/vietnam.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 3h 15m</span>
+                        <img src="https://images.unsplash.com/photo-1509030450996-93f2e3d84298?w=600&auto=format&fit=crop" alt="Hanoi">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(780)</span></div>
+                            <h4>Hanoi (HAN)</h4>
+                            <p class="flight-time">Thu, 20 Aug • Direct</p>
+                            <p class="price">from <strong>RM 350</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/vietnam.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 05m</span>
+                        <img src="https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&auto=format&fit=crop" alt="Ho Chi Minh">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.7 <span>(1,120)</span></div>
+                            <h4>Ho Chi Minh (SGN)</h4>
+                            <p class="flight-time">Mon, 24 Aug • Direct</p>
+                            <p class="price">from <strong>RM 260</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/vietnam.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 1h 50m</span>
+                        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&auto=format&fit=crop" alt="Phu Quoc">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.9 <span>(410)</span></div>
+                            <h4>Phu Quoc (PQC)</h4>
+                            <p class="flight-time">Wed, 26 Aug • Direct</p>
+                            <p class="price">from <strong>RM 390</strong></p>
+                        </div>
+                    </a>
+
+                    <a href="../destinations/vietnam.php" class="mini-card">
+                        <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
+                            <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </button>
+                        <span class="mini-plane-badge">✈️ 2h 30m</span>
+                        <img src="https://images.unsplash.com/photo-1528127269322-539801943592?w=600&auto=format&fit=crop" alt="Nha Trang">
+                        <div class="mini-info">
+                            <div class="mini-rating">★ 4.8 <span>(260)</span></div>
+                            <h4>Nha Trang (CXR)</h4>
+                            <p class="flight-time">Sat, 29 Aug • Direct</p>
+                            <p class="price">from <strong>RM 310</strong></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script>
+// Toggle favorite status on star button without triggering card link
+function toggleFav(event, btn) {
+    event.preventDefault();
+    event.stopPropagation();
+    btn.classList.toggle('active');
+}
+
+// Dropdown Toggles
+function toggleDropdown(id) {
+    const target = document.getElementById(id);
+    const isOpen = target.classList.contains('show');
+    document.querySelectorAll('.airbnb-dropdown').forEach(d => d.classList.remove('show'));
+    if (!isOpen) {
+        target.classList.add('show');
+    }
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-segment')) {
+        document.querySelectorAll('.airbnb-dropdown').forEach(d => d.classList.remove('show'));
+    }
+});
+
+// Sticky Header Shift
+window.addEventListener('scroll', function() {
+    const searchHero = document.getElementById('searchHero');
+    if (window.scrollY > 60) {
+        searchHero.classList.add('sticky');
+    } else {
+        searchHero.classList.remove('sticky');
+    }
+});
+</script>
+
+</body>
+</html>

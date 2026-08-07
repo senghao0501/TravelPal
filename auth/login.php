@@ -3,7 +3,6 @@
 
 <main class="auth-wrapper">
     <div class="auth-container">
-        <!-- 左侧：故事感 44% 宽度轮播图 -->
         <div class="auth-left slideshow-container">
             <!-- Slide 1: Malaysia -->
             <div class="slide fade active">

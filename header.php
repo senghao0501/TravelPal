@@ -17,7 +17,7 @@
 
         <div class="nav-links">
             <a href="/TravelPal/index.php">Home</a>
-            <a href="#">Flights</a>
+            <a href="/TravelPal/flights/index.php">Flights</a>
             <a href="/TravelPal/hotels/index.php">Hotels</a>
             <a href="#">Restaurants</a>
             <a href="#">Attractions</a>

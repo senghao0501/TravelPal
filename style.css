@@ -431,6 +431,45 @@ body {
     height: 16px;
 }
 
+/* 优化 Top Picks 右滑动箭头定位 */
+.top-picks-wrapper {
+    position: relative; /* 确保箭头相对此容器定位 */
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 10px;
+}
+
+.next-arrow {
+    position: absolute;
+    right: -15px;
+    top: 50%;                     /* 垂直居中 */
+    transform: translateY(-50%);  /* 垂直居中校准 */
+    z-index: 10;                  /* 确保按键悬浮在最上层 */
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--lime);
+    border-radius: 50%;
+    background: var(--black);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease;
+    
+    /* 确保按钮内的箭头文字居中 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.next-arrow:hover {
+    background: var(--lime);
+    color: var(--black);
+    transform: translateY(-50%) scale(1.1);
+}
+
+
 /* ----------------------------------------------------
    7. Features Section (绿色点缀图标卡片)
    ---------------------------------------------------- */

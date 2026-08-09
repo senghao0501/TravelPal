@@ -1,0 +1,224 @@
+/* 弹窗遮罩层 */
+.flight-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.flight-modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* 主弹窗容器 */
+.flight-modal-container {
+    background: #ffffff;
+    width: 90%;
+    max-width: 920px;
+    max-height: 90vh;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* 弹窗头部 */
+.modal-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-header .route-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+}
+
+.modal-header .flight-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    gap: 12px;
+}
+
+.modal-close-btn {
+    background: #f8fafc;
+    border: none;
+    font-size: 1.25rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.modal-close-btn:hover { background: #e2e8f0; color: #0f172a; }
+
+/* 航班路线展示条 */
+.modal-flight-details {
+    background: #f8fafc;
+    padding: 1rem 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.time-box strong { display: block; font-size: 1.1rem; color: #0f172a; }
+.time-box span { font-size: 0.75rem; color: #64748b; }
+.airline-info { border-left: 2px solid #cbd5e1; padding-left: 1rem; }
+.airline-info .carrier { font-weight: 700; font-size: 0.85rem; color: #334155; }
+.airline-info .aircraft { font-size: 0.75rem; color: #64748b; }
+
+/* 弹窗滚动主体内容 */
+.modal-body {
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* 改造后的多选套餐卡片区域 */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.option-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1rem;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.option-card:hover { border-color: #38bdf8; }
+
+.option-card.selected {
+    border: 2px solid #0284c7;
+    background: #f0f9ff;
+}
+
+.option-card .card-checkbox {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 18px;
+    height: 18px;
+    accent-color: #0284c7;
+}
+
+.option-card .class-name { font-weight: 800; font-size: 0.95rem; color: #0f172a; margin-bottom: 0.5rem; }
+.option-card .tag-recommended { background: #dbeafe; color: #1e40af; font-size: 0.65rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 0.5rem; }
+
+.feature-list { list-style: none; padding: 0; margin: 0 0 1rem 0; font-size: 0.78rem; color: #475569; }
+.feature-list li { margin-bottom: 0.4rem; display: flex; align-items: center; gap: 6px; }
+
+.option-price { font-size: 1.1rem; font-weight: 800; color: #0284c7; margin-top: auto; }
+
+/* 付款方式单选区域 */
+.payment-section {
+    border-top: 1px dashed #e2e8f0;
+    padding-top: 1.25rem;
+}
+
+.payment-title { font-size: 0.85rem; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+
+.payment-label {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.payment-label:hover { background: #f8fafc; }
+.payment-label input[type="radio"] { accent-color: #0284c7; }
+
+/* 底部 Sticky Bar */
+.modal-footer {
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    padding: 1rem 1.75rem;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.total-price-display {
+    text-align: right;
+}
+
+.total-price-display span { font-size: 0.75rem; color: #64748b; display: block; }
+.total-price-display strong { font-size: 1.35rem; color: #0284c7; font-weight: 800; }
+
+.add-to-cart-btn {
+    background: #0284c7;
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.75rem;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.add-to-cart-btn:hover { background: #0369a1; transform: translateY(-1px); }
+
+@media (max-width: 768px) {
+    .options-grid, .payment-options { grid-template-columns: 1fr; }
+}
+
+.flight-modal-overlay.active {
+    display: flex !important;
+    opacity: 1 !important;
+    z-index: 99999 !important;
+}

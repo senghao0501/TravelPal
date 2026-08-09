@@ -1,5 +1,6 @@
 <?php include '../header.php'; ?>
 <link rel="stylesheet" href="../css/modules/flights.css">
+<link rel="stylesheet" href="../css/modules/model.css">
 
 <main class="flights-page">
 
@@ -634,63 +635,273 @@
         </section>
 
     </div>
+
 </main>
 
+<!-- 5. 弹窗结构 -->
+<div class="flight-modal-overlay" id="flightModal">
+    <div class="flight-modal-container">
+        
+        <!-- Header -->
+        <div class="modal-header">
+            <div>
+                <h3 class="route-title" id="modalRouteTitle">Kuala Lumpur ➔ Destination</h3>
+                <div class="flight-meta">
+                    <span id="modalDepartDate">Depart: Daily Schedule</span>
+                    <span>|</span>
+                    <span id="modalDuration">Duration: --</span>
+                </div>
+            </div>
+            <button class="modal-close-btn" onclick="closeFlightModal()">✕</button>
+        </div>
+
+        <!-- Flight Detail Segment -->
+        <div class="modal-flight-details">
+            <div class="time-box">
+                <strong id="modalDeptTime">09:25</strong>
+                <span id="modalDeptCode">KUL Kuala Lumpur</span>
+            </div>
+            <div class="airline-info">
+                <div class="carrier" id="modalCarrier">Malaysia Airlines (MH5483)</div>
+                <div class="aircraft">Economy Class • Direct Flight</div>
+            </div>
+            <div class="time-box" style="margin-left: auto;">
+                <strong id="modalArrTime">10:50</strong>
+                <span id="modalArrCode">DEST Airport</span>
+            </div>
+        </div>
+
+        <!-- Scrollable Options Content -->
+        <div class="modal-body">
+            <!-- 增值服务多选框 -->
+            <div class="options-grid">
+                <label class="option-card selected">
+                    <input type="checkbox" class="card-checkbox" value="0" checked disabled onclick="recalculateTotal()">
+                    <div>
+                        <div class="class-name">Standard Economy</div>
+                        <ul class="feature-list">
+                            <li>🎒 Carry-on luggage: 1 piece</li>
+                            <li>🧳 Checked baggage: 10 kg</li>
+                            <li>❌ Non-refundable</li>
+                        </ul>
+                    </div>
+                    <div class="option-price" id="basePriceTag">RM 0</div>
+                </label>
+
+                <label class="option-card">
+                    <input type="checkbox" class="card-checkbox" value="50" onclick="recalculateTotal()">
+                    <div>
+                        <span class="tag-recommended">RECOMMENDED</span>
+                        <div class="class-name">TripFlex Plus</div>
+                        <ul class="feature-list">
+                            <li>✅ Free Cancellation</li>
+                            <li>✅ Free Date Change</li>
+                            <li>🧳 Checked baggage: 20 kg</li>
+                        </ul>
+                    </div>
+                    <div class="option-price">+ RM 50</div>
+                </label>
+
+                <label class="option-card">
+                    <input type="checkbox" class="card-checkbox" value="30" onclick="recalculateTotal()">
+                    <div>
+                        <div class="class-name">Priority & Comfort</div>
+                        <ul class="feature-list">
+                            <li>⚡ Priority Boarding</li>
+                            <li>🍱 Premium In-flight Meal</li>
+                            <li>💺 Standard Seat Selection</li>
+                        </ul>
+                    </div>
+                    <div class="option-price">+ RM 30</div>
+                </label>
+            </div>
+
+            <!-- 支付方式单选框 -->
+            <div class="payment-section">
+                <div class="payment-title">Select Payment Method</div>
+                <div class="payment-options">
+                    <label class="payment-label">
+                        <input type="radio" name="payMethod" value="card" checked>
+                        <span>💳 Credit / Debit Card</span>
+                    </label>
+                    <label class="payment-label">
+                        <input type="radio" name="payMethod" value="tng">
+                        <span>📱 Touch 'n Go eWallet</span>
+                    </label>
+                    <label class="payment-label">
+                        <input type="radio" name="payMethod" value="fpx">
+                        <span>🏦 FPX Online Banking</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+            <div class="total-price-display">
+                <span>Total Amount</span>
+                <strong id="modalTotalPrice">RM 0</strong>
+            </div>
+            <button class="add-to-cart-btn" onclick="addToCartAction()">Add to Cart</button>
+        </div>
+
+    </div>
+</div>
+
 <script>
-// Toggle favorite status on star button without triggering card link
+// 全局基础价格
+let currentBasePrice = 0;
+
+// 1. 打开弹窗逻辑
+function openFlightModal(destination, priceStr, duration) {
+    const numericPrice = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+    currentBasePrice = numericPrice;
+
+    const modal = document.getElementById('flightModal');
+    if (!modal) return;
+
+    document.getElementById('modalRouteTitle').textContent = `Kuala Lumpur ➔ ${destination}`;
+    document.getElementById('modalDuration').textContent = `Duration: ${duration || 'N/A'}`;
+    document.getElementById('basePriceTag').textContent = `RM ${numericPrice}`;
+
+    const arrCodeEl = document.getElementById('modalArrCode');
+    if (arrCodeEl) {
+        arrCodeEl.textContent = destination.includes('(') ? destination : `${destination} Airport`;
+    }
+    
+    // 重置多选项（基础票价强制为 selected 与 disabled）
+    const checkboxes = modal.querySelectorAll('.card-checkbox');
+    checkboxes.forEach((cb, idx) => {
+        if (idx === 0) {
+            cb.checked = true;
+            cb.disabled = true;
+        } else {
+            cb.checked = false;
+            cb.disabled = false;
+        }
+        cb.closest('.option-card').classList.toggle('selected', cb.checked);
+    });
+
+    recalculateTotal();
+    modal.classList.add('active');
+}
+
+// 2. 关闭弹窗逻辑
+function closeFlightModal() {
+    const modal = document.getElementById('flightModal');
+    if (modal) modal.classList.remove('active');
+}
+
+// 3. 计算总价
+function recalculateTotal() {
+    let total = currentBasePrice;
+    const checkboxes = document.querySelectorAll('.card-checkbox');
+    
+    checkboxes.forEach((cb, idx) => {
+        const card = cb.closest('.option-card');
+        if (cb.checked) {
+            card.classList.add('selected');
+            if (idx > 0) total += parseFloat(cb.value);
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+
+    document.getElementById('modalTotalPrice').textContent = `RM ${total.toFixed(0)}`;
+}
+
+// 4. 加入购物车动作
+function addToCartAction() {
+    const total = document.getElementById('modalTotalPrice').textContent;
+    alert(`Success! Flight added to cart with Total: ${total}`);
+    closeFlightModal();
+}
+
+// 5. 收藏夹星星点击
 function toggleFav(event, btn) {
     event.preventDefault();
     event.stopPropagation();
     btn.classList.toggle('active');
 }
 
-// Dropdown Toggles
+// 6. 搜索栏下拉菜单切换
 function toggleDropdown(id) {
     const target = document.getElementById(id);
+    if (!target) return;
     const isOpen = target.classList.contains('show');
     document.querySelectorAll('.airbnb-dropdown').forEach(d => d.classList.remove('show'));
+    if (!isOpen) target.classList.add('show');
+}
+
+// 7. 手风琴折叠
+function toggleAccordion(button) {
+    const item = button.parentElement;
+    const content = item.querySelector('.accordion-content');
+    const icon = button.querySelector('.acc-icon');
+    const isOpen = item.classList.contains('active');
+    
+    document.querySelectorAll('.accordion-item').forEach(acc => {
+        acc.classList.remove('active');
+        const c = acc.querySelector('.accordion-content');
+        if (c) c.style.display = 'none';
+        const ic = acc.querySelector('.acc-icon');
+        if (ic) ic.textContent = '∨';
+    });
+
     if (!isOpen) {
-        target.classList.add('show');
+        item.classList.add('active');
+        if (content) content.style.display = 'block';
+        if (icon) icon.textContent = '∧';
     }
 }
 
+// 全局事件委托（带容错处理）
 document.addEventListener('click', function(e) {
+    // A. 点击背景遮罩关闭弹窗
+    if (e.target.classList.contains('flight-modal-overlay')) {
+        closeFlightModal();
+        return;
+    }
+
+    // B. 点击机票卡片 / 优惠套餐触发弹窗
+    const card = e.target.closest('.hero-card, .mini-card, .package-card');
+    if (card && !e.target.closest('.fav-btn')) {
+        e.preventDefault(); // 强行拦截 <a> 标签跳转
+        
+        try {
+            // 安全提取文本信息，防止 null 报错
+            const cityEl = card.querySelector('.city-name') || card.querySelector('h4') || card.querySelector('h3');
+            const priceEl = card.querySelector('.price strong') || card.querySelector('.price') || card.querySelector('.explore-link');
+            const badgeEl = card.querySelector('.mini-plane-badge') || card.querySelector('.card-badge') || card.querySelector('.route');
+
+            const cityName = cityEl ? cityEl.textContent.trim() : 'Destination';
+            const priceText = priceEl ? priceEl.textContent.trim() : '0';
+            const durationText = badgeEl ? badgeEl.textContent.replace('✈️', '').trim() : 'Direct';
+
+            openFlightModal(cityName, priceText, durationText);
+        } catch (err) {
+            console.error("Modal Trigger Error:", err);
+        }
+        return;
+    }
+
+    // C. 点击搜索栏之外的地方收起下拉框
     if (!e.target.closest('.search-segment')) {
         document.querySelectorAll('.airbnb-dropdown').forEach(d => d.classList.remove('show'));
     }
 });
 
-// Sticky Header Shift
+// 顶部 Search Bar 滚动吸顶效果
 window.addEventListener('scroll', function() {
     const searchHero = document.getElementById('searchHero');
-    if (window.scrollY > 60) {
-        searchHero.classList.add('sticky');
-    } else {
-        searchHero.classList.remove('sticky');
+    if (searchHero) {
+        if (window.scrollY > 60) {
+            searchHero.classList.add('sticky');
+        } else {
+            searchHero.classList.remove('sticky');
+        }
     }
 });
-
-function toggleAccordion(button) {
-    const item = button.parentElement;
-    const content = item.querySelector('.accordion-content');
-    const icon = button.querySelector('.acc-icon');
-    
-    const isOpen = item.classList.contains('active');
-    
-    // 关闭其他手风琴
-    document.querySelectorAll('.accordion-item').forEach(acc => {
-        acc.classList.remove('active');
-        acc.querySelector('.accordion-content').style.display = 'none';
-        acc.querySelector('.acc-icon').textContent = '∨';
-    });
-
-    if (!isOpen) {
-        item.classList.add('active');
-        content.style.display = 'block';
-        icon.textContent = '∧';
-    }
-}
 </script>
 
-</body>
-</html>
+<?php include '../footer.php'; ?>

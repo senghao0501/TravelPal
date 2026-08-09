@@ -22,6 +22,8 @@
             <a href="#">Restaurants</a>
             <a href="#">Attractions</a>
             <a href="#">My Trips</a>
+            <!-- 新增 Settings 菜单项 -->
+            <a href="/TravelPal/settings/index.php">Settings</a>
             <a href="/TravelPal/auth/login.php" class="btn-login">Sign in</a>
         </div>
     </div>

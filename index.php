@@ -1,7 +1,7 @@
 <?php include 'header.php'; ?>
 
 <!-- 引入样式文件 -->
-<link rel="stylesheet" href="/TravelPal/style.css?v=2026">
+<link rel="stylesheet" href="/TravelPal/css/style.css?v=2026">
 
 <!-- 1. Welcome 标语区域 -->
 <section class="welcome-hero">
@@ -10,23 +10,86 @@
     <p class="subtitle">Your ultimate travel assistant.</p>
 </section>
 
-<!-- 2. 渐变绿轮播卡片 (scrollingView) -->
+<!-- 2. 东南亚轮播卡片 (带地点和国家标注) -->
 <section id="scrollingView">
     <h2>Explore Southeast Asia<br><span>Thailand · Vietnam · Indonesia · Malaysia</span></h2>
     
     <div class="images" id="image-slider">
-        <img src="/TravelPal/images/thailand.jpg" alt="Thailand">
-        <img src="/TravelPal/images/thailand2.jpg" alt="Thailand">
-        <img src="/TravelPal/images/vietnam.jpg" alt="Vietnam">
-        <img src="/TravelPal/images/vietnam2.jpg" alt="Vietnam">
-        <img src="/TravelPal/images/indonesia.jpg" alt="Indonesia">
-        <img src="/TravelPal/images/indonesia2.jpg" alt="Indonesia">
-        <img src="/TravelPal/images/malaysia.jpg" alt="Malaysia">
-        <img src="/TravelPal/images/malaysia2.jpg" alt="Malaysia">
+        <!-- 1. Thailand -->
+        <div class="image-card">
+            <img src="/TravelPal/images/thailand.jpg" alt="Thailand">
+            <div class="image-info">
+                <span class="place-name">Grand Palace</span>
+                <span class="country-tag">Thailand</span>
+            </div>
+        </div>
+
+        <!-- 2. Thailand 2 -->
+        <div class="image-card">
+            <img src="/TravelPal/images/thailand2.jpg" alt="Thailand">
+            <div class="image-info">
+                <span class="place-name">Phi Phi Islands</span>
+                <span class="country-tag">Thailand</span>
+            </div>
+        </div>
+
+        <!-- 3. Vietnam -->
+        <div class="image-card">
+            <img src="/TravelPal/images/vietnam.jpg" alt="Vietnam">
+            <div class="image-info">
+                <span class="place-name">Ha Long Bay</span>
+                <span class="country-tag">Vietnam</span>
+            </div>
+        </div>
+
+        <!-- 4. Vietnam 2 -->
+        <div class="image-card">
+            <img src="/TravelPal/images/vietnam2.jpg" alt="Vietnam">
+            <div class="image-info">
+                <span class="place-name">Hoi An Ancient Town</span>
+                <span class="country-tag">Vietnam</span>
+            </div>
+        </div>
+
+        <!-- 5. Indonesia -->
+        <div class="image-card">
+            <img src="/TravelPal/images/indonesia.jpg" alt="Indonesia">
+            <div class="image-info">
+                <span class="place-name">Prambanan Temple</span>
+                <span class="country-tag">Indonesia</span>
+            </div>
+        </div>
+
+        <!-- 6. Indonesia 2 -->
+        <div class="image-card">
+            <img src="/TravelPal/images/indonesia2.jpg" alt="Indonesia">
+            <div class="image-info">
+                <span class="place-name">Mount Bromo</span>
+                <span class="country-tag">Indonesia</span>
+            </div>
+        </div>
+
+        <!-- 7. Malaysia -->
+        <div class="image-card">
+            <img src="/TravelPal/images/malaysia.jpg" alt="Malaysia">
+            <div class="image-info">
+                <span class="place-name">Batu Caves</span>
+                <span class="country-tag">Malaysia</span>
+            </div>
+        </div>
+
+        <!-- 8. Malaysia 2 -->
+        <div class="image-card">
+            <img src="/TravelPal/images/malaysia2.jpg" alt="Malaysia">
+            <div class="image-info">
+                <span class="place-name">Mulu National Park</span>
+                <span class="country-tag">Malaysia</span>
+            </div>
+        </div>
     </div>
 </section>
 
-<!-- 3. 荧光绿搜索栏组件 -->
+<!-- 3. 搜索栏组件 -->
 <section class="search-container">
     <div class="search">
         <input type="text" id="searchBar" placeholder="Search Malaysia, Vietnam, Thailand, Indonesia places to go, hotels...">
@@ -35,7 +98,7 @@
     <div class="error-message" id="searchError"></div>
 </section>
 
-<!-- 4. 四个国家卡片区域 (移到 Search Bar 正下方) -->
+<!-- 4. 四个国家卡片区域 -->
 <section class="viewMore">
     <dialog id="travelPopup">
         <h3 id="popupTitle">Explore Country</h3>
@@ -77,7 +140,7 @@
     </div>
 </section>
 
-<!-- 5. Top Picks 推荐区块 (完整 8 个卡片) -->
+<!-- 5. Top Picks 推荐区块 -->
 <section class="top-picks-section">
     <h2 class="section-title">Top Picks</h2>
     <div class="top-picks-wrapper">
@@ -131,10 +194,11 @@
                 <div class="rating">⭐ 4.7</div>
             </div>
         </div>
-        <!-- 依然保留右滑按钮，点一下滑动看后面的卡片 -->
         <button type="button" class="next-arrow" onclick="scrollTopPicks()" title="Next">➔</button>
     </div>
-</section><!-- 6. Features 核心功能与优势 -->
+</section>
+
+<!-- 6. Features 核心功能与优势 -->
 <section class="features-section">
     <h2 class="section-title" style="background:none; box-shadow:none;">Why TravelPal?</h2>
     <p class="section-subtitle">Discover how TravelPal makes travel planning effortless.</p>
@@ -198,14 +262,14 @@
 </div>
 
 <script>
-    // 1. 顶部轮播图自动播放
+    // 1. 顶部轮播图自动播放 (针对新的 .image-card 容器结构平滑滚动)
     const slider = document.getElementById("image-slider");
     if (slider) {
         setInterval(() => {
             if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5) {
                 slider.scrollTo({ left: 0, behavior: "smooth" });
             } else {
-                slider.scrollBy({ left: 260, behavior: "smooth" });
+                slider.scrollBy({ left: 250, behavior: "smooth" });
             }
         }, 3000);
     }

@@ -1,0 +1,198 @@
+/* ==========================================================================
+   C:\wamp64\www\travelPal\css\modules\restaurant_detail.css
+   餐厅详情页专属独立样式
+   ========================================================================== */
+
+body {
+    background-color: #f8fafc; 
+    color: #111827;
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.detail-container {
+    max-width: 1150px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* 顶部标题区 */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+.detail-title h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+.detail-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    color: #f59e0b; 
+    font-weight: bold;
+}
+.review-count {
+    color: #6b7280;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: normal;
+}
+.action-btns .btn {
+    background: white;
+    border: 1px solid #d1d5db;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: 0.2s;
+}
+.action-btns .btn:hover {
+    background: #f3f4f6;
+}
+.action-btns .btn-primary {
+    background: #111827;
+    color: white;
+    border: none;
+}
+.action-btns .btn-primary:hover {
+    background: #C6FF34; 
+    color: #111827;
+}
+
+/* 相册网格 (左一大，右三小) */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: repeat(3, 150px);
+    gap: 8px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+.gallery-item {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+.gallery-item:hover {
+    opacity: 0.9;
+}
+.main-img {
+    grid-column: 1 / 2;
+    grid-row: 1 / 4;
+}
+
+/* 左右分栏布局 */
+.content-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+}
+
+/* 模块通用卡片样式 */
+.info-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    margin-bottom: 30px;
+    border: 1px solid #e5e7eb;
+}
+.info-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+/* 右侧侧边栏 (地址、电话、时间) */
+.sidebar-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+    color: #374151;
+}
+.sidebar-item i {
+    color: #111827;
+    font-size: 1.2rem;
+    margin-top: 3px;
+}
+.sidebar-item p { margin: 0; }
+.sidebar-item strong { display: block; margin-bottom: 5px; color: #111827;}
+
+/* 菜单列表 */
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed #e5e7eb;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-name { font-weight: 600; font-size: 1.1rem; }
+.menu-desc { font-size: 0.9rem; color: #6b7280; margin-top: 4px; }
+.menu-price { font-weight: bold; color: #111827; font-size: 1.1rem; }
+
+/* 评论区 */
+.review-item {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+.reviewer-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+.reviewer-name { font-weight: bold; display: block; }
+.review-date { font-size: 0.85rem; color: #9ca3af; }
+.review-text {
+    font-size: 1rem;
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* 评论附加的照片网格 */
+.review-photos {
+    display: flex;
+    gap: 10px;
+}
+.review-photos img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.review-photos img:hover { opacity: 0.8; }
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .content-layout { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-rows: repeat(3, 100px); }
+    .detail-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+}

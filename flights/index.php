@@ -655,7 +655,7 @@
             <button class="modal-close-btn" onclick="closeFlightModal()">✕</button>
         </div>
 
-        <!-- 美化后的弹窗配置栏（已绑定逻辑） -->
+        <!-- 弹窗配置栏 -->
         <div class="booking-form">
           <!-- Trip Type -->
           <div class="trip-type-toggle" role="radiogroup" aria-label="Trip type">

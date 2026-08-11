@@ -1,168 +1,243 @@
-<?php 
-if (file_exists('../header.php')) {
-    include '../header.php';
-} else if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/header.php')) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/header.php';
+<?php
+// 1. Get Hotel ID from URL (e.g., detail.php?id=2)
+$hotel_id = isset($_GET['id']) ? intval($_GET['id']) : 1;
+
+/*
+// =========================================================================
+// DATABASE INTEGRATION EXAMPLE (Uncomment and edit when using MySQL)
+// =========================================================================
+$db = new PDO('mysql:host=localhost;dbname=your_database;charset=utf8', 'username', 'password');
+$stmt = $db->prepare('SELECT * FROM hotels WHERE id = ?');
+$stmt->execute([$hotel_id]);
+$hotel = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$hotel) {
+    die("Hotel not found!");
 }
+// =========================================================================
+*/
 
-// 1. 获取 URL 中的 id 参数，默认显示 mandarin_kl
-$hotel_id = isset($_GET['id']) ? $_GET['id'] : 'mandarin_kl';
-
-// 2. 所有酒店的数据字典 (全线统一使用马币 RM)
+// 2. Dynamic Mock Hotel Data (Each hotel now has distinct prices)
 $hotels_data = [
-    // === 🇲🇾 MALAYSIA ===
-    'mandarin_kl' => [
-        'name' => 'Mandarin Oriental, Kuala Lumpur',
-        'location' => '📍 Near Petronas Twin Towers, Kuala Lumpur, Malaysia',
-        'price' => 'RM 680',
-        'main_img' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80',
-        'about' => 'Set between the iconic Petronas Twin Towers and KLCC Park, Mandarin Oriental offers world-class luxury, an infinity pool with park views, and exceptional dining.',
-        'amenities' => ['🏊‍♂️ Infinity Pool', '📶 Free Wi-Fi', '🍸 Rooftop Bar', '🏋️‍♂️ Fitness Center', '💆‍♀️ Luxury Spa'],
-        'highlights' => ['🚶‍♂️ 1 min walk to Petronas Twin Towers', '🚶‍♂️ 3 min walk to Suria KLCC Mall', '🚗 45 min drive from KLIA']
+    1 => [
+        'id' => 1,
+        'name' => 'The Ritz-Carlton, Kyoto',
+        'location' => 'Nakagyo Ward, Kyoto, Japan',
+        'price_per_night' => 850,
+        'currency' => '$',
+        'rating' => '4.9',
+        'reviews_count' => 128,
+        'main_image' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
+        'description' => 'Situated along the banks of the Kamogawa river, offering stunning views of the Higashiyama mountains. Blending traditional Japanese architecture with modern luxury.',
+        'amenities' => ['Free High-Speed Wi-Fi', 'Indoor Heated Pool', 'Luxury SPA Center', 'Michelin-starred Dining', '24-Hour Butler Service']
     ],
-    'eo_penang' => [
-        'name' => 'Eastern & Oriental Hotel (E&O)',
-        'location' => '📍 George Town, Penang, Malaysia',
-        'price' => 'RM 450',
-        'main_img' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80',
-        'about' => 'A colonial-era luxury hotel in George Town, Penang. The E&O offers sea-facing suites, classic hospitality, and timeless heritage charm.',
-        'amenities' => ['🌊 Sea Views', '🏊‍♂️ Outdoor Pool', '📶 Free Wi-Fi', '🍳 Heritage Breakfast', '🍸 Palm Court Bar'],
-        'highlights' => ['🏛 Located in UNESCO World Heritage Zone', '🚶‍♂️ 5 min walk to George Town Food Streets', '🚗 20 min drive to Penang Airport']
+    2 => [
+        'id' => 2,
+        'name' => 'Marina Bay Sands',
+        'location' => 'Bayfront Avenue, Singapore',
+        'price_per_night' => 620,
+        'currency' => '$',
+        'rating' => '4.8',
+        'reviews_count' => 310,
+        'main_image' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
+        'description' => 'An iconic landmark in Singapore featuring the world\'s largest rooftop infinity pool with breathtaking skyline views of Marina Bay.',
+        'amenities' => ['57th Floor Infinity Pool', 'SkyPark Observation Deck', 'Premier Shopping Mall', '24-Hour Fitness Center', 'Luxury Airport Shuttle']
     ],
-    'casa_del_rio' => [
-        'name' => 'Casa del Rio Melaka',
-        'location' => '📍 Near Jonker Street, Melaka, Malaysia',
-        'price' => 'RM 380',
-        'main_img' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=500&q=80',
-        'about' => 'A Mediterranean-inspired boutique hotel situated on the banks of the historic Melaka River, just steps away from Jonker Street.',
-        'amenities' => ['🚣‍♂️ Riverfront View', '🏊‍♂️ Infinity Pool', '📶 Free Wi-Fi', '🍳 Daily Breakfast', '🚗 Free Parking'],
-        'highlights' => ['🚶‍♂️ 3 min walk to Jonker Street Night Market', '🚶‍♂️ 5 min walk to The Stadthuys', '🚗 1.5 hours drive from KL']
+    3 => [
+        'id' => 3,
+        'name' => 'Grand Hyatt Bali',
+        'location' => 'Nusa Dua, Bali, Indonesia',
+        'price_per_night' => 280,
+        'currency' => '$',
+        'rating' => '4.7',
+        'reviews_count' => 95,
+        'main_image' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
+        'description' => 'A tropical paradise in Nusa Dua offering private beach access, lush gardens, multiple outdoor swimming pools, and authentic Balinese luxury.',
+        'amenities' => ['Private Beach Access', 'Lagoon Pools', 'Balinese Spa', 'Water Sports Center', 'Kids Club']
     ],
-    'st_regis_langkawi' => [
-        'name' => 'The St. Regis Langkawi',
-        'location' => '📍 Near Eagle Square, Langkawi, Malaysia',
-        'price' => 'RM 890',
-        'main_img' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80',
-        'about' => 'Nestled between an ancient rainforest and the Andaman Sea, offering luxurious suites, private villas, and butler service.',
-        'amenities' => ['🏖 Private Beach', '🤵 24-hr St. Regis Butler', '🏊‍♂️ Infinity Pool', '💆‍♀️ Iridium Spa', '🍸 Kayuputi Overwater Bar'],
-        'highlights' => ['🚗 20 min drive from Langkawi Airport', '🚶‍♂️ 5 min to Kuah Jetty', '🌊 Private Cove Beachfront']
-    ],
-    'kapalai_resort' => [
-        'name' => 'Kapalai Dive Resort',
-        'location' => '📍 Near Sipadan Island, Sabah, Malaysia',
-        'price' => 'RM 1,200',
-        'main_img' => 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80',
-        'about' => 'A luxury water village built on stilts over Ligitan Reef. Famous for world-class diving and transparent crystal waters.',
-        'amenities' => ['🌊 Overwater Chalets', '🤿 Scuba Diving Center', '🍳 All-inclusive Meals', '📶 Wi-Fi Available', '🌅 Sunset Deck'],
-        'highlights' => ['🚤 45 min boat ride from Semporna', '🐠 World-famous Sipadan Diving Spot', '🐢 Turtle Spotting Deck']
-    ],
-
-    // === 🇹🇭 THAILAND (已自动换算为马币 RM) ===
-    'sala_rattanakosin' => [
-        'name' => 'Sala Rattanakosin Bangkok',
-        'location' => '📍 Near Wat Arun & Grand Palace, Bangkok, Thailand',
-        'price' => 'RM 620', // 原 4,800 THB 换算为马币
-        'main_img' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80',
-        'about' => 'Scenic riverfront boutique hotel directly facing Wat Arun (Temple of Dawn) across the Chao Phraya River.',
-        'amenities' => ['🛕 Temple View Suites', '🍸 Rooftop Bar', '📶 Free Wi-Fi', '🍳 Riverfront Restaurant'],
-        'highlights' => ['🚶‍♂️ 5 min walk to Grand Palace', '🚤 2 min to Tha Tien Pier', '🛕 Best Sunset View of Wat Arun']
-    ],
-    'arun_residence' => [
-        'name' => 'Arun Residence',
-        'location' => '📍 Near Wat Arun, Bangkok, Thailand',
-        'price' => 'RM 450', // 原 3,500 THB 换算为马币
-        'main_img' => 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1000&q=80',
-        'sub_img1' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80',
-        'sub_img2' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80',
-        'about' => 'Cozy wooden Sino-Portuguese style house transformed into a heritage hotel along the Bangkok riverbank.',
-        'amenities' => ['🍸 The Deck Rooftop Restaurant', '📶 Free Wi-Fi', '🍳 Breakfast Included', '❄️ Air Conditioning'],
-        'highlights' => ['🚶‍♂️ 2 min walk to Wat Pho', '🚶‍♂️ 8 min walk to Grand Palace', '🚤 Direct River Access']
+    4 => [
+        'id' => 4,
+        'name' => 'Burj Al Arab',
+        'location' => 'Jumeirah Beach, Dubai, UAE',
+        'price_per_night' => 1500,
+        'currency' => '$',
+        'rating' => '5.0',
+        'reviews_count' => 420,
+        'main_image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+        'description' => 'The world\'s most luxurious hotel, standing on its own island. Featuring sail-shaped architecture, suite-only accommodations, and private helicopter transfers.',
+        'amenities' => ['Private Helipad', 'Duplex Suites', 'Chauffeur-driven Rolls-Royce', 'Private Beach', 'Underwater Restaurant']
     ]
 ];
 
-// 3. 匹配当前 ID 的酒店，匹配不到则默认显示第 1 个
-$hotel = isset($hotels_data[$hotel_id]) ? $hotels_data[$hotel_id] : $hotels_data['mandarin_kl'];
+// Fallback to hotel ID 1 if ID is invalid or not found
+$hotel = isset($hotels_data[$hotel_id]) ? $hotels_data[$hotel_id] : $hotels_data[1];
 ?>
 
-<link rel="stylesheet" href="../css/modules/hotels.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($hotel['name']); ?> - Hotel Details</title>
+    <!-- Linked CSS with cache busting -->
+    <link rel="stylesheet" href="../css/modules/hotels.css">
+</head>
+<body style="background-color: #0f172a; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
 
-<div class="detail-wrapper">
-    
-    <!-- 1. 头部：动态酒店名 + 参考价格 -->
-    <div class="detail-header">
-        <div class="detail-header-left">
-            <h1><?php echo htmlspecialchars($hotel['name']); ?></h1>
-            <div class="sub-location">
-                <?php echo htmlspecialchars($hotel['location']); ?>
-            </div>
+<div class="detail-container">
+
+    <!-- ================= 1. LEFT: HOTEL DETAILS ================= -->
+    <div class="detail-info">
+        <!-- Hotel Name & Location -->
+        <h1><?php echo htmlspecialchars($hotel['name']); ?></h1>
+        <p class="location">📍 <?php echo htmlspecialchars($hotel['location']); ?></p>
+
+        <!-- Main Image -->
+        <div class="gallery">
+            <img src="<?php echo htmlspecialchars($hotel['main_image']); ?>" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
         </div>
-        
-        <div class="reference-price-box">
-            <div class="price-label">Est. Avg Rate</div>
-            <div>
-                <span class="price-amount"><?php echo htmlspecialchars($hotel['price']); ?></span>
-                <span class="price-unit">/ night</span>
-            </div>
+
+        <!-- Description -->
+        <h3>About This Hotel</h3>
+        <p><?php echo htmlspecialchars($hotel['description']); ?></p>
+
+        <!-- Amenities -->
+        <h3>Amenities & Services</h3>
+        <div class="amenities-tags" style="margin-top: 15px;">
+            <?php foreach ($hotel['amenities'] as $amenity): ?>
+                <span class="amenity-chip">✓ <?php echo htmlspecialchars($amenity); ?></span>
+            <?php endforeach; ?>
         </div>
     </div>
 
-    <!-- 2. 动态图片展示区 -->
-    <div class="detail-gallery">
-        <img class="gallery-main-img" src="<?php echo $hotel['main_img']; ?>" alt="Main View">
-        <div class="gallery-sub-grid">
-            <img class="gallery-sub-img" src="<?php echo $hotel['sub_img1']; ?>" alt="Sub 1">
-            <img class="gallery-sub-img" src="<?php echo $hotel['sub_img2']; ?>" alt="Sub 2">
+    <!-- ================= 2. RIGHT: FLOATING BOOKING CARD ================= -->
+    <div class="booking-card">
+        <!-- Dynamic Price Header -->
+        <div class="price-header">
+            <span class="price-amount" id="basePriceDisplay"><?php echo $hotel['currency'] . $hotel['price_per_night']; ?></span>
+            <span class="price-unit">/ night</span>
         </div>
-    </div>
 
-    <!-- 3. 动态内容区域 -->
-    <div class="detail-content-body">
-        
-        <!-- 关于酒店 -->
-        <section class="detail-info-section">
-            <h2>🏨 About this hotel</h2>
-            <p><?php echo htmlspecialchars($hotel['about']); ?></p>
-        </section>
+        <!-- Booking Form -->
+        <form class="booking-form" action="process_booking.php" method="POST">
+            <!-- Hidden input for hotel ID -->
+            <input type="hidden" name="hotel_id" value="<?php echo $hotel['id']; ?>">
 
-        <!-- 设施服务 -->
-        <section class="detail-info-section">
-            <h2>✨ Popular Amenities</h2>
-            <div class="amenities-tags">
-                <?php foreach ($hotel['amenities'] as $amenity): ?>
-                    <span class="amenity-chip"><?php echo htmlspecialchars($amenity); ?></span>
-                <?php endforeach; ?>
+            <!-- Date Selectors -->
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="checkin">Check-in</label>
+                    <input type="date" id="checkin" name="check_in" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkout">Check-out</label>
+                    <input type="date" id="checkout" name="check_out" required>
+                </div>
             </div>
-        </section>
 
-        <!-- 位置亮点 -->
-        <section class="detail-info-section">
-            <h2>📍 Location Highlights</h2>
-            <ul>
-                <?php foreach ($hotel['highlights'] as $highlight): ?>
-                    <li><?php echo htmlspecialchars($highlight); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </section>
+            <!-- Guests Dropdown -->
+            <div class="form-group">
+                <label for="guests">Guests</label>
+                <select id="guests" name="guests">
+                    <option value="1">1 Adult</option>
+                    <option value="2" selected>2 Adults</option>
+                    <option value="3">3 Adults</option>
+                    <option value="4">4 Guests (Family Suite)</option>
+                </select>
+            </div>
 
+            <!-- Room Type Dropdown with Price Multipliers -->
+            <div class="form-group">
+                <label for="room_type">Room Type</label>
+                <select id="room_type" name="room_type">
+                    <option value="standard" data-multiplier="1.0">Standard Deluxe Room</option>
+                    <option value="executive" data-multiplier="1.4">Executive Suite (+40%)</option>
+                    <option value="presidential" data-multiplier="2.2">Presidential Suite (+120%)</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Price Calculation Display -->
+            <div id="priceSummary" style="display: none; background: #f8fafc; padding: 14px; border-radius: 10px; font-size: 14px; color: #475569; margin-top: 10px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span><span id="effectiveRate">$0</span> × <span id="nightCount">1</span> night(s)</span>
+                    <span id="subtotalAmount">$0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #0f172a; border-top: 1px dashed #cbd5e1; padding-top: 8px; font-size: 15px;">
+                    <span>Total Estimated Price</span>
+                    <span id="totalAmount" style="color: #ff385c;">$0</span>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit-booking">Book Now</button>
+            <p class="booking-note">You won't be charged yet</p>
+        </form>
     </div>
+
 </div>
 
-<?php 
-if (file_exists('../footer.php')) {
-    include '../footer.php';
-} else if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/footer.php')) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/footer.php';
-}
-?>
+<!-- ================= 3. JS: REAL-TIME NIGHT & ROOM MULTIPLIER CALCULATION ================= -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const checkinInput = document.getElementById("checkin");
+    const checkoutInput = document.getElementById("checkout");
+    const roomTypeSelect = document.getElementById("room_type");
+    
+    const basePriceDisplay = document.getElementById("basePriceDisplay");
+    const priceSummary = document.getElementById("priceSummary");
+    const effectiveRateSpan = document.getElementById("effectiveRate");
+    const nightCountSpan = document.getElementById("nightCount");
+    const subtotalAmountSpan = document.getElementById("subtotalAmount");
+    const totalAmountSpan = document.getElementById("totalAmount");
+
+    const basePricePerNight = <?php echo floatval($hotel['price_per_night']); ?>;
+    const currency = "<?php echo $hotel['currency']; ?>";
+
+    // Set default check-in to today, check-out to tomorrow
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    checkinInput.value = today.toISOString().split('T')[0];
+    checkoutInput.value = tomorrow.toISOString().split('T')[0];
+
+    function calculateTotal() {
+        const checkinDate = new Date(checkinInput.value);
+        const checkoutDate = new Date(checkoutInput.value);
+
+        // Get room multiplier from selected option
+        const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
+        const multiplier = parseFloat(selectedOption.getAttribute("data-multiplier")) || 1.0;
+
+        const currentNightlyRate = Math.round(basePricePerNight * multiplier);
+
+        // Update top price header
+        basePriceDisplay.textContent = currency + currentNightlyRate;
+
+        if (checkinDate && checkoutDate && checkoutDate > checkinDate) {
+            const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
+            const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            const totalPrice = nights * currentNightlyRate;
+
+            effectiveRateSpan.textContent = currency + currentNightlyRate;
+            nightCountSpan.textContent = nights;
+            subtotalAmountSpan.textContent = currency + totalPrice;
+            totalAmountSpan.textContent = currency + totalPrice;
+            priceSummary.style.display = "block";
+        } else {
+            priceSummary.style.display = "none";
+        }
+    }
+
+    // Listeners for input change
+    checkinInput.addEventListener("change", calculateTotal);
+    checkoutInput.addEventListener("change", calculateTotal);
+    roomTypeSelect.addEventListener("change", calculateTotal);
+
+    // Initial calculation on page load
+    calculateTotal();
+});
+</script>
+
+</body>
+</html>

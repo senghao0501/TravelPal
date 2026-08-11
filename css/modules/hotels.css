@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Hotels Module Styles - Flight-Style Grid Layout (1 Big + 4 Small)
+   Hotels Module Styles - Flight-Style Grid Layout & Dynamic Detail Form
    ========================================================================== */
 
 :root {
@@ -9,6 +9,10 @@
     --hotel-text-muted: #64748b;
     --hotel-radius: 20px;
 }
+
+/* ==========================================================================
+   1. 酒店列表页样式 (Hotels Index / List)
+   ========================================================================== */
 
 /* 主容器：无大白底 */
 .hotels-wrapper {
@@ -37,7 +41,7 @@
     font-size: 1rem;
 }
 
-/* 国家标题 - 高亮纯白色，在深色背景下清晰显眼 */
+/* 国家标题 - 高亮纯白色 */
 .country-section-title {
     font-size: 1.8rem;
     font-weight: 700;
@@ -50,7 +54,7 @@
     padding-bottom: 6px;
 }
 
-/* --- 核心网格：1大4小，外层没有任何白底大框 --- */
+/* 核心网格：1大4小 */
 .hotel-grid-box {
     display: grid;
     grid-template-columns: 1.25fr 1fr 1fr;
@@ -59,7 +63,7 @@
     margin-bottom: 3.5rem;
 }
 
-/* --- 左侧大卡片 --- */
+/* 左侧大卡片 */
 .hotel-card-large {
     grid-column: 1 / 2;
     grid-row: 1 / 3;
@@ -98,6 +102,7 @@
     flex-direction: column;
     justify-content: space-between;
     color: #ffffff;
+    box-sizing: border-box;
 }
 
 .large-tags-row {
@@ -155,7 +160,7 @@
     transform: translateX(5px);
 }
 
-/* --- 右侧小卡片 (2x2) - 兼容 <a> 标签链接模式 --- */
+/* 右侧小卡片 (2x2) */
 .hotel-card-small {
     background: #ffffff;
     border-radius: var(--hotel-radius);
@@ -166,7 +171,7 @@
     border: 1px solid #e2e8f0;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
-    text-decoration: none !important; /* 防止 <a> 标签带下划线 */
+    text-decoration: none !important;
     color: inherit;
 }
 
@@ -242,7 +247,7 @@
     font-size: 1.05rem;
 }
 
-/* --- 黄色星星收藏按钮 --- */
+/* 黄色星星收藏按钮 */
 .star-fav-btn {
     position: absolute;
     top: 12px;
@@ -268,157 +273,20 @@
 }
 
 .star-fav-btn.active {
-    color: var(--hotel-star-active) !important; /* 点亮变成黄色星星 */
+    color: var(--hotel-star-active) !important;
 }
+
 
 /* ==========================================================================
-   Detail Page Styles (高清、不可预订、无人数选项)
+   2. 酒店详情页 - 两种布局通用支持 (Detail Page Styles)
    ========================================================================== */
 
-.hotel-detail-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 5rem;
-}
-
-.hotel-breadcrumb {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    margin-bottom: 1.5rem;
-}
-
-.hotel-breadcrumb a {
-    color: var(--hotel-primary);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.hotel-detail-hero {
-    position: relative;
-    height: 380px;
-    border-radius: 20px;
-    overflow: hidden;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
-
-.hotel-detail-hero img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hotel-detail-hero .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.85) 100%);
-}
-
-.hero-content-box {
-    position: absolute;
-    bottom: 2rem;
-    left: 2rem;
-    right: 2rem;
-    color: #ffffff;
-    z-index: 3;
-}
-
-.hero-content-box h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #ffffff !important;
-    margin: 0 0 0.5rem 0;
-}
-
-.hero-content-box p {
-    color: #e2e8f0 !important;
-    font-size: 1rem;
-    margin: 0;
-}
-
-/* 高清晰度卡片背景与高对比度文字 */
-.hotel-info-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 2.2rem;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e2e8f0;
-}
-
-.hotel-info-card h2 {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #0f172a !important; /* 深度黑蓝色，保证极度清晰 */
-    margin-top: 0;
-    margin-bottom: 1rem;
-    border-left: 5px solid var(--hotel-primary);
-    padding-left: 0.8rem;
-}
-
-.hotel-info-card p, 
-.hotel-info-card li {
-    color: #334155 !important; /* 醒目灰色 */
-    font-size: 1rem;
-    line-height: 1.7;
-}
-
-.hotel-spec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.2rem;
-    margin: 1.8rem 0;
-}
-
-.hotel-spec-box {
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 1.2rem;
-}
-
-.hotel-spec-box .label {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #64748b !important;
-    text-transform: uppercase;
-}
-
-.hotel-spec-box .value {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: var(--hotel-primary) !important;
-    margin-top: 0.4rem;
-}
-
-/* 响应式适配 */
-@media (max-width: 992px) {
-    .hotel-grid-box {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
-    }
-    .hotel-card-large {
-        grid-column: 1 / -1;
-        height: 320px;
-    }
-}
-
-@media (max-width: 576px) {
-    .hotel-grid-box {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ================= 酒店详情页 (仅展示信息，无预订功能) ================= */
-
-/* 主容器：居中 + 磨砂暗色背景 */
+/* ------------------ A. 单列/纯信息版详情页 (.detail-wrapper) ------------------ */
 .detail-wrapper {
     max-width: 1000px;
     margin: 40px auto;
     padding: 36px;
-    background: rgba(15, 23, 42, 0.85); /* 半透明深色背景 */
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-radius: 20px;
@@ -427,7 +295,6 @@
     color: #ffffff !important;
 }
 
-/* 1. 头部区域 */
 .detail-header {
     display: flex;
     justify-content: space-between;
@@ -451,7 +318,6 @@
     gap: 6px;
 }
 
-/* 顶部参考价格展示 (非预订) */
 .reference-price-box {
     text-align: right;
     background: rgba(255, 255, 255, 0.05);
@@ -470,7 +336,7 @@
 .reference-price-box .price-amount {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #a3e635 !important; /* 荧光绿提亮 */
+    color: #a3e635 !important;
 }
 
 .reference-price-box .price-unit {
@@ -478,7 +344,6 @@
     color: #cbd5e1 !important;
 }
 
-/* 2. 图片画廊 (已完美修复图片被裁切/截下一半的问题) */
 .detail-gallery {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -510,7 +375,6 @@
     border-radius: 12px;
 }
 
-/* 3. 信息板块 */
 .detail-info-section {
     margin-bottom: 32px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -540,15 +404,9 @@
     font-size: 1rem;
 }
 
-.detail-info-section ul {
-    padding-left: 20px;
-}
+.detail-info-section ul { padding-left: 20px; }
+.detail-info-section li { margin-bottom: 8px; }
 
-.detail-info-section li {
-    margin-bottom: 8px;
-}
-
-/* 设施标签 Chips */
 .amenities-tags {
     display: flex;
     flex-wrap: wrap;
@@ -567,7 +425,229 @@
     gap: 8px;
 }
 
-/* 📱 移动端适应 */
+
+/* ------------------ B. 双列/含 Booking Form 预订版详情页 (.detail-container) ------------------ */
+
+.detail-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* 左侧：酒店信息区 */
+.detail-info {
+    flex: 2;
+    min-width: 0;
+}
+
+.detail-info h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: #ffffff !important; /* 统一暗色背景下的白色大标题 */
+}
+
+.detail-info .location {
+    font-size: 0.95rem;
+    color: #94a3b8 !important;
+    margin-bottom: 24px;
+}
+
+.detail-info .gallery {
+    width: 100%;
+    height: 420px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.detail-info .gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.detail-info .gallery img:hover {
+    transform: scale(1.02);
+}
+
+.detail-info h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 24px 0 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+    color: #ffffff !important;
+}
+
+.detail-info p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #cbd5e1 !important;
+}
+
+/* 右侧：浮动预订表单卡片 (Booking Card) */
+.booking-card {
+    flex: 1;
+    min-width: 320px;
+    background: #ffffff; /* 保持精致白底 */
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    position: sticky;
+    top: 30px;
+    color: #0f172a !important; /* 内部文字采用清晰黑蓝色 */
+    box-sizing: border-box;
+}
+
+/* 价格展示 */
+.price-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.price-amount {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a !important;
+}
+
+.price-unit {
+    font-size: 14px;
+    color: #64748b !important;
+}
+
+/* Form 表单内部结构 */
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 12px;
+}
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #475569 !important;
+    margin-bottom: 6px;
+}
+
+.form-group input[type="date"],
+.form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b !important;
+    background-color: #f8fafc;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group input[type="date"]:hover,
+.form-group select:hover {
+    border-color: #94a3b8;
+    background-color: #ffffff;
+}
+
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+    border-color: #2563eb;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* 预订按钮 (BOOK NOW) */
+.btn-submit-booking {
+    width: 100%;
+    background: linear-gradient(135deg, #ff385c 0%, #e00b41 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 16px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(224, 11, 65, 0.25);
+    transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-submit-booking:hover {
+    opacity: 0.95;
+    box-shadow: 0 6px 16px rgba(224, 11, 65, 0.35);
+}
+
+.btn-submit-booking:active {
+    transform: scale(0.98);
+}
+
+.booking-note {
+    text-align: center;
+    font-size: 13px;
+    color: #64748b !important;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   3. 📱 移动端与响应式适配 (Responsive Design)
+   ========================================================================== */
+
+@media (max-width: 992px) {
+    .hotel-grid-box {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+    .hotel-card-large {
+        grid-column: 1 / -1;
+        height: 320px;
+    }
+}
+
+@media (max-width: 850px) {
+    .detail-container {
+        flex-direction: column;
+        margin: 20px auto;
+        gap: 30px;
+    }
+
+    .booking-card {
+        width: 100%;
+        position: static;
+    }
+
+    .detail-info .gallery {
+        height: 260px;
+    }
+}
+
 @media (max-width: 768px) {
     .detail-gallery {
         grid-template-columns: 1fr;
@@ -578,5 +658,11 @@
     .gallery-sub-grid {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .hotel-grid-box {
+        grid-template-columns: 1fr;
     }
 }

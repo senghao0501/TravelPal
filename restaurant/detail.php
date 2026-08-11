@@ -4,7 +4,7 @@ include '../header.php';
 ?>
 
 <!-- 引入独立的餐厅详情 CSS 文件和图标库 -->
-<link rel="stylesheet" href="/travelPal/css/modules/restaurant_detail.css">
+<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <main class="detail-container">

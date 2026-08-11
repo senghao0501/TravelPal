@@ -212,7 +212,7 @@ body {
 }
 
 .editorial-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', Arial, Helvetica, sans-serif;
     font-size: 3.2rem;
     line-height: 1.05;
     font-weight: 800;
@@ -600,16 +600,176 @@ body {
     margin: 0;
 }
 
+/* Booking form */
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    width: min(300px, 100%);
+    margin-left: auto;
+    margin-right: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* One-Way / Round-Trip: clean single-select options */
+.trip-type-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    width: 100%;
+    padding: 4px 2px;
+}
+
+.trip-type-option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.trip-type-option:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+
+.trip-type-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.trip-check {
+    width: 17px;
+    height: 17px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 5px;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 17px;
+    transition: all .2s ease;
+}
+
+.trip-type-option.active {
+    color: #0284c7;
+    background: #f0f9ff;
+}
+
+.trip-type-option.active .trip-check {
+    background: #0284c7;
+    border-color: #0284c7;
+    box-shadow: 0 2px 7px rgba(2, 132, 199, .22);
+}
+
+.trip-type-option.active .trip-check::after {
+    content: "";
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.trip-type-text {
+    white-space: nowrap;
+}
+
+/* 2. 表单字段区块 */
+.form-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 标签样式 */
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+/* 3. 美化后的下拉选择框容器 */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 10px 36px 10px 12px; /* 给右侧自定义箭头留出空间 */
+  font-size: 14px;
+  color: #1e293b;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  appearance: none; /* 去除原生浏览器默认箭头 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background-color: #ffffff;
+}
+
+/* 消除双箭头，使用单一自定义下拉微型图标 */
+.select-wrapper::after {
+  content: "▾";
+  font-size: 14px;
+  color: #64748b;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 确保点击箭头也能触发 select */
+}
+
 /* 响应式调整 */
 @media (max-width: 900px) {
     .packages-grid { grid-template-columns: 1fr; }
     .tips-section { padding: 2rem 1.2rem; }
-}
-
-/* 响应式 */
-@media (max-width: 900px) {
     .magazine-layout, .reverse-layout .magazine-layout { grid-template-columns: 1fr; }
     .reverse-layout .hero-card, .reverse-layout .small-cards-grid { grid-column: 1; }
     .editorial-title { font-size: 2.3rem; }
 }
 
+
+
+/* Natural, standard type for country section headings */
+.issue-tag,
+.flight-route-badge,
+.editorial-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.editorial-title {
+    font-weight: 750;
+    letter-spacing: -0.5px;
+}
+
+.issue-tag {
+    letter-spacing: 1px;
+}
+
+.flight-route-badge {
+    font-weight: 600;
+    letter-spacing: 0;
+}

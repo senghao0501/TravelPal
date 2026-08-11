@@ -86,7 +86,7 @@
 
     <!-- Ticker Info Bar -->
     <div class="flight-ticker">
-        <span>✈️ DIRECT FLIGHTS FROM KUL HUB • DAILY REAL-TIME FARES UPDATED</span>
+        <span>✈️ DIRECT FLIGHTS FROM MALAYSIA • DAILY REAL-TIME FARES UPDATED</span>
     </div>
 
 
@@ -97,10 +97,10 @@
         <section class="magazine-issue">
             <div class="editorial-header">
                 <div class="issue-meta">
-                    <span class="issue-tag">ISSUE 01 — FLIGHTS TO MALAYSIA</span>
-                    <span class="flight-route-badge">✈️ KUL HUB</span>
+                    <span class="issue-tag">POPULAR ROUTES — MALAYSIA</span>
+                    <span class="flight-route-badge">✈️ FLY FROM MALAYSIA</span>
                 </div>
-                <h2 class="editorial-title">DISCOVER<br>MALAYSIA</h2>
+                <h2 class="editorial-title">EXPLORE<br>MALAYSIA</h2>
                 <div class="editorial-line"></div>
             </div>
 
@@ -112,7 +112,7 @@
                     </button>
                     <div class="hero-img-wrapper">
                         <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1200&auto=format&fit=crop" alt="Kuala Lumpur">
-                        <span class="card-badge">✈️ KUL • MAIN HUB</span>
+                        <span class="card-badge">✈️ KUL ⇄ MAIN HUB</span>
                     </div>
                     <div class="hero-caption">
                         <div class="card-meta-line">
@@ -132,7 +132,7 @@
                         <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
                             <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                         </button>
-                        <span class="mini-plane-badge">✈️ 1h 10m</span>
+                        <span class="mini-plane-badge">⇄ 1h 10m</span>
                         <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop" alt="Langkawi">
                         <div class="mini-info">
                             <div class="mini-rating">★ 4.8 <span>(412)</span></div>
@@ -146,7 +146,7 @@
                         <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
                             <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                         </button>
-                        <span class="mini-plane-badge">✈️ 1h 00m</span>
+                        <span class="mini-plane-badge">⇄ 1h 00m</span>
                         <img src="https://images.unsplash.com/photo-1584281722572-8820c744f9c6?w=600&auto=format&fit=crop" alt="Penang">
                         <div class="mini-info">
                             <div class="mini-rating">★ 4.9 <span>(630)</span></div>
@@ -160,7 +160,7 @@
                         <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
                             <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                         </button>
-                        <span class="mini-plane-badge">✈️ 2h 30m</span>
+                        <span class="mini-plane-badge">⇄ 2h 30m</span>
                         <img src="https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?w=600&auto=format&fit=crop" alt="Kota Kinabalu">
                         <div class="mini-info">
                             <div class="mini-rating">★ 4.7 <span>(290)</span></div>
@@ -174,7 +174,7 @@
                         <button class="fav-btn" title="Save" onclick="toggleFav(event, this)">
                             <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                         </button>
-                        <span class="mini-plane-badge">✈️ 1h 45m</span>
+                        <span class="mini-plane-badge">⇄ 1h 45m</span>
                         <img src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&auto=format&fit=crop" alt="Kuching">
                         <div class="mini-info">
                             <div class="mini-rating">★ 4.8 <span>(180)</span></div>
@@ -466,7 +466,7 @@
             </div>
         </section>
 
-        <!-- 3. SPECIAL FLIGHT PACKAGES (优惠套餐) -->
+        <!-- 3. SPECIAL FLIGHT PACKAGES -->
         <section class="packages-section">
             <div class="section-title-box">
                 <h2>FEATURED FLIGHT PACKAGES</h2>
@@ -537,7 +537,7 @@
         </section>
 
 
-        <!-- 4. TIPS ON BOOKING CHEAP FLIGHTS (手风琴折叠板块) -->
+        <!-- 4. TIPS ON BOOKING CHEAP FLIGHTS -->
         <section class="tips-section">
             <h2 class="tips-main-title">Tips on Booking Cheap Flights</h2>
             
@@ -655,6 +655,42 @@
             <button class="modal-close-btn" onclick="closeFlightModal()">✕</button>
         </div>
 
+        <!-- 美化后的弹窗配置栏（已绑定逻辑） -->
+        <div class="booking-form">
+          <!-- Trip Type -->
+          <div class="trip-type-toggle" role="radiogroup" aria-label="Trip type">
+            <label class="trip-type-option active">
+              <input type="radio" name="tripType" class="segment-btn" value="one-way" data-multiplier="1" checked onchange="setTripType(this)">
+              <span class="trip-check" aria-hidden="true"></span>
+              <span class="trip-type-text">One-Way</span>
+            </label>
+
+            <label class="trip-type-option">
+              <input type="radio" name="tripType" class="segment-btn" value="round-trip" data-multiplier="1.85" onchange="setTripType(this)">
+              <span class="trip-check" aria-hidden="true"></span>
+              <span class="trip-type-text">Round-Trip</span>
+            </label>
+          </div>
+
+          <!-- Departure Airport -->
+          <div class="form-field">
+            <label class="field-label">
+              <span>🛫</span>
+              <span>Departure</span>
+            </label>
+            <div class="select-wrapper">
+              <select id="originAirport" class="custom-select" onchange="recalculateTotal()">
+                <option value="KUL" data-adj="0" selected>Kuala Lumpur (KUL)</option>
+                <option value="PEN" data-adj="35">Penang (PEN) [+$35]</option>
+                <option value="JHB" data-adj="20">Johor Bahru (JHB) [+$20]</option>
+                <option value="TGG" data-adj="15">Kuala Terengganu (TGG) [+$15]</option>
+                <option value="KBR" data-adj="15">Kota Bharu (KBR) [+$15]</option>
+                <option value="IPH" data-adj="25">Ipoh (IPH) [+$25]</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- Flight Detail Segment -->
         <div class="modal-flight-details">
             <div class="time-box">
@@ -673,7 +709,6 @@
 
         <!-- Scrollable Options Content -->
         <div class="modal-body">
-            <!-- 增值服务多选框 -->
             <div class="options-grid">
                 <label class="option-card selected">
                     <input type="checkbox" class="card-checkbox" value="0" checked disabled onclick="recalculateTotal()">
@@ -716,7 +751,6 @@
                 </label>
             </div>
 
-            <!-- 支付方式单选框 -->
             <div class="payment-section">
                 <div class="payment-title">Select Payment Method</div>
                 <div class="payment-options">
@@ -736,7 +770,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="modal-footer">
             <div class="total-price-display">
                 <span>Total Amount</span>
@@ -749,10 +782,53 @@
 </div>
 
 <script>
-// 全局基础价格
 let currentBasePrice = 0;
+let currentTripMultiplier = 1;
 
-// 1. 打开弹窗逻辑
+// 单程 / 往返胶囊按钮切换逻辑
+function setTripType(input) {
+    document.querySelectorAll('.trip-type-option').forEach(option => {
+        option.classList.toggle('active', option.contains(input));
+    });
+
+    document.querySelectorAll('.segment-btn').forEach(radio => {
+        radio.checked = radio === input;
+    });
+
+    currentTripMultiplier = parseFloat(input.getAttribute('data-multiplier')) || 1;
+    recalculateTotal();
+}
+
+// 重新计算价格
+function recalculateTotal() {
+    const airportSelect = document.getElementById('originAirport');
+    const airportAdj = parseFloat(airportSelect.options[airportSelect.selectedIndex].getAttribute('data-adj')) || 0;
+
+    // 实时更新出发地显示
+    const originText = airportSelect.options[airportSelect.selectedIndex].text.split(' [')[0];
+    document.getElementById('modalDeptCode').textContent = originText;
+
+    // 计算总基础票价：(基础单价 + 机场差价) * 往返系数
+    let dynamicBase = (currentBasePrice + airportAdj) * currentTripMultiplier;
+    document.getElementById('basePriceTag').textContent = `RM ${dynamicBase.toFixed(0)}`;
+
+    let total = dynamicBase;
+    const checkboxes = document.querySelectorAll('.card-checkbox');
+    
+    checkboxes.forEach((cb, idx) => {
+        const card = cb.closest('.option-card');
+        if (cb.checked) {
+            card.classList.add('selected');
+            if (idx > 0) total += parseFloat(cb.value);
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+
+    document.getElementById('modalTotalPrice').textContent = `RM ${total.toFixed(0)}`;
+}
+
+// 弹窗初始化状态重置
 function openFlightModal(destination, priceStr, duration) {
     const numericPrice = parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
     currentBasePrice = numericPrice;
@@ -760,16 +836,25 @@ function openFlightModal(destination, priceStr, duration) {
     const modal = document.getElementById('flightModal');
     if (!modal) return;
 
-    document.getElementById('modalRouteTitle').textContent = `Kuala Lumpur ➔ ${destination}`;
+    document.getElementById('modalRouteTitle').textContent = `Malaysia ➔ ${destination}`;
     document.getElementById('modalDuration').textContent = `Duration: ${duration || 'N/A'}`;
-    document.getElementById('basePriceTag').textContent = `RM ${numericPrice}`;
 
     const arrCodeEl = document.getElementById('modalArrCode');
     if (arrCodeEl) {
         arrCodeEl.textContent = destination.includes('(') ? destination : `${destination} Airport`;
     }
     
-    // 重置多选项（基础票价强制为 selected 与 disabled）
+    // 重置配置框
+    document.getElementById('originAirport').selectedIndex = 0;
+    currentTripMultiplier = 1;
+    document.querySelectorAll('.segment-btn').forEach((radio, idx) => {
+        radio.checked = idx === 0;
+    });
+
+    document.querySelectorAll('.trip-type-option').forEach((option, idx) => {
+        option.classList.toggle('active', idx === 0);
+    });
+
     const checkboxes = modal.querySelectorAll('.card-checkbox');
     checkboxes.forEach((cb, idx) => {
         if (idx === 0) {
@@ -786,45 +871,23 @@ function openFlightModal(destination, priceStr, duration) {
     modal.classList.add('active');
 }
 
-// 2. 关闭弹窗逻辑
 function closeFlightModal() {
     const modal = document.getElementById('flightModal');
     if (modal) modal.classList.remove('active');
 }
 
-// 3. 计算总价
-function recalculateTotal() {
-    let total = currentBasePrice;
-    const checkboxes = document.querySelectorAll('.card-checkbox');
-    
-    checkboxes.forEach((cb, idx) => {
-        const card = cb.closest('.option-card');
-        if (cb.checked) {
-            card.classList.add('selected');
-            if (idx > 0) total += parseFloat(cb.value);
-        } else {
-            card.classList.remove('selected');
-        }
-    });
-
-    document.getElementById('modalTotalPrice').textContent = `RM ${total.toFixed(0)}`;
-}
-
-// 4. 加入购物车动作
 function addToCartAction() {
     const total = document.getElementById('modalTotalPrice').textContent;
     alert(`Success! Flight added to cart with Total: ${total}`);
     closeFlightModal();
 }
 
-// 5. 收藏夹星星点击
 function toggleFav(event, btn) {
     event.preventDefault();
     event.stopPropagation();
     btn.classList.toggle('active');
 }
 
-// 6. 搜索栏下拉菜单切换
 function toggleDropdown(id) {
     const target = document.getElementById(id);
     if (!target) return;
@@ -833,7 +896,6 @@ function toggleDropdown(id) {
     if (!isOpen) target.classList.add('show');
 }
 
-// 7. 手风琴折叠
 function toggleAccordion(button) {
     const item = button.parentElement;
     const content = item.querySelector('.accordion-content');
@@ -855,28 +917,24 @@ function toggleAccordion(button) {
     }
 }
 
-// 全局事件委托（带容错处理）
 document.addEventListener('click', function(e) {
-    // A. 点击背景遮罩关闭弹窗
     if (e.target.classList.contains('flight-modal-overlay')) {
         closeFlightModal();
         return;
     }
 
-    // B. 点击机票卡片 / 优惠套餐触发弹窗
     const card = e.target.closest('.hero-card, .mini-card, .package-card');
     if (card && !e.target.closest('.fav-btn')) {
-        e.preventDefault(); // 强行拦截 <a> 标签跳转
+        e.preventDefault();
         
         try {
-            // 安全提取文本信息，防止 null 报错
             const cityEl = card.querySelector('.city-name') || card.querySelector('h4') || card.querySelector('h3');
             const priceEl = card.querySelector('.price strong') || card.querySelector('.price') || card.querySelector('.explore-link');
             const badgeEl = card.querySelector('.mini-plane-badge') || card.querySelector('.card-badge') || card.querySelector('.route');
 
             const cityName = cityEl ? cityEl.textContent.trim() : 'Destination';
             const priceText = priceEl ? priceEl.textContent.trim() : '0';
-            const durationText = badgeEl ? badgeEl.textContent.replace('✈️', '').trim() : 'Direct';
+            const durationText = badgeEl ? badgeEl.textContent.replace(/[✈️⇄]/g, '').trim() : 'Direct';
 
             openFlightModal(cityName, priceText, durationText);
         } catch (err) {
@@ -885,13 +943,11 @@ document.addEventListener('click', function(e) {
         return;
     }
 
-    // C. 点击搜索栏之外的地方收起下拉框
     if (!e.target.closest('.search-segment')) {
         document.querySelectorAll('.airbnb-dropdown').forEach(d => d.classList.remove('show'));
     }
 });
 
-// 顶部 Search Bar 滚动吸顶效果
 window.addEventListener('scroll', function() {
     const searchHero = document.getElementById('searchHero');
     if (searchHero) {

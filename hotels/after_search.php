@@ -17,6 +17,7 @@ $check_out= $_GET['check_out'] ?? date('Y-m-d', strtotime('+1 day'));
 $adults   = (int)($_GET['adults'] ?? 2);
 $children = (int)($_GET['children'] ?? 0);
 $rooms    = (int)($_GET['rooms'] ?? 1);
+$sort     = $_GET['sort'] ?? 'popular';
 
 // 3. 筛选酒店
 $filtered_hotels = array_filter($all_hotels, function($h) use ($query, $type, $vibe) {
@@ -26,8 +27,36 @@ $filtered_hotels = array_filter($all_hotels, function($h) use ($query, $type, $v
     return empty($query) && empty($type) && empty($vibe);
 });
 
+// 默认显示 Penang
 if (empty($filtered_hotels)) {
     $filtered_hotels = array_filter($all_hotels, fn($h) => $h['state'] === 'Penang');
+}
+
+// 排序逻辑
+$filtered_hotels = array_values($filtered_hotels);
+
+switch ($sort) {
+    case 'price_low':
+        usort($filtered_hotels, function($a, $b) {
+            return $a['price'] - $b['price'];
+        });
+        break;
+    case 'price_high':
+        usort($filtered_hotels, function($a, $b) {
+            return $b['price'] - $a['price'];
+        });
+        break;
+    case 'rating':
+        usort($filtered_hotels, function($a, $b) {
+            return $b['rating'] <=> $a['rating'];
+        });
+        break;
+    case 'popular':
+    default:
+        usort($filtered_hotels, function($a, $b) {
+            return $b['rating'] <=> $a['rating'];
+        });
+        break;
 }
 
 $page_title = !empty($query) ? $query : (!empty($type) ? $type : (!empty($vibe) ? $vibe : 'Penang'));
@@ -38,298 +67,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 
 <link rel="stylesheet" href="../css/modules/hotels.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-    /* 顶部 Search Bar 基础 */
-    .search-hero-wrapper {
-        background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
-        padding: 35px 20px 45px 20px;
-    }
-    
-    .results-container { 
-        max-width: 1140px; 
-        margin: 30px auto 60px; 
-        padding: 0 20px; 
-    }
-
-    .hotel-list { 
-        display: flex; 
-        flex-direction: column; 
-        gap: 24px; 
-    }
-
-    /* 🌟 解决加减失效的核心 CSS 修复 */
-    .input-group {
-        position: relative;
-        overflow: visible !important; /* 必须是 visible，保证下拉面板能弹出 */
-    }
-
-    .guest-selector-group {
-        position: relative;
-    }
-
-    .input-wrapper {
-        min-width: 0; 
-        flex: 1;
-        overflow: hidden; /* 只让文字包裹层截断，不挤压右侧按钮 */
-    }
-
-    .guest-display-text {
-        font-size: 0.85rem; 
-        font-weight: 600;
-        color: #0f172a;
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-    }
-
-    /* 🌟 人数与房间选择弹出面板 */
-    .guest-picker-dropdown {
-        position: absolute;
-        top: calc(100% + 12px);
-        left: 0;
-        width: 280px;
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
-        border-radius: 12px;
-        padding: 18px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-        z-index: 999;
-        display: none; /* 默认隐藏 */
-    }
-
-    .guest-picker-dropdown.show {
-        display: block !important; /* JS 控制显示 */
-    }
-
-    .picker-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-    }
-
-    .picker-title {
-        font-size: 0.9rem;
-        font-weight: 700;
-        color: #0f172a;
-        display: block;
-    }
-
-    .picker-subtitle {
-        font-size: 0.75rem;
-        color: #64748b;
-    }
-
-    .counter-controls {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .btn-counter {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 1px solid #cbd5e1;
-        background: #f8fafc;
-        color: #0f172a;
-        font-size: 1.1rem;
-        font-weight: 700;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-
-    .btn-counter:hover {
-        background: #047857;
-        color: #ffffff;
-        border-color: #047857;
-    }
-
-    .counter-value {
-        font-size: 0.95rem;
-        font-weight: 700;
-        min-width: 18px;
-        text-align: center;
-    }
-
-    .btn-picker-done {
-        width: 100%;
-        padding: 8px;
-        background: #047857;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 6px;
-    }
-
-    /* 酒店卡片与收藏按钮 */
-    .hotel-card { 
-        background: #ffffff; 
-        border: 1px solid #e2e8f0; 
-        border-radius: 16px; 
-        display: flex; 
-        overflow: hidden; 
-        position: relative; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .hotel-card:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 12px 28px rgba(0,0,0,0.08); 
-        border-color: #047857; 
-    }
-
-    .card-img-box { 
-        width: 320px; 
-        height: 220px; 
-        flex-shrink: 0; 
-        position: relative; 
-        overflow: hidden;
-    }
-
-    .card-img-box img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-        transition: transform 0.3s ease;
-    }
-
-    .hotel-card:hover .card-img-box img {
-        transform: scale(1.05);
-    }
-
-    /* ❤️ 收藏按钮 & 局部提示 */
-    .fav-wrapper {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 15;
-    }
-
-    .btn-fav { 
-        background: rgba(255, 255, 255, 0.92); 
-        border: none; 
-        width: 38px; 
-        height: 38px; 
-        border-radius: 50%; 
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        cursor: pointer; 
-        box-shadow: 0 2px 10px rgba(0,0,0,0.18); 
-        transition: all 0.2s ease; 
-    }
-
-    .btn-fav:hover { 
-        transform: scale(1.1); 
-        background: #ffffff;
-    }
-
-    .btn-fav i { 
-        font-size: 1.15rem; 
-        color: #94a3b8; 
-        transition: color 0.2s; 
-    }
-
-    .btn-fav.active i { 
-        color: #ef4444; 
-    }
-
-    .fav-tooltip {
-        position: absolute;
-        top: 46px;
-        right: 0;
-        background: #1e293b;
-        color: #ffffff;
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 6px 12px;
-        border-radius: 6px;
-        white-space: nowrap;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-6px);
-        transition: all 0.25s ease;
-        pointer-events: none;
-        z-index: 20;
-    }
-
-    .fav-tooltip::before {
-        content: '';
-        position: absolute;
-        top: -4px;
-        right: 13px;
-        width: 8px;
-        height: 8px;
-        background: #1e293b;
-        transform: rotate(45deg);
-    }
-
-    .fav-wrapper.show-tooltip .fav-tooltip {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-
-    .card-body { 
-        padding: 20px 24px; 
-        flex: 1; 
-        display: flex; 
-        flex-direction: column; 
-        justify-content: space-between; 
-    }
-
-    .hotel-title-link {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #0f172a;
-        text-decoration: none;
-        position: relative;
-        z-index: 5;
-    }
-
-    .hotel-title-link:hover {
-        color: #047857;
-        text-decoration: underline;
-    }
-
-    .badge-score { 
-        background: #047857; 
-        color: #fff; 
-        font-weight: 700; 
-        padding: 6px 12px; 
-        border-radius: 8px; 
-        font-size: 0.9rem; 
-    }
-
-    .btn-view-detail {
-        background: #047857;
-        color: #ffffff;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        position: relative;
-        z-index: 5;
-    }
-
-    .btn-view-detail:hover {
-        background: #065f46;
-        color: #ffffff;
-    }
-</style>
 
 <!-- 1. 顶部 Search Bar -->
 <section class="search-hero-wrapper">
@@ -367,7 +104,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 </div>
             </div>
 
-            <!-- 人数/房间组 -->
             <div class="input-group guest-selector-group">
                 <i class="fa-solid fa-user-group icon"></i>
                 <div class="input-wrapper" id="guestInputTrigger" style="cursor: pointer;">
@@ -379,7 +115,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 <input type="hidden" name="children" id="input_children" value="<?php echo $children; ?>">
                 <input type="hidden" name="rooms" id="input_rooms" value="<?php echo $rooms; ?>">
 
-                <!-- 弹出面板 -->
                 <div class="guest-picker-dropdown" id="guestDropdown">
                     <div class="picker-row">
                         <div class="picker-info">
@@ -420,6 +155,8 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 </div>
             </div>
 
+            <input type="hidden" name="sort" value="<?php echo htmlspecialchars($sort); ?>">
+
             <button type="submit" class="btn-search">
                 <i class="fa-solid fa-magnifying-glass"></i> Search
             </button>
@@ -429,14 +166,29 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 
 <!-- 2. 搜索结果列表区 -->
 <main class="results-container">
-    <div style="margin-bottom: 24px;">
+    <div style="margin-bottom: 20px;">
         <h2 style="font-size: 1.5rem; color: #0f172a; font-weight: 700;">Stays in <?php echo htmlspecialchars($page_title); ?></h2>
         <p style="font-size: 0.9rem; color: #64748b; margin-top: 4px;">Found <?php echo count($filtered_hotels); ?> properties matching your search</p>
     </div>
 
+    <!-- 排序栏 -->
+    <div class="sort-bar">
+        <div class="results-count">
+            Showing <strong><?php echo count($filtered_hotels); ?></strong> properties
+        </div>
+        <div class="sort-group">
+            <label for="sortSelect"><i class="fa-solid fa-arrow-up-wide-short"></i> Sort by:</label>
+            <select id="sortSelect" onchange="applySort()">
+                <option value="popular" <?php echo $sort === 'popular' ? 'selected' : ''; ?>>⭐ Most Popular</option>
+                <option value="price_low" <?php echo $sort === 'price_low' ? 'selected' : ''; ?>>💰 Price: Low to High</option>
+                <option value="price_high" <?php echo $sort === 'price_high' ? 'selected' : ''; ?>>💰 Price: High to Low</option>
+                <option value="rating" <?php echo $sort === 'rating' ? 'selected' : ''; ?>>⭐ Rating: High to Low</option>
+            </select>
+        </div>
+    </div>
+
     <div class="hotel-list">
         <?php foreach ($filtered_hotels as $hotel): 
-            // 💡 如果 detail.php 在根目录（与 index.php 同层），请把路径改为 "../detail.php?id=..."
             $detail_url = "detail.php?id={$hotel['id']}&check_in=" . urlencode($check_in) . "&check_out=" . urlencode($check_out) . "&adults={$adults}&rooms={$rooms}";
         ?>
             <div class="hotel-card">
@@ -493,7 +245,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 <script>
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
-// 收藏按钮逻辑
 function toggleFavorite(event, btn, hotelId) {
     event.stopPropagation();
     event.preventDefault();
@@ -512,7 +263,6 @@ function toggleFavorite(event, btn, hotelId) {
     btn.classList.toggle('active');
 }
 
-// 👨‍👩‍👧 核心修复：人数加减完整逻辑
 let guestCounts = { 
     adults: <?php echo $adults; ?>, 
     children: <?php echo $children; ?>, 
@@ -520,7 +270,7 @@ let guestCounts = {
 };
 
 function updateGuest(event, type, change) {
-    if (event) event.stopPropagation(); // 阻止冒泡
+    if (event) event.stopPropagation();
 
     let minLimit = (type === 'children') ? 0 : 1;
     let currentVal = guestCounts[type];
@@ -528,13 +278,8 @@ function updateGuest(event, type, change) {
     if (currentVal + change >= minLimit && currentVal + change <= 10) {
         guestCounts[type] += change;
         
-        // 1. 更新面板上的数字
         document.getElementById('cnt_' + type).innerText = guestCounts[type];
-        
-        // 2. 更新隐藏的 Input 给 Form 提交
         document.getElementById('input_' + type).value = guestCounts[type];
-        
-        // 3. 更新输入框显示的 Summary 文字
         updateGuestSummary();
     }
 }
@@ -547,23 +292,19 @@ function updateGuestSummary() {
     document.getElementById('guestSummary').innerText = `${adultText}${childText}, ${roomText}`;
 }
 
-// 面板开关控制
 const guestTrigger = document.getElementById('guestInputTrigger');
 const guestDropdown = document.getElementById('guestDropdown');
 
 if (guestTrigger && guestDropdown) {
-    // 点击 Trigger 打开/关闭
     guestTrigger.addEventListener('click', function (e) {
         e.stopPropagation();
         guestDropdown.classList.toggle('show');
     });
 
-    // 点击 Dropdown 内部不关闭
     guestDropdown.addEventListener('click', function (e) {
         e.stopPropagation();
     });
 
-    // 点击空白处关闭
     document.addEventListener('click', function () {
         guestDropdown.classList.remove('show');
     });
@@ -572,5 +313,15 @@ if (guestTrigger && guestDropdown) {
 function closeGuestDropdown(e) {
     if (e) e.stopPropagation();
     if (guestDropdown) guestDropdown.classList.remove('show');
+}
+
+function applySort() {
+    const select = document.getElementById('sortSelect');
+    const sortValue = select.value;
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('sort', sortValue);
+    
+    window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
 </script>

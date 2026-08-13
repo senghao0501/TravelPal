@@ -30,83 +30,13 @@ if (!$hotel) $hotel = $all_hotels[0];
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    .detail-container { max-width: 1140px; margin: 30px auto 80px; padding: 0 20px; }
-    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-    
-    .detail-title { font-size: 1.8rem; font-weight: 800; color: #0f172a; text-decoration: underline; }
-    .detail-subtitle { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
-    
-    .photo-gallery { 
-        display: grid; 
-        grid-template-columns: 2fr 1fr; 
-        gap: 12px; 
-        height: 420px; 
-        border-radius: 16px; 
-        overflow: hidden; 
-        margin-bottom: 30px; 
-    }
-    .gallery-main { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-        display: block; 
-    }
-    .gallery-sub-grid { 
-        display: grid; 
-        grid-template-rows: repeat(2, calc(50% - 6px));
-        gap: 12px; 
-        height: 100%; 
-    }
-    .sub-img-box { 
-        position: relative; 
-        width: 100%; 
-        height: 100%; 
-        overflow: hidden; 
-        border-radius: 8px; 
-    }
-    .sub-img-box img { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
-        display: block; 
-    }
-    .img-tag { 
-        position: absolute; 
-        bottom: 10px; 
-        left: 10px; 
-        background: rgba(0, 0, 0, 0.65); 
-        color: #fff; 
-        font-size: 0.75rem; 
-        padding: 4px 8px; 
-        border-radius: 4px; 
-        backdrop-filter: blur(4px); 
-    }
-
-    .detail-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
-    .info-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-    .amenity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
-    .amenity-item { display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.9rem; }
-    .amenity-item i { color: #047857; font-size: 1.1rem; }
-
-    .booking-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); position: sticky; top: 20px; }
-    .booking-price { font-size: 2rem; font-weight: 800; color: #0f172a; }
-    .btn-book-now { width: 100%; background: #047857; color: #fff; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 20px; }
-    .btn-book-now:hover { background: #065f46; transform: translateY(-2px); }
-    
-    .btn-fav-detail { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; color: #475569; transition: all 0.2s; }
-    .btn-fav-detail.active { background: #fef9c3; border-color: #fde047; color: #854d0e; }
-    .btn-fav-detail.active i { color: #eab308; }
-
-    /* 🆕 新增提示消息样式 */
-    #loginMsg {
+    /* 🆕 登录提示样式（在按钮上方显示） */
+    #favLoginMsg {
         color: #dc2626;
         font-weight: 600;
+        font-size: 0.85rem;
         text-align: center;
-        margin-bottom: 10px;
-        padding: 8px;
-        background: #fee2e2;
-        border-radius: 6px;
-        border: 1px solid #fca5a5;
+        margin-top: 8px;
         display: none;
     }
 </style>
@@ -118,9 +48,13 @@ if (!$hotel) $hotel = $all_hotels[0];
             <h1 class="detail-title"><?php echo htmlspecialchars($hotel['name']); ?></h1>
             <p class="detail-subtitle"><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($hotel['city']); ?>, <?php echo htmlspecialchars($hotel['state']); ?>, Malaysia</p>
         </div>
-        <button class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
-            <i class="fa-solid fa-star"></i> <span>Save to Favorites</span>
-        </button>
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+            <button class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
+                <i class="fa-solid fa-star"></i> <span>Save to Favorites</span>
+            </button>
+            <!-- 🆕 提示消息 -->
+            <div id="favLoginMsg">⚠️ Please login first</div>
+        </div>
     </div>
 
     <!-- 三图组合相册 -->
@@ -158,6 +92,33 @@ if (!$hotel) $hotel = $all_hotels[0];
                     <div class="amenity-item"><i class="fa-solid fa-dumbbell"></i> Fitness Center</div>
                 </div>
             </div>
+
+            <!-- 评论区域 -->
+            <div class="reviews-section">
+                <h3>
+                    <i class="fa-solid fa-comments"></i> Guest Reviews
+                    <span class="review-count">(<?php echo count($hotel['reviews']); ?> reviews)</span>
+                </h3>
+
+                <?php if (!empty($hotel['reviews'])): ?>
+                    <?php foreach ($hotel['reviews'] as $review): ?>
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div>
+                                    <span class="review-user"><?php echo htmlspecialchars($review['user']); ?></span>
+                                    <span class="review-date">
+                                        <i class="fa-regular fa-calendar"></i> <?php echo date('d M Y', strtotime($review['date'])); ?>
+                                    </span>
+                                </div>
+                                <span class="review-rating"><?php echo $review['rating']; ?> / 10</span>
+                            </div>
+                            <p class="review-comment"><?php echo htmlspecialchars($review['comment']); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p class="no-reviews">No reviews yet for this property.</p>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- 右侧预订区 -->
@@ -184,7 +145,6 @@ if (!$hotel) $hotel = $all_hotels[0];
                         <input type="date" name="check_out" value="<?php echo htmlspecialchars($check_out); ?>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px;">
                     </div>
 
-                    <!-- 🆕 提示消息显示区 -->
                     <div id="loginMsg">⚠️ Please login first</div>
 
                     <button type="submit" class="btn-book-now">
@@ -201,26 +161,24 @@ const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
 function handleBooking(event) {
     if (!isLoggedIn) {
-        event.preventDefault(); // 阻止表单提交
-
-        // 显示提示消息
+        event.preventDefault();
         const msg = document.getElementById('loginMsg');
         msg.style.display = 'block';
-
-        // 可选：5秒后自动隐藏（但要考虑用户可能再点，所以可以不自动隐藏，或者点击后一直显示）
-        // 如果想自动消失，可以取消注释下面几行
-        // setTimeout(() => {
-        //     msg.style.display = 'none';
-        // }, 5000);
-
         return false;
     }
-    return true; // 允许提交
+    return true;
 }
 
 function toggleDetailFav(btn) {
     if (!isLoggedIn) {
-        alert("must be login first");
+        // 🆕 在按钮下方显示 "Please login first" 提示
+        const msg = document.getElementById('favLoginMsg');
+        msg.style.display = 'block';
+        
+        // 3秒后自动隐藏
+        setTimeout(() => {
+            msg.style.display = 'none';
+        }, 3000);
         return;
     }
     

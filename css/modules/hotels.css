@@ -1,668 +1,595 @@
-/* ==========================================================================
-   Hotels Module Styles - Flight-Style Grid Layout & Dynamic Detail Form
-   ========================================================================== */
+/* ==========================================
+   TravelPal Hotel Module Styles
+   ========================================== */
 
-:root {
-    --hotel-primary: #00aa6c;
-    --hotel-star-active: #eab308; /* 点击亮起黄色 */
-    --hotel-text-dark: #0f172a;
-    --hotel-text-muted: #64748b;
-    --hotel-radius: 20px;
+/* ===== 顶部 Hero 搜索栏（匹配 index.php 的 .hero-section） ===== */
+.hero-section {
+    background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
+    padding: 40px 20px 50px 20px;
 }
 
-/* ==========================================================================
-   1. 酒店列表页样式 (Hotels Index / List)
-   ========================================================================== */
-
-/* 主容器：无大白底 */
-.hotels-wrapper {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 5rem;
-}
-
-/* Hero 头部 Banner */
-.hotels-hero {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #ffffff;
+.hero-content {
+    max-width: 1140px;
+    margin: 0 auto 30px auto;
     text-align: center;
-    padding: 3.5rem 1.5rem 2.5rem;
+    color: #ffffff;
 }
 
-.hotels-hero h1 {
-    font-size: 2.2rem;
+.hero-content h1 {
+    font-size: 2.5rem;
     font-weight: 800;
-    margin-bottom: 0.5rem;
-    color: #ffffff !important;
+    margin-bottom: 10px;
 }
 
-.hotels-hero p {
-    color: #94a3b8 !important;
-    font-size: 1rem;
-}
-
-/* 国家标题 - 高亮纯白色 */
-.country-section-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #ffffff !important;
-    letter-spacing: 1px;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    border-bottom: 3px solid #10b981;
-    display: inline-block;
-    padding-bottom: 6px;
-}
-
-/* 核心网格：1大4小 */
-.hotel-grid-box {
-    display: grid;
-    grid-template-columns: 1.25fr 1fr 1fr;
-    grid-template-rows: repeat(2, 260px);
-    gap: 20px;
-    margin-bottom: 3.5rem;
-}
-
-/* 左侧大卡片 */
-.hotel-card-large {
-    grid-column: 1 / 2;
-    grid-row: 1 / 3;
-    position: relative;
-    border-radius: var(--hotel-radius);
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.hotel-card-large .bg-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-}
-
-.hotel-card-large .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.15) 0%, rgba(15, 23, 42, 0.85) 100%);
-    z-index: 2;
-}
-
-.hotel-card-large .card-content {
-    position: relative;
-    z-index: 3;
-    height: 100%;
-    padding: 1.8rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: #ffffff;
-    box-sizing: border-box;
-}
-
-.large-tags-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.tag-green-pill {
-    background: var(--hotel-primary);
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 6px;
-}
-
-.tag-rating-pill {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
-    color: #ffffff;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 6px;
-}
-
-.tag-rating-pill span { color: var(--hotel-star-active); }
-
-.large-card-info h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0.8rem 0 0.4rem 0;
-    color: #ffffff !important;
-}
-
-.large-card-info .sub-location {
+.hero-content p {
+    font-size: 1.1rem;
     color: #cbd5e1;
-    font-size: 0.95rem;
-    margin-bottom: 0.8rem;
 }
 
-.btn-explore {
-    display: inline-flex;
-    align-items: center;
-    color: #34d399;
-    font-weight: 700;
-    font-size: 0.95rem;
-    text-decoration: none;
-    margin-top: 0.8rem;
-    transition: transform 0.2s;
-}
-
-.btn-explore:hover {
-    transform: translateX(5px);
-}
-
-/* 右侧小卡片 (2x2) */
-.hotel-card-small {
-    background: #ffffff;
-    border-radius: var(--hotel-radius);
-    overflow: hidden;
+/* ===== Vibe Tags ===== */
+.vibe-tags {
     display: flex;
-    flex-direction: column;
-    position: relative;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    text-decoration: none !important;
-    color: inherit;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    justify-content: center;
 }
 
-.hotel-card-small:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
-}
-
-.small-card-img {
-    height: 52%;
-    position: relative;
-    background: #f1f5f9;
-}
-
-.small-card-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hotel-walk-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(4px);
-    color: #ffffff;
-    font-size: 0.72rem;
+.vibe-pill {
+    background: rgba(255,255,255,0.12);
+    color: #e2e8f0;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.small-card-body {
-    padding: 0.9rem 1.1rem;
+.vibe-pill:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.vibe-pill.active {
+    background: #047857;
+    color: #ffffff;
+}
+
+/* ===== Search Container & Filter Bar ===== */
+.search-container {
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.filter-bar {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    flex-wrap: wrap;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    position: relative;
+    overflow: visible !important;
+    min-width: 150px;
+}
+
+.input-group .icon {
+    color: #047857;
+    font-size: 1.1rem;
+}
+
+.input-wrapper {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
-.small-rating {
-    font-size: 0.8rem;
+.input-wrapper label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
     font-weight: 700;
-    color: #334155;
+    color: #64748b;
+    margin-bottom: 2px;
 }
 
-.small-rating .star { color: var(--hotel-star-active); }
-.small-rating .count { color: #94a3b8; font-weight: 400; }
+.input-wrapper select,
+.input-wrapper input {
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+    width: 100%;
+}
 
-.small-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    color: var(--hotel-text-dark) !important;
-    margin: 2px 0;
+.guest-display-text {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #0f172a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.small-location {
-    font-size: 0.78rem;
-    color: var(--hotel-text-muted) !important;
-}
-
-.small-price {
-    font-size: 0.85rem;
-    color: var(--hotel-text-muted);
-}
-
-.small-price strong {
-    color: var(--hotel-primary);
-    font-size: 1.05rem;
-}
-
-/* 黄色星星收藏按钮 */
-.star-fav-btn {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    width: 34px;
-    height: 34px;
-    background: #ffffff;
+.btn-search {
+    background: #047857;
+    color: #ffffff;
     border: none;
+    padding: 16px 28px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-search:hover {
+    background: #065f46;
+}
+
+/* ===== Guest Picker Dropdown ===== */
+.guest-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 280px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+    z-index: 999;
+    display: none;
+}
+
+.guest-picker-dropdown.show {
+    display: block !important;
+}
+
+.picker-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.picker-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.picker-subtitle {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: block;
+}
+
+.counter-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-counter {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: #94a3b8;
-    z-index: 5;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     transition: all 0.2s ease;
 }
 
-.star-fav-btn:hover {
-    transform: scale(1.1);
+.btn-counter:hover {
+    background: #047857;
+    color: #ffffff;
+    border-color: #047857;
 }
 
-.star-fav-btn.active {
-    color: var(--hotel-star-active) !important;
+.counter-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
 }
 
-
-/* ==========================================================================
-   2. 酒店详情页 - 两种布局通用支持 (Detail Page Styles)
-   ========================================================================== */
-
-/* ------------------ A. 单列/纯信息版详情页 (.detail-wrapper) ------------------ */
-.detail-wrapper {
-    max-width: 1000px;
-    margin: 40px auto;
-    padding: 36px;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    color: #ffffff !important;
+.btn-picker-done {
+    width: 100%;
+    padding: 8px;
+    background: #047857;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
 }
 
-.detail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
+/* ===== Main Content ===== */
+.main-content {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== Section Header ===== */
+.section-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.section-header p {
+    color: #64748b;
+}
+
+/* ===== Property Types ===== */
+.property-types-section {
+    padding: 50px 0;
+}
+
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
-.detail-header-left h1 {
-    font-size: 2.2rem;
+.property-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #0f172a;
+    transition: all 0.2s;
+}
+
+.property-card:hover {
+    border-color: #047857;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.property-icon {
+    font-size: 2rem;
+    color: #047857;
+    margin-bottom: 12px;
+}
+
+.property-card h3 {
+    font-size: 1.1rem;
     font-weight: 700;
-    color: #ffffff !important;
-    margin-bottom: 8px;
 }
 
-.detail-header-left .sub-location {
-    font-size: 1rem;
-    color: #cbd5e1 !important;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.reference-price-box {
-    text-align: right;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 12px 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.reference-price-box .price-label {
-    font-size: 0.8rem;
-    color: #94a3b8 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.reference-price-box .price-amount {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #a3e635 !important;
-}
-
-.reference-price-box .price-unit {
+.property-card p {
     font-size: 0.85rem;
-    color: #cbd5e1 !important;
+    color: #64748b;
+    margin-top: 6px;
 }
 
-.detail-gallery {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 16px;
-    width: 100%;
-    margin-bottom: 32px;
-}
-
-.gallery-main-img {
-    width: 100%;
-    height: 100%;
-    min-height: 380px;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.gallery-sub-grid {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    gap: 16px;
-    height: 100%;
-}
-
-.gallery-sub-img {
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    object-fit: cover;
-    border-radius: 12px;
-}
-
-.detail-info-section {
-    margin-bottom: 32px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 24px;
-}
-
-.detail-info-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.detail-info-section h2 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #ffffff !important;
-    margin-bottom: 14px;
+/* ===== Account Prompt ===== */
+.account-prompt-card {
+    margin: 30px 0;
+    padding: 30px;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 1px solid #bbf7d0;
+    border-radius: 16px;
     display: flex;
     align-items: center;
-    gap: 8px;
-}
-
-.detail-info-section p, 
-.detail-info-section li {
-    color: #e2e8f0 !important;
-    line-height: 1.7;
-    font-size: 1rem;
-}
-
-.detail-info-section ul { padding-left: 20px; }
-.detail-info-section li { margin-bottom: 8px; }
-
-.amenities-tags {
-    display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
+    gap: 20px;
+}
+
+.prompt-icon {
+    font-size: 2.5rem;
+    color: #047857;
+}
+
+.prompt-text h3 {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.prompt-text p {
+    color: #475569;
+}
+
+.prompt-buttons {
+    display: flex;
     gap: 12px;
 }
 
-.amenity-chip {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    color: #ffffff !important;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.btn-accent {
+    background: #047857;
+    color: #ffffff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
+.btn-accent:hover {
+    background: #065f46;
+}
 
-/* ------------------ B. 双列/含 Booking Form 预订版详情页 (.detail-container) ------------------ */
+.btn-outline {
+    border: 1px solid #cbd5e1;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    color: #0f172a;
+    transition: background 0.2s;
+}
 
-.detail-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+.btn-outline:hover {
+    background: #f1f5f9;
+}
+
+/* ===== Gallery ===== */
+.gallery-section {
+    padding: 30px 0 50px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.gallery-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    display: block;
+    aspect-ratio: 16/10;
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.price-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+}
+
+.gallery-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: #ffffff;
+}
+
+.gallery-overlay h3 {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.gallery-overlay p {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+/* ===== Features ===== */
+.features-section {
+    padding: 20px 0 50px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.feature-item {
     display: flex;
-    gap: 40px;
+    gap: 16px;
     align-items: flex-start;
 }
 
-/* 左侧：酒店信息区 */
-.detail-info {
-    flex: 2;
-    min-width: 0;
+.feature-icon-wrapper {
+    background: #ecfdf5;
+    color: #047857;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
 }
 
-.detail-info h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 8px 0;
-    color: #ffffff !important; /* 统一暗色背景下的白色大标题 */
-}
-
-.detail-info .location {
-    font-size: 0.95rem;
-    color: #94a3b8 !important;
-    margin-bottom: 24px;
-}
-
-.detail-info .gallery {
-    width: 100%;
-    height: 420px;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-.detail-info .gallery img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.detail-info .gallery img:hover {
-    transform: scale(1.02);
-}
-
-.detail-info h3 {
-    font-size: 1.3rem;
+.feature-info h4 {
     font-weight: 700;
-    margin: 24px 0 12px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 8px;
-    color: #ffffff !important;
+    color: #0f172a;
+    margin-bottom: 4px;
 }
 
-.detail-info p {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: #cbd5e1 !important;
+.feature-info p {
+    font-size: 0.9rem;
+    color: #64748b;
 }
 
-/* 右侧：浮动预订表单卡片 (Booking Card) */
-.booking-card {
-    flex: 1;
-    min-width: 320px;
-    background: #ffffff; /* 保持精致白底 */
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-    position: sticky;
-    top: 30px;
-    color: #0f172a !important; /* 内部文字采用清晰黑蓝色 */
-    box-sizing: border-box;
+/* ===== Routes / Travel Theme Tabs ===== */
+.routes-section {
+    padding: 20px 0 50px;
 }
 
-/* 价格展示 */
-.price-header {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #edf2f7;
-}
-
-.price-amount {
-    font-size: 28px;
-    font-weight: 800;
-    color: #0f172a !important;
-}
-
-.price-unit {
-    font-size: 14px;
-    color: #64748b !important;
-}
-
-/* Form 表单内部结构 */
-.booking-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.form-group-row {
+.category-tabs {
     display: flex;
     gap: 12px;
+    margin-bottom: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
-.form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #475569 !important;
-    margin-bottom: 6px;
-}
-
-.form-group input[type="date"],
-.form-group select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #1e293b !important;
-    background-color: #f8fafc;
-    outline: none;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-.form-group input[type="date"]:hover,
-.form-group select:hover {
-    border-color: #94a3b8;
-    background-color: #ffffff;
-}
-
-.form-group input[type="date"]:focus,
-.form-group select:focus {
-    border-color: #2563eb;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-/* 预订按钮 (BOOK NOW) */
-.btn-submit-booking {
-    width: 100%;
-    background: linear-gradient(135deg, #ff385c 0%, #e00b41 100%);
-    color: #ffffff !important;
+.tab-btn {
+    background: #f1f5f9;
     border: none;
-    padding: 16px;
-    border-radius: 10px;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    color: #475569;
     cursor: pointer;
-    margin-top: 8px;
-    box-shadow: 0 4px 12px rgba(224, 11, 65, 0.25);
-    transition: transform 0.1s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: all 0.2s;
 }
 
-.btn-submit-booking:hover {
-    opacity: 0.95;
-    box-shadow: 0 6px 16px rgba(224, 11, 65, 0.35);
+.tab-btn:hover {
+    background: #e2e8f0;
 }
 
-.btn-submit-booking:active {
-    transform: scale(0.98);
+.tab-btn.active {
+    background: #047857;
+    color: #ffffff;
 }
 
-.booking-note {
-    text-align: center;
-    font-size: 13px;
-    color: #64748b !important;
-    margin-top: 10px;
-    margin-bottom: 0;
+.tab-content {
+    display: none;
 }
 
+.tab-content.active {
+    display: block;
+}
 
-/* ==========================================================================
-   3. 📱 移动端与响应式适配 (Responsive Design)
-   ========================================================================== */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
 
+.theme-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    text-decoration: none;
+    color: #0f172a;
+    transition: all 0.2s;
+}
+
+.theme-card:hover {
+    border-color: #047857;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.theme-card i {
+    font-size: 1.5rem;
+    color: #047857;
+    margin-top: 4px;
+}
+
+.theme-card h4 {
+    font-weight: 700;
+}
+
+.theme-card p {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* ===== 响应式 ===== */
 @media (max-width: 992px) {
-    .hotel-grid-box {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
+    .property-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-    .hotel-card-large {
-        grid-column: 1 / -1;
-        height: 320px;
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-}
-
-@media (max-width: 850px) {
-    .detail-container {
-        flex-direction: column;
-        margin: 20px auto;
-        gap: 30px;
+    .theme-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
-
-    .booking-card {
-        width: 100%;
-        position: static;
-    }
-
-    .detail-info .gallery {
-        height: 260px;
+    .features-section {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .detail-gallery {
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .input-group {
+        min-width: auto;
+    }
+    .btn-search {
+        justify-content: center;
+    }
+    .property-grid {
         grid-template-columns: 1fr;
     }
-    .gallery-main-img {
-        min-height: 250px;
-    }
-    .gallery-sub-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr;
-    }
-}
-
-@media (max-width: 576px) {
-    .hotel-grid-box {
+    .gallery-grid {
         grid-template-columns: 1fr;
+    }
+    .theme-grid {
+        grid-template-columns: 1fr;
+    }
+    .features-section {
+        grid-template-columns: 1fr;
+    }
+    .account-prompt-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    .prompt-buttons {
+        justify-content: center;
+    }
+    .vibe-tags {
+        justify-content: center;
+    }
+    .category-tabs {
+        flex-direction: column;
+        align-items: center;
     }
 }

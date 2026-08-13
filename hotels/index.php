@@ -1,417 +1,465 @@
-<?php 
-if (file_exists('../header.php')) {
-    include '../header.php';
-} else if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/header.php')) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/header.php';
-}
-?>
-
+<?php include '../header.php'; ?>
 <link rel="stylesheet" href="../css/modules/hotels.css">
 
+<!-- 1. Hero & Hotel Search Box -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>Find Your Perfect Stay in Malaysia</h1>
+        <p>From heritage mansions in Penang to overwater villas in Sabah</p>
+    </div>
 
-<section class="hotels-hero">
-    <h1>Top Places to Stay in Southeast Asia</h1>
-    <p>Hand-picked luxury stays and boutique hotels near top landmarks.</p>
+    <div class="search-container">
+        <!-- Hotel Vibe Quick Filters -->
+        <div class="vibe-tags">
+            <span class="vibe-pill active"><i class="fa-solid fa-compass"></i> All Stays</span>
+            <span class="vibe-pill"><i class="fa-solid fa-umbrella-beach"></i> Beach Resorts</span>
+            <span class="vibe-pill"><i class="fa-solid fa-landmark"></i> Heritage</span>
+            <span class="vibe-pill"><i class="fa-solid fa-mountain"></i> Highlands</span>
+            <span class="vibe-pill"><i class="fa-solid fa-hot-tub-person"></i> Hot Springs</span>
+        </div>
+
+        <!-- Filter Bar -->
+        <form action="after_search.php" method="GET" class="filter-bar">
+            <!-- Destination State Dropdown -->
+            <div class="input-group">
+                <i class="fa-solid fa-location-dot icon"></i>
+                <div class="input-wrapper">
+                    <label>Destination / State</label>
+                    <select name="query" required>
+                        <option value="Penang" selected>Penang</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Selangor">Selangor</option>
+                        <option value="Melaka">Melaka</option>
+                        <option value="Sabah">Sabah</option>
+                        <option value="Sarawak">Sarawak</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Perak">Perak</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Check-in Date -->
+            <div class="input-group">
+                <i class="fa-solid fa-calendar-check icon"></i>
+                <div class="input-wrapper">
+                    <label>Check-in Date</label>
+                    <input type="date" name="check_in" id="check_in" required>
+                </div>
+            </div>
+
+            <!-- Check-out Date -->
+            <div class="input-group">
+                <i class="fa-solid fa-calendar-minus icon"></i>
+                <div class="input-wrapper">
+                    <label>Check-out Date</label>
+                    <input type="date" name="check_out" id="check_out" required>
+                </div>
+            </div>
+
+            <!-- Guests & Rooms Custom Counter Dropdown -->
+            <div class="input-group guest-selector-group">
+                <i class="fa-solid fa-user-group icon"></i>
+                <div class="input-wrapper" id="guestInputTrigger">
+                    <label>Guests & Rooms</label>
+                    <div class="guest-display-text" id="guestSummary">2 Adults, 0 Children, 1 Room</div>
+                </div>
+
+                <!-- 表单提交隐藏域 -->
+                <input type="hidden" name="adults" id="input_adults" value="2">
+                <input type="hidden" name="children" id="input_children" value="0">
+                <input type="hidden" name="rooms" id="input_rooms" value="1">
+
+                <!-- 弹出加减选择面板 -->
+                <div class="guest-picker-dropdown" id="guestDropdown" style="display: none;">
+                    <!-- Adults Row -->
+                    <div class="picker-row">
+                        <div class="picker-info">
+                            <span class="picker-title">Adults</span>
+                            <span class="picker-subtitle">Ages 13+</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="btn-counter" onclick="updateGuest('adults', -1)">-</button>
+                            <span class="counter-value" id="cnt_adults">2</span>
+                            <button type="button" class="btn-counter" onclick="updateGuest('adults', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Children Row -->
+                    <div class="picker-row">
+                        <div class="picker-info">
+                            <span class="picker-title">Children</span>
+                            <span class="picker-subtitle">Ages 0 - 12</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="btn-counter" onclick="updateGuest('children', -1)">-</button>
+                            <span class="counter-value" id="cnt_children">0</span>
+                            <button type="button" class="btn-counter" onclick="updateGuest('children', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Rooms Row -->
+                    <div class="picker-row">
+                        <div class="picker-info">
+                            <span class="picker-title">Rooms</span>
+                            <span class="picker-subtitle">Number of rooms</span>
+                        </div>
+                        <div class="counter-controls">
+                            <button type="button" class="btn-counter" onclick="updateGuest('rooms', -1)">-</button>
+                            <span class="counter-value" id="cnt_rooms">1</span>
+                            <button type="button" class="btn-counter" onclick="updateGuest('rooms', 1)">+</button>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-picker-done" onclick="closeGuestDropdown()">Done</button>
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <button type="submit" class="btn-search">
+                <i class="fa-solid fa-magnifying-glass"></i> Search Hotels
+            </button>
+        </form>
+    </div>
 </section>
 
-<div class="hotels-wrapper">
+<main class="main-content">
+    <!-- 2. Property Types Grid -->
+    <section class="property-types-section">
+        <div class="section-header">
+            <h2>Browse by Property Type</h2>
+            <p>Find the style of accommodation that suits your journey</p>
+        </div>
 
-    <!-- ================= 1. 🇲🇾 MALAYSIA (1大4小) ================= -->
-    <h2 class="country-section-title">🇲🇾 MALAYSIA</h2>
-    
-    <div class="hotel-grid-box">
-        <!-- 左侧大卡片 -->
-        <div class="hotel-card-large">
-            <img class="bg-img" src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1000&q=80" alt="Mandarin Oriental">
-            <div class="overlay"></div>
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
+        <div class="property-grid">
+            <a href="after_search.php?type=Luxury+Resort" class="property-card">
+                <div class="property-icon"><i class="fa-solid fa-hotel"></i></div>
+                <h3>Luxury Resorts</h3>
+                <p>5-Star beachfront & island retreats</p>
+            </a>
+            <a href="after_search.php?type=City+Hotel" class="property-card">
+                <div class="property-icon"><i class="fa-solid fa-city"></i></div>
+                <h3>City Hotels</h3>
+                <p>Prime locations near top malls & food</p>
+            </a>
+            <a href="after_search.php?type=Heritage+Boutique" class="property-card">
+                <div class="property-icon"><i class="fa-solid fa-house-chimney-window"></i></div>
+                <h3>Heritage Boutiques</h3>
+                <p>Colonial architecture & local culture</p>
+            </a>
+            <a href="after_search.php?type=Nature+Eco+Lodge" class="property-card">
+                <div class="property-icon"><i class="fa-solid fa-tree"></i></div>
+                <h3>Nature & Eco Lodges</h3>
+                <p>Highland escapes & rainforest villas</p>
+            </a>
+        </div>
+    </section>
 
-            <div class="card-content">
-                <div></div>
-                <div class="large-card-info">
-                    <div class="large-tags-row">
-                        <span class="tag-green-pill">🚶‍♂️ 1 min walk</span>
-                        <span class="tag-rating-pill"><span>★ 4.9</span> (1,280 reviews)</span>
-                    </div>
-                    <h2>Mandarin Oriental, KL</h2>
-                    <p class="sub-location">📍 Near Petronas Twin Towers, Kuala Lumpur</p>
-                    <a href="detail.php?id=mandarin_kl" class="btn-explore">VIEW DETAILS & RATES →</a>
+    <!-- 3. Member Exclusive Banner -->
+    <section class="account-prompt-card">
+        <div class="prompt-icon">
+            <i class="fa-solid fa-gem"></i>
+        </div>
+        <div class="prompt-text">
+            <h3>Save 15% or More on Staycations</h3>
+            <p>Sign in to unlock Member Secret Prices, free room upgrades, and late check-outs.</p>
+        </div>
+        <div class="prompt-buttons">
+            <a href="../auth/login.php" class="btn-accent">Sign In</a>
+            <a href="../auth/register.php" class="btn-outline">Register Free</a>
+        </div>
+    </section>
+
+    <!-- 4. Destination Showcase -->
+    <section class="gallery-section">
+        <div class="section-header">
+            <h2>Top Staycation Destinations</h2>
+            <p>Handpicked hotels across 8 stunning states in Malaysia</p>
+        </div>
+
+        <div class="gallery-grid">
+            <a href="after_search.php?query=Penang" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80" alt="Penang">
+                <span class="price-badge">From RM 215 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Penang</h3>
+                    <p>8 Hotels • Heritage & Beachfront</p>
                 </div>
+            </a>
+            <a href="after_search.php?query=Sabah" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=500&q=80" alt="Sabah">
+                <span class="price-badge">From RM 230 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Sabah</h3>
+                    <p>8 Hotels • Island Resorts & Diving</p>
+                </div>
+            </a>
+            <a href="after_search.php?query=Perak" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80" alt="Perak">
+                <span class="price-badge">From RM 170 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Perak</h3>
+                    <p>8 Hotels • Hot Springs & Foodie Stays</p>
+                </div>
+            </a>
+            <a href="after_search.php?query=Pahang" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500&q=80" alt="Pahang">
+                <span class="price-badge">From RM 220 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Pahang</h3>
+                    <p>8 Hotels • Cameron Highlands & Genting</p>
+                </div>
+            </a>
+            <a href="after_search.php?query=Melaka" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500&q=80" alt="Melaka">
+                <span class="price-badge">From RM 60 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Melaka</h3>
+                    <p>8 Hotels • Riverfront & Jonker Walk</p>
+                </div>
+            </a>
+            <a href="after_search.php?query=Johor" class="gallery-card">
+                <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80" alt="Johor">
+                <span class="price-badge">From RM 220 / night</span>
+                <div class="gallery-overlay">
+                    <h3>Johor</h3>
+                    <p>8 Hotels • Desaru Coast & Legoland</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- 5. Feature Highlights -->
+    <section class="features-section">
+        <div class="feature-item">
+            <div class="feature-icon-wrapper">
+                <i class="fa-solid fa-shield-cat"></i>
+            </div>
+            <div class="feature-info">
+                <h4>Best Price Guarantee</h4>
+                <p>Found a lower rate? We’ll match it and give you extra rewards.</p>
             </div>
         </div>
 
-        <!-- 右侧小卡片 1 -->
-        <a href="detail.php?id=eo_penang" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80" alt="E&O Penang">
-                <span class="hotel-walk-badge">🏛 Heritage</span>
+        <div class="feature-item">
+            <div class="feature-icon-wrapper">
+                <i class="fa-solid fa-calendar-xmark"></i>
             </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(630)</span></div>
-                    <div class="small-title">E&O Hotel Penang</div>
-                    <div class="small-location">📍 Near George Town</div>
-                </div>
-                <div class="small-price">from <strong>RM 450</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 2 -->
-        <a href="detail.php?id=casa_del_rio" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80" alt="Casa del Rio">
-                <span class="hotel-walk-badge">🚶‍♂️ 3 min walk</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.7</span> <span class="count">(412)</span></div>
-                    <div class="small-title">Casa del Rio Melaka</div>
-                    <div class="small-location">📍 Near Jonker Street</div>
-                </div>
-                <div class="small-price">from <strong>RM 380</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 3 -->
-        <a href="detail.php?id=st_regis_langkawi" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80" alt="St. Regis Langkawi">
-                <span class="hotel-walk-badge">🏖 Beachfront</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(520)</span></div>
-                    <div class="small-title">St. Regis Langkawi</div>
-                    <div class="small-location">📍 Near Eagle Square</div>
-                </div>
-                <div class="small-price">from <strong>RM 890</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 4 -->
-        <a href="detail.php?id=kapalai_resort" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80" alt="Kapalai Resort">
-                <span class="hotel-walk-badge">🌊 Overwater</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(290)</span></div>
-                    <div class="small-title">Kapalai Dive Resort</div>
-                    <div class="small-location">📍 Near Sipadan Island</div>
-                </div>
-                <div class="small-price">from <strong>RM 1,200</strong></div>
-            </div>
-        </a>
-    </div>
-
-
-    <!-- ================= 2. 🇹🇭 THAILAND (1大4小) ================= -->
-    <h2 class="country-section-title">🇹🇭 THAILAND</h2>
-    
-    <div class="hotel-grid-box">
-        <!-- 左侧大卡片 -->
-        <div class="hotel-card-large">
-            <img class="bg-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80" alt="Sala Rattanakosin">
-            <div class="overlay"></div>
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-
-            <div class="card-content">
-                <div></div>
-                <div class="large-card-info">
-                    <div class="large-tags-row">
-                        <span class="tag-green-pill">🚶‍♂️ 5 min walk</span>
-                        <span class="tag-rating-pill"><span>★ 4.8</span> (890 reviews)</span>
-                    </div>
-                    <h2>Sala Rattanakosin</h2>
-                    <p class="sub-location">📍 Near Wat Arun & Grand Palace, Bangkok</p>
-                    <a href="detail.php?id=sala_rattanakosin" class="btn-explore">VIEW DETAILS & RATES →</a>
-                </div>
+            <div class="feature-info">
+                <h4>Free Cancellation</h4>
+                <p>Flexible stay plans on most properties. Cancel risk-free.</p>
             </div>
         </div>
 
-        <!-- 右侧小卡片 1 -->
-        <a href="detail.php?id=arun_residence" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=500&q=80" alt="Arun Residence">
-                <span class="hotel-walk-badge">🚶‍♂️ 2 min</span>
+        <div class="feature-item">
+            <div class="feature-icon-wrapper">
+                <i class="fa-solid fa-comments-dollar"></i>
             </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.7</span> <span class="count">(310)</span></div>
-                    <div class="small-title">Arun Residence</div>
-                    <div class="small-location">📍 Near Wat Arun</div>
-                </div>
-                <div class="small-price">from <strong>RM 450</strong></div>
+            <div class="feature-info">
+                <h4>Pay at Hotel Available</h4>
+                <p>Reserve online today and pay directly upon check-in.</p>
             </div>
-        </a>
+        </div>
+    </section>
 
-        <!-- 右侧小卡片 2 -->
-        <a href="detail.php?id=sala_ayutthaya" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80" alt="Sala Ayutthaya">
-                <span class="hotel-walk-badge">📍 Adjacent</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(450)</span></div>
-                    <div class="small-title">Sala Ayutthaya</div>
-                    <div class="small-location">📍 Near Ayutthaya Ruins</div>
-                </div>
-                <div class="small-price">from <strong>RM 550</strong></div>
-            </div>
-        </a>
+    <!-- 6. Travel Theme Dynamic Tabs -->
+    <section class="routes-section">
+        <div class="section-header">
+            <h2>Find Stays by Travel Theme</h2>
+            <p>Curated recommendations tailored for every type of traveler</p>
+        </div>
 
-        <!-- 右侧小卡片 3 -->
-        <a href="detail.php?id=phulay_bay" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=500&q=80" alt="Phulay Bay">
-                <span class="hotel-walk-badge">🏖 Beachfront</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(680)</span></div>
-                    <div class="small-title">Phulay Bay Krabi</div>
-                    <div class="small-location">📍 Near Krabi Beach</div>
-                </div>
-                <div class="small-price">from <strong>RM 1,550</strong></div>
-            </div>
-        </a>
+        <div class="category-tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'romantic')">Romantic Getaways</button>
+            <button class="tab-btn" onclick="switchTab(event, 'family')">Family Fun</button>
+            <button class="tab-btn" onclick="switchTab(event, 'foodie')">Foodie Escapes</button>
+        </div>
 
-        <!-- 右侧小卡片 4 -->
-        <a href="detail.php?id=amari_phuket" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=500&q=80" alt="Amari Phuket">
-                <span class="hotel-walk-badge">🏖 Ocean View</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(920)</span></div>
-                    <div class="small-title">Amari Phuket</div>
-                    <div class="small-location">📍 Near Patong Beach</div>
-                </div>
-                <div class="small-price">from <strong>RM 660</strong></div>
-            </div>
-        </a>
-    </div>
-
-
-    <!-- ================= 3. 🇮🇩 INDONESIA (1大4小) ================= -->
-    <h2 class="country-section-title">🇮🇩 INDONESIA</h2>
-    
-    <div class="hotel-grid-box">
-        <!-- 左侧大卡片 -->
-        <div class="hotel-card-large">
-            <img class="bg-img" src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=80" alt="Amankila Bali">
-            <div class="overlay"></div>
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-
-            <div class="card-content">
-                <div></div>
-                <div class="large-card-info">
-                    <div class="large-tags-row">
-                        <span class="tag-green-pill">🌋 Cliffside View</span>
-                        <span class="tag-rating-pill"><span>★ 5.0</span> (740 reviews)</span>
+        <!-- Content 1: Romantic -->
+        <div id="tab-romantic" class="tab-content active">
+            <div class="theme-grid">
+                <a href="detail.php?id=801" class="theme-card">
+                    <i class="fa-solid fa-heart"></i>
+                    <div>
+                        <h4>The Banjaran Hotsprings (Ipoh)</h4>
+                        <p>Private geothermal hot spring villas surrounded by nature.</p>
                     </div>
-                    <h2>Amankila, Bali</h2>
-                    <p class="sub-location">📍 Overlooking Badung Strait, Karangasem, Bali</p>
-                    <a href="detail.php?id=amankila_bali" class="btn-explore">VIEW DETAILS & RATES →</a>
-                </div>
+                </a>
+                <a href="detail.php?id=401" class="theme-card">
+                    <i class="fa-solid fa-water"></i>
+                    <div>
+                        <h4>Casa del Rio (Melaka)</h4>
+                        <p>Luxury Mediterranean vibes right on the Melaka River.</p>
+                    </div>
+                </a>
+                <a href="detail.php?id=802" class="theme-card">
+                    <i class="fa-solid fa-umbrella-beach"></i>
+                    <div>
+                        <h4>Pangkor Laut Resort</h4>
+                        <p>One island, one luxury resort experience.</p>
+                    </div>
+                </a>
             </div>
         </div>
 
-        <!-- 右侧小卡片 1 -->
-        <a href="detail.php?id=padma_ubud" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80" alt="Padma Resort Ubud">
-                <span class="hotel-walk-badge">🌿 Jungle View</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(1,120)</span></div>
-                    <div class="small-title">Padma Resort Ubud</div>
-                    <div class="small-location">📍 Near Payangan Forest, Bali</div>
-                </div>
-                <div class="small-price">from <strong>RM 780</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 2 -->
-        <a href="detail.php?id=kempinski_jakarta" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80" alt="Hotel Indonesia Kempinski">
-                <span class="hotel-walk-badge">🏙 City Center</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(850)</span></div>
-                    <div class="small-title">Kempinski Jakarta</div>
-                    <div class="small-location">📍 Near Bundaran HI, Jakarta</div>
-                </div>
-                <div class="small-price">from <strong>RM 590</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 3 -->
-        <a href="detail.php?id=plataran_borobudur" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=500&q=80" alt="Plataran Borobudur">
-                <span class="hotel-walk-badge">🏛 Heritage</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(490)</span></div>
-                    <div class="small-title">Plataran Borobudur</div>
-                    <div class="small-location">📍 Near Borobudur Temple</div>
-                </div>
-                <div class="small-price">from <strong>RM 980</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 4 -->
-        <a href="detail.php?id=ayana_bali" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80" alt="AYANA Resort Bali">
-                <span class="hotel-walk-badge">🍹 Rock Bar Access</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(2,300)</span></div>
-                    <div class="small-title">AYANA Resort & Spa</div>
-                    <div class="small-location">📍 Near Jimbaran Bay, Bali</div>
-                </div>
-                <div class="small-price">from <strong>RM 890</strong></div>
-            </div>
-        </a>
-    </div>
-
-
-    <!-- ================= 4. 🇻🇳 VIETNAM (1大4小) ================= -->
-    <h2 class="country-section-title">🇻🇳 VIETNAM</h2>
-    
-    <div class="hotel-grid-box">
-        <!-- 左侧大卡片 -->
-        <div class="hotel-card-large">
-            <img class="bg-img" src="https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1000&q=80" alt="JW Marriott Phu Quoc">
-            <div class="overlay"></div>
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-
-            <div class="card-content">
-                <div></div>
-                <div class="large-card-info">
-                    <div class="large-tags-row">
-                        <span class="tag-green-pill">🏖 Private Beach</span>
-                        <span class="tag-rating-pill"><span>★ 4.9</span> (980 reviews)</span>
+        <!-- Content 2: Family -->
+        <div id="tab-family" class="tab-content">
+            <div class="theme-grid">
+                <a href="detail.php?id=201" class="theme-card">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <div>
+                        <h4>Legoland Hotel (Johor)</h4>
+                        <p>Interactive themed rooms with treasure hunts for kids.</p>
                     </div>
-                    <h2>JW Marriott Phu Quoc</h2>
-                    <p class="sub-location">📍 Khem Beach, Phu Quoc Island, Vietnam</p>
-                    <a href="detail.php?id=jw_phuquoc" class="btn-explore">VIEW DETAILS & RATES →</a>
-                </div>
+                </a>
+                <a href="detail.php?id=301" class="theme-card">
+                    <i class="fa-solid fa-person-swimming"></i>
+                    <div>
+                        <h4>Sunway Resort (Selangor)</h4>
+                        <p>Direct access to Sunway Lagoon Theme Park.</p>
+                    </div>
+                </a>
+                <a href="detail.php?id=205" class="theme-card">
+                    <i class="fa-solid fa-guitar"></i>
+                    <div>
+                        <h4>Hard Rock Hotel (Desaru)</h4>
+                        <p>Waterpark access with fun rock & roll family suites.</p>
+                    </div>
+                </a>
             </div>
         </div>
 
-        <!-- 右侧小卡片 1 -->
-        <a href="detail.php?id=metropole_hanoi" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=500&q=80" alt="Sofitel Legend Metropole">
-                <span class="hotel-walk-badge">🏛 Colonial Heritage</span>
+        <!-- Content 3: Foodie -->
+        <div id="tab-foodie" class="tab-content">
+            <div class="theme-grid">
+                <a href="detail.php?id=101" class="theme-card">
+                    <i class="fa-solid fa-utensils"></i>
+                    <div>
+                        <h4>E&O Hotel (Penang)</h4>
+                        <p>3-minute walk to Penang’s top hawker stalls and nightlife.</p>
+                    </div>
+                </a>
+                <a href="detail.php?id=803" class="theme-card">
+                    <i class="fa-solid fa-bowl-food"></i>
+                    <div>
+                        <h4>WEIL Hotel (Ipoh)</h4>
+                        <p>Connected to Ipoh’s famous dim sum & bean sprout chicken district.</p>
+                    </div>
+                </a>
+                <a href="detail.php?id=506" class="theme-card">
+                    <i class="fa-solid fa-store"></i>
+                    <div>
+                        <h4>Horizon Hotel (Kota Kinabalu)</h4>
+                        <p>Located right on Gaya Street Sunday Night Market.</p>
+                    </div>
+                </a>
             </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(1,400)</span></div>
-                    <div class="small-title">Metropole Hanoi</div>
-                    <div class="small-location">📍 Near Hoan Kiem Lake, Hanoi</div>
-                </div>
-                <div class="small-price">from <strong>RM 980</strong></div>
-            </div>
-        </a>
+        </div>
+    </section>
+</main>
 
-        <!-- 右侧小卡片 2 -->
-        <a href="detail.php?id=anantara_hoian" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=500&q=80" alt="Anantara Hoi An Resort">
-                <span class="hotel-walk-badge">🚶‍♂️ 5 min walk</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(610)</span></div>
-                    <div class="small-title">Anantara Hoi An</div>
-                    <div class="small-location">📍 Near Hoi An Ancient Town</div>
-                </div>
-                <div class="small-price">from <strong>RM 680</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 3 -->
-        <a href="detail.php?id=intercon_danang" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80" alt="InterContinental Danang">
-                <span class="hotel-walk-badge">🏔 Cliff Resort</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.9</span> <span class="count">(830)</span></div>
-                    <div class="small-title">InterContinental Danang</div>
-                    <div class="small-location">📍 Son Tra Peninsula, Da Nang</div>
-                </div>
-                <div class="small-price">from <strong>RM 1,280</strong></div>
-            </div>
-        </a>
-
-        <!-- 右侧小卡片 4 -->
-        <a href="detail.php?id=park_hyatt_saigon" class="hotel-card-small">
-            <button class="star-fav-btn" onclick="toggleStar(event, this)">☆</button>
-            <div class="small-card-img">
-                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80" alt="Park Hyatt Saigon">
-                <span class="hotel-walk-badge">📍 City Heart</span>
-            </div>
-            <div class="small-card-body">
-                <div>
-                    <div class="small-rating"><span class="star">★ 4.8</span> <span class="count">(950)</span></div>
-                    <div class="small-title">Park Hyatt Saigon</div>
-                    <div class="small-location">📍 Near Opera House, HCMC</div>
-                </div>
-                <div class="small-price">from <strong>RM 880</strong></div>
-            </div>
-        </a>
-    </div>
-
-</div>
-
-<!-- JS：阻止点击收藏星星时触发跳转详情页 -->
 <script>
-    function toggleStar(event, btn) {
-        event.preventDefault(); // 阻止 <a> 标签的页面跳转
-        event.stopPropagation(); // 阻止事件冒泡
-        
-        btn.classList.toggle('active');
-        if (btn.classList.contains('active')) {
-            btn.innerHTML = '★'; // 实心黄星
-        } else {
-            btn.innerHTML = '☆'; // 空心星
+    // 1. 日期自动设置
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const formatDate = (date) => date.toISOString().split('T')[0];
+
+        const checkInInput = document.getElementById('check_in');
+        const checkOutInput = document.getElementById('check_out');
+
+        if (checkInInput && checkOutInput) {
+            checkInInput.min = formatDate(today);
+            checkInInput.value = formatDate(today);
+
+            checkOutInput.min = formatDate(tomorrow);
+            checkOutInput.value = formatDate(tomorrow);
+
+            checkInInput.addEventListener('change', function () {
+                const selectedInDate = new Date(this.value);
+                const nextDay = new Date(selectedInDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+
+                checkOutInput.min = formatDate(nextDay);
+                if (new Date(checkOutInput.value) <= selectedInDate) {
+                    checkOutInput.value = formatDate(nextDay);
+                }
+            });
+        }
+    });
+
+    // 2. 加减控制逻辑
+    let guestCounts = { adults: 2, children: 0, rooms: 1 };
+
+    function updateGuest(type, change) {
+        let minLimit = (type === 'children') ? 0 : 1;
+        let maxLimit = 10;
+
+        if (guestCounts[type] + change >= minLimit && guestCounts[type] + change <= maxLimit) {
+            guestCounts[type] += change;
+            document.getElementById('cnt_' + type).innerText = guestCounts[type];
+            document.getElementById('input_' + type).value = guestCounts[type];
+            updateGuestSummary();
         }
     }
-</script>
 
-<?php 
-if (file_exists('../footer.php')) {
-    include '../footer.php';
-} else if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/footer.php')) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/footer.php';
-}
-?>
+    function updateGuestSummary() {
+        let adultText = guestCounts.adults + (guestCounts.adults > 1 ? ' Adults' : ' Adult');
+        let childText = guestCounts.children + (guestCounts.children === 1 ? ' Child' : ' Children');
+        let roomText = guestCounts.rooms + (guestCounts.rooms > 1 ? ' Rooms' : ' Room');
+
+        document.getElementById('guestSummary').innerText = `${adultText}, ${childText}, ${roomText}`;
+    }
+
+    // 3. 点击切换显示/隐藏面板
+    const guestTrigger = document.getElementById('guestInputTrigger');
+    const guestDropdown = document.getElementById('guestDropdown');
+
+    if (guestTrigger && guestDropdown) {
+        guestTrigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (guestDropdown.style.display === 'none' || guestDropdown.style.display === '') {
+                guestDropdown.style.display = 'block';
+            } else {
+                guestDropdown.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!guestDropdown.contains(e.target) && !guestTrigger.contains(e.target)) {
+                guestDropdown.style.display = 'none';
+            }
+        });
+    }
+
+    function closeGuestDropdown() {
+        if (guestDropdown) {
+            guestDropdown.style.display = 'none';
+        }
+    }
+
+    // 4. Tab 切换
+    function switchTab(evt, tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById('tab-' + tabName).classList.add('active');
+        if (evt && evt.currentTarget) {
+            evt.currentTarget.classList.add('active');
+        }
+    }
+
+    // 5. Vibe Pills 点击跳转支持
+    document.querySelectorAll('.vibe-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.querySelectorAll('.vibe-pill').forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            
+            const vibeText = this.innerText.trim();
+            if (vibeText !== 'All Stays') {
+                window.location.href = 'after_search.php?vibe=' + encodeURIComponent(vibeText);
+            }
+        });
+    });
+</script>

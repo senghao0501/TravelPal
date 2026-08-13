@@ -1,243 +1,235 @@
 <?php
-// 1. Get Hotel ID from URL (e.g., detail.php?id=2)
-$hotel_id = isset($_GET['id']) ? intval($_GET['id']) : 1;
-
-/*
-// =========================================================================
-// DATABASE INTEGRATION EXAMPLE (Uncomment and edit when using MySQL)
-// =========================================================================
-$db = new PDO('mysql:host=localhost;dbname=your_database;charset=utf8', 'username', 'password');
-$stmt = $db->prepare('SELECT * FROM hotels WHERE id = ?');
-$stmt->execute([$hotel_id]);
-$hotel = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$hotel) {
-    die("Hotel not found!");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-// =========================================================================
-*/
+include '../header.php';
+require_once 'hotels_data.php';
 
-// 2. Dynamic Mock Hotel Data (Each hotel now has distinct prices)
-$hotels_data = [
-    1 => [
-        'id' => 1,
-        'name' => 'The Ritz-Carlton, Kyoto',
-        'location' => 'Nakagyo Ward, Kyoto, Japan',
-        'price_per_night' => 850,
-        'currency' => '$',
-        'rating' => '4.9',
-        'reviews_count' => 128,
-        'main_image' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80',
-        'description' => 'Situated along the banks of the Kamogawa river, offering stunning views of the Higashiyama mountains. Blending traditional Japanese architecture with modern luxury.',
-        'amenities' => ['Free High-Speed Wi-Fi', 'Indoor Heated Pool', 'Luxury SPA Center', 'Michelin-starred Dining', '24-Hour Butler Service']
-    ],
-    2 => [
-        'id' => 2,
-        'name' => 'Marina Bay Sands',
-        'location' => 'Bayfront Avenue, Singapore',
-        'price_per_night' => 620,
-        'currency' => '$',
-        'rating' => '4.8',
-        'reviews_count' => 310,
-        'main_image' => 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1200&q=80',
-        'description' => 'An iconic landmark in Singapore featuring the world\'s largest rooftop infinity pool with breathtaking skyline views of Marina Bay.',
-        'amenities' => ['57th Floor Infinity Pool', 'SkyPark Observation Deck', 'Premier Shopping Mall', '24-Hour Fitness Center', 'Luxury Airport Shuttle']
-    ],
-    3 => [
-        'id' => 3,
-        'name' => 'Grand Hyatt Bali',
-        'location' => 'Nusa Dua, Bali, Indonesia',
-        'price_per_night' => 280,
-        'currency' => '$',
-        'rating' => '4.7',
-        'reviews_count' => 95,
-        'main_image' => 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80',
-        'description' => 'A tropical paradise in Nusa Dua offering private beach access, lush gardens, multiple outdoor swimming pools, and authentic Balinese luxury.',
-        'amenities' => ['Private Beach Access', 'Lagoon Pools', 'Balinese Spa', 'Water Sports Center', 'Kids Club']
-    ],
-    4 => [
-        'id' => 4,
-        'name' => 'Burj Al Arab',
-        'location' => 'Jumeirah Beach, Dubai, UAE',
-        'price_per_night' => 1500,
-        'currency' => '$',
-        'rating' => '5.0',
-        'reviews_count' => 420,
-        'main_image' => 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-        'description' => 'The world\'s most luxurious hotel, standing on its own island. Featuring sail-shaped architecture, suite-only accommodations, and private helicopter transfers.',
-        'amenities' => ['Private Helipad', 'Duplex Suites', 'Chauffeur-driven Rolls-Royce', 'Private Beach', 'Underwater Restaurant']
-    ]
-];
+// 检测用户登录状态
+$isLoggedIn = isset($_SESSION['user_id']) || isset($_SESSION['user']) || isset($_SESSION['user_name']);
 
-// Fallback to hotel ID 1 if ID is invalid or not found
-$hotel = isset($hotels_data[$hotel_id]) ? $hotels_data[$hotel_id] : $hotels_data[1];
+$hotel_id = $_GET['id'] ?? 101;
+$check_in = $_GET['check_in'] ?? date('Y-m-d');
+$check_out= $_GET['check_out'] ?? date('Y-m-d', strtotime('+1 day'));
+$adults   = $_GET['adults'] ?? 2;
+
+// 在数据库中查找对应 ID 的酒店
+$hotel = null;
+foreach ($all_hotels as $h) {
+    if ($h['id'] == $hotel_id) {
+        $hotel = $h;
+        break;
+    }
+}
+
+// 没找到默认载入第一个
+if (!$hotel) $hotel = $all_hotels[0];
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($hotel['name']); ?> - Hotel Details</title>
-    <!-- Linked CSS with cache busting -->
-    <link rel="stylesheet" href="../css/modules/hotels.css">
-</head>
-<body style="background-color: #0f172a; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<link rel="stylesheet" href="../css/modules/hotels.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<div class="detail-container">
-
-    <!-- ================= 1. LEFT: HOTEL DETAILS ================= -->
-    <div class="detail-info">
-        <!-- Hotel Name & Location -->
-        <h1><?php echo htmlspecialchars($hotel['name']); ?></h1>
-        <p class="location">📍 <?php echo htmlspecialchars($hotel['location']); ?></p>
-
-        <!-- Main Image -->
-        <div class="gallery">
-            <img src="<?php echo htmlspecialchars($hotel['main_image']); ?>" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
-        </div>
-
-        <!-- Description -->
-        <h3>About This Hotel</h3>
-        <p><?php echo htmlspecialchars($hotel['description']); ?></p>
-
-        <!-- Amenities -->
-        <h3>Amenities & Services</h3>
-        <div class="amenities-tags" style="margin-top: 15px;">
-            <?php foreach ($hotel['amenities'] as $amenity): ?>
-                <span class="amenity-chip">✓ <?php echo htmlspecialchars($amenity); ?></span>
-            <?php endforeach; ?>
-        </div>
-    </div>
-
-    <!-- ================= 2. RIGHT: FLOATING BOOKING CARD ================= -->
-    <div class="booking-card">
-        <!-- Dynamic Price Header -->
-        <div class="price-header">
-            <span class="price-amount" id="basePriceDisplay"><?php echo $hotel['currency'] . $hotel['price_per_night']; ?></span>
-            <span class="price-unit">/ night</span>
-        </div>
-
-        <!-- Booking Form -->
-        <form class="booking-form" action="process_booking.php" method="POST">
-            <!-- Hidden input for hotel ID -->
-            <input type="hidden" name="hotel_id" value="<?php echo $hotel['id']; ?>">
-
-            <!-- Date Selectors -->
-            <div class="form-group-row">
-                <div class="form-group">
-                    <label for="checkin">Check-in</label>
-                    <input type="date" id="checkin" name="check_in" required>
-                </div>
-                <div class="form-group">
-                    <label for="checkout">Check-out</label>
-                    <input type="date" id="checkout" name="check_out" required>
-                </div>
-            </div>
-
-            <!-- Guests Dropdown -->
-            <div class="form-group">
-                <label for="guests">Guests</label>
-                <select id="guests" name="guests">
-                    <option value="1">1 Adult</option>
-                    <option value="2" selected>2 Adults</option>
-                    <option value="3">3 Adults</option>
-                    <option value="4">4 Guests (Family Suite)</option>
-                </select>
-            </div>
-
-            <!-- Room Type Dropdown with Price Multipliers -->
-            <div class="form-group">
-                <label for="room_type">Room Type</label>
-                <select id="room_type" name="room_type">
-                    <option value="standard" data-multiplier="1.0">Standard Deluxe Room</option>
-                    <option value="executive" data-multiplier="1.4">Executive Suite (+40%)</option>
-                    <option value="presidential" data-multiplier="2.2">Presidential Suite (+120%)</option>
-                </select>
-            </div>
-
-            <!-- Dynamic Price Calculation Display -->
-            <div id="priceSummary" style="display: none; background: #f8fafc; padding: 14px; border-radius: 10px; font-size: 14px; color: #475569; margin-top: 10px; border: 1px solid #e2e8f0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span><span id="effectiveRate">$0</span> × <span id="nightCount">1</span> night(s)</span>
-                    <span id="subtotalAmount">$0</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #0f172a; border-top: 1px dashed #cbd5e1; padding-top: 8px; font-size: 15px;">
-                    <span>Total Estimated Price</span>
-                    <span id="totalAmount" style="color: #ff385c;">$0</span>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn-submit-booking">Book Now</button>
-            <p class="booking-note">You won't be charged yet</p>
-        </form>
-    </div>
-
-</div>
-
-<!-- ================= 3. JS: REAL-TIME NIGHT & ROOM MULTIPLIER CALCULATION ================= -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const checkinInput = document.getElementById("checkin");
-    const checkoutInput = document.getElementById("checkout");
-    const roomTypeSelect = document.getElementById("room_type");
+<style>
+    .detail-container { max-width: 1140px; margin: 30px auto 80px; padding: 0 20px; }
+    .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
     
-    const basePriceDisplay = document.getElementById("basePriceDisplay");
-    const priceSummary = document.getElementById("priceSummary");
-    const effectiveRateSpan = document.getElementById("effectiveRate");
-    const nightCountSpan = document.getElementById("nightCount");
-    const subtotalAmountSpan = document.getElementById("subtotalAmount");
-    const totalAmountSpan = document.getElementById("totalAmount");
-
-    const basePricePerNight = <?php echo floatval($hotel['price_per_night']); ?>;
-    const currency = "<?php echo $hotel['currency']; ?>";
-
-    // Set default check-in to today, check-out to tomorrow
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    checkinInput.value = today.toISOString().split('T')[0];
-    checkoutInput.value = tomorrow.toISOString().split('T')[0];
-
-    function calculateTotal() {
-        const checkinDate = new Date(checkinInput.value);
-        const checkoutDate = new Date(checkoutInput.value);
-
-        // Get room multiplier from selected option
-        const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
-        const multiplier = parseFloat(selectedOption.getAttribute("data-multiplier")) || 1.0;
-
-        const currentNightlyRate = Math.round(basePricePerNight * multiplier);
-
-        // Update top price header
-        basePriceDisplay.textContent = currency + currentNightlyRate;
-
-        if (checkinDate && checkoutDate && checkoutDate > checkinDate) {
-            const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
-            const nights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            const totalPrice = nights * currentNightlyRate;
-
-            effectiveRateSpan.textContent = currency + currentNightlyRate;
-            nightCountSpan.textContent = nights;
-            subtotalAmountSpan.textContent = currency + totalPrice;
-            totalAmountSpan.textContent = currency + totalPrice;
-            priceSummary.style.display = "block";
-        } else {
-            priceSummary.style.display = "none";
-        }
+    .detail-title { font-size: 1.8rem; font-weight: 800; color: #0f172a; text-decoration: underline; }
+    .detail-subtitle { color: #64748b; font-size: 0.95rem; margin-top: 4px; }
+    
+    .photo-gallery { 
+        display: grid; 
+        grid-template-columns: 2fr 1fr; 
+        gap: 12px; 
+        height: 420px; 
+        border-radius: 16px; 
+        overflow: hidden; 
+        margin-bottom: 30px; 
+    }
+    .gallery-main { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        display: block; 
+    }
+    .gallery-sub-grid { 
+        display: grid; 
+        grid-template-rows: repeat(2, calc(50% - 6px));
+        gap: 12px; 
+        height: 100%; 
+    }
+    .sub-img-box { 
+        position: relative; 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden; 
+        border-radius: 8px; 
+    }
+    .sub-img-box img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        display: block; 
+    }
+    .img-tag { 
+        position: absolute; 
+        bottom: 10px; 
+        left: 10px; 
+        background: rgba(0, 0, 0, 0.65); 
+        color: #fff; 
+        font-size: 0.75rem; 
+        padding: 4px 8px; 
+        border-radius: 4px; 
+        backdrop-filter: blur(4px); 
     }
 
-    // Listeners for input change
-    checkinInput.addEventListener("change", calculateTotal);
-    checkoutInput.addEventListener("change", calculateTotal);
-    roomTypeSelect.addEventListener("change", calculateTotal);
+    .detail-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+    .info-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .amenity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+    .amenity-item { display: flex; align-items: center; gap: 10px; color: #334155; font-size: 0.9rem; }
+    .amenity-item i { color: #047857; font-size: 1.1rem; }
 
-    // Initial calculation on page load
-    calculateTotal();
-});
+    .booking-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); position: sticky; top: 20px; }
+    .booking-price { font-size: 2rem; font-weight: 800; color: #0f172a; }
+    .btn-book-now { width: 100%; background: #047857; color: #fff; border: none; padding: 16px; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 20px; }
+    .btn-book-now:hover { background: #065f46; transform: translateY(-2px); }
+    
+    .btn-fav-detail { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; color: #475569; transition: all 0.2s; }
+    .btn-fav-detail.active { background: #fef9c3; border-color: #fde047; color: #854d0e; }
+    .btn-fav-detail.active i { color: #eab308; }
+
+    /* 🆕 新增提示消息样式 */
+    #loginMsg {
+        color: #dc2626;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 10px;
+        padding: 8px;
+        background: #fee2e2;
+        border-radius: 6px;
+        border: 1px solid #fca5a5;
+        display: none;
+    }
+</style>
+
+<main class="detail-container">
+    <!-- 头部标题与收藏 -->
+    <div class="detail-header">
+        <div>
+            <h1 class="detail-title"><?php echo htmlspecialchars($hotel['name']); ?></h1>
+            <p class="detail-subtitle"><i class="fa-solid fa-location-dot"></i> <?php echo htmlspecialchars($hotel['city']); ?>, <?php echo htmlspecialchars($hotel['state']); ?>, Malaysia</p>
+        </div>
+        <button class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
+            <i class="fa-solid fa-star"></i> <span>Save to Favorites</span>
+        </button>
+    </div>
+
+    <!-- 三图组合相册 -->
+    <div class="photo-gallery">
+        <img class="gallery-main" src="<?php echo $hotel['img_main']; ?>" alt="Hotel Exterior">
+        <div class="gallery-sub-grid">
+            <div class="sub-img-box">
+                <img src="<?php echo $hotel['img_lobby']; ?>" alt="Hotel Lobby">
+                <span class="img-tag"><i class="fa-solid fa-building"></i> Lobby & Lounge</span>
+            </div>
+            <div class="sub-img-box">
+                <img src="<?php echo $hotel['img_bathroom']; ?>" alt="Bathroom View">
+                <span class="img-tag"><i class="fa-solid fa-bath"></i> Bathroom & Amenities</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 内容与预订侧边栏 -->
+    <div class="detail-layout">
+        <!-- 左侧信息区 -->
+        <div>
+            <div class="info-card">
+                <h3 style="font-size: 1.2rem; margin-bottom: 12px; color: #0f172a; text-decoration: underline;">About the Accommodation</h3>
+                <p style="color: #475569; line-height: 1.6;"><?php echo htmlspecialchars($hotel['desc']); ?> Designed with modern comforts and premium hospitality to ensure a memorable staycation experience in <?php echo htmlspecialchars($hotel['state']); ?>.</p>
+            </div>
+
+            <div class="info-card">
+                <h3 style="font-size: 1.2rem; margin-bottom: 16px; color: #0f172a; text-decoration: underline;">Popular Amenities</h3>
+                <div class="amenity-grid">
+                    <div class="amenity-item"><i class="fa-solid fa-wifi"></i> Free High-speed Wi-Fi</div>
+                    <div class="amenity-item"><i class="fa-solid fa-water-ladder"></i> Swimming Pool</div>
+                    <div class="amenity-item"><i class="fa-solid fa-utensils"></i> On-site Restaurant</div>
+                    <div class="amenity-item"><i class="fa-solid fa-square-parking"></i> Free Parking</div>
+                    <div class="amenity-item"><i class="fa-solid fa-snowflake"></i> Air Conditioning</div>
+                    <div class="amenity-item"><i class="fa-solid fa-dumbbell"></i> Fitness Center</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧预订区 -->
+        <div>
+            <div class="booking-card">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                    <div>
+                        <small style="color: #64748b;">Starting from</small>
+                        <div class="booking-price">RM <?php echo $hotel['price']; ?> <span style="font-size: 0.9rem; font-weight: normal; color: #64748b;">/ night</span></div>
+                    </div>
+                    <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.85rem;"><?php echo $hotel['rating']; ?> / 10</span>
+                </div>
+
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 18px 0;">
+
+                <form action="checkout.php" method="GET" onsubmit="return handleBooking(event)">
+                    <input type="hidden" name="hotel_id" value="<?php echo $hotel['id']; ?>">
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Check-in Date</label>
+                        <input type="date" name="check_in" value="<?php echo htmlspecialchars($check_in); ?>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px;">
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Check-out Date</label>
+                        <input type="date" name="check_out" value="<?php echo htmlspecialchars($check_out); ?>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px;">
+                    </div>
+
+                    <!-- 🆕 提示消息显示区 -->
+                    <div id="loginMsg">⚠️ Please login first</div>
+
+                    <button type="submit" class="btn-book-now">
+                        <i class="fa-solid fa-bolt"></i> Book Now
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+
+function handleBooking(event) {
+    if (!isLoggedIn) {
+        event.preventDefault(); // 阻止表单提交
+
+        // 显示提示消息
+        const msg = document.getElementById('loginMsg');
+        msg.style.display = 'block';
+
+        // 可选：5秒后自动隐藏（但要考虑用户可能再点，所以可以不自动隐藏，或者点击后一直显示）
+        // 如果想自动消失，可以取消注释下面几行
+        // setTimeout(() => {
+        //     msg.style.display = 'none';
+        // }, 5000);
+
+        return false;
+    }
+    return true; // 允许提交
+}
+
+function toggleDetailFav(btn) {
+    if (!isLoggedIn) {
+        alert("must be login first");
+        return;
+    }
+    
+    btn.classList.toggle('active');
+    const label = btn.querySelector('span');
+    if(btn.classList.contains('active')) {
+        label.innerText = 'Saved to Favorites';
+    } else {
+        label.innerText = 'Save to Favorites';
+    }
+}
 </script>
-
-</body>
-</html>

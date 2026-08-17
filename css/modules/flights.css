@@ -302,3 +302,282 @@ body {
     .overview-box, .amenity-grid { grid-template-columns:1fr; }
     .detail-header h1 { font-size:1.65rem; }
 }
+
+/* ==================== Premium Booking-Style Rating & Comments ==================== */
+.rating-comments-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.rating-section-header {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rating-section-header h3 {
+    margin: 0 0 4px 0;
+    font-size: 1.25rem;
+    color: var(--slate-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rating-section-header h3 i {
+    color: #f59e0b;
+}
+
+.rating-subtitle {
+    font-size: 0.8rem;
+    color: var(--slate-500);
+}
+
+/* Dashboard Banner */
+.rating-overview-dashboard {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    background: var(--slate-50);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 24px;
+    align-items: center;
+}
+
+.rating-primary-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-right: 1px solid var(--border-color);
+    padding-right: 16px;
+}
+
+.rating-score-badge {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #ffffff;
+    padding: 12px 14px;
+    border-radius: 14px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    box-shadow: 0 6px 14px rgba(2, 132, 199, 0.25);
+    flex-shrink: 0;
+}
+
+.rating-score-badge .score-num {
+    font-size: 1.75rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.rating-score-badge .score-max {
+    font-size: 0.75rem;
+    opacity: 0.85;
+    font-weight: 700;
+}
+
+.rating-summary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rating-status-title {
+    font-size: 1.15rem;
+    font-weight: 850;
+    color: var(--slate-900);
+    line-height: 1.2;
+}
+
+.rating-count-text {
+    font-size: 0.74rem;
+    color: var(--slate-500);
+}
+
+.rating-stars-row {
+    display: flex;
+    gap: 3px;
+    color: #f59e0b;
+    font-size: 0.8rem;
+    margin-top: 3px;
+}
+
+/* Category Progress Bars */
+.rating-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+}
+
+.breakdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.breakdown-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--slate-700);
+    font-weight: 700;
+}
+
+.progress-bar-bg {
+    height: 7px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 999px;
+}
+
+/* Comments List */
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.comment-item {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    transition: all 0.2s ease;
+}
+
+.comment-item:hover {
+    border-color: #bae6fd;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.comment-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.comment-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-weight: 800;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    box-shadow: inset 0 0 0 1px rgba(2, 132, 199, 0.15);
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-name {
+    font-size: 0.92rem;
+    color: var(--slate-900);
+    font-weight: 800;
+}
+
+.user-sub-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    color: var(--slate-500);
+}
+
+.traveler-tag {
+    color: var(--slate-600);
+    font-weight: 600;
+}
+
+.dot-separator {
+    color: var(--slate-400);
+}
+
+.comment-date {
+    color: var(--slate-400);
+}
+
+.comment-score-badge {
+    background: #fef3c7;
+    color: #b45309;
+    font-weight: 850;
+    font-size: 0.82rem;
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.comment-title {
+    margin: 4px 0 6px 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--slate-800);
+}
+
+.comment-body {
+    margin: 0 0 10px 0;
+    font-size: 0.88rem;
+    color: var(--slate-700);
+    line-height: 1.55;
+}
+
+.comment-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.72rem;
+    color: #16a34a;
+    font-weight: 700;
+    padding-top: 8px;
+    border-top: 1px dashed #f1f5f9;
+}
+
+.verified-purchase {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+@media (max-width: 768px) {
+    .rating-overview-dashboard {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .rating-primary-box {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-color);
+        padding-right: 0;
+        padding-bottom: 14px;
+    }
+    .rating-breakdown-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -444,6 +444,7 @@ function convertLocalFlight($flight, $departDate) {
         'stops' => (int)($flight['stops'] ?? 0),
         'is_direct' => ((int)($flight['stops'] ?? 0) == 0) ? 1 : 0,
         'departure_date' => $departDate,
+        'reviews' => $flight['reviews'] ?? [], // 保留评论数组数据
         '_source' => 'local'
     ];
 }

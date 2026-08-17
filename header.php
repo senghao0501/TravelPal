@@ -19,7 +19,7 @@
             <a href="/TravelPal/index.php">Home</a>
             <a href="/TravelPal/flights/index.php">Flights</a>
             <a href="/TravelPal/hotels/index.php">Hotels</a>
-            <a href="#">Restaurants</a>
+            <a href="/TravelPal/restaurant/index.php">Restaurants</a>
             <a href="#">Attractions</a>
             <a href="#">My Trips</a>
             <a href="/TravelPal/settings/index.php">Settings</a>

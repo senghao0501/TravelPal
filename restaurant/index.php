@@ -1,178 +1,348 @@
-<?php 
-include '../header.php'; 
+<?php
+require_once __DIR__ . '/food_data.php';
+include __DIR__ . '/../header.php';
+
+function food_escape(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+$states = array_values(array_unique(array_column($foodOptions, 'state')));
+sort($states);
 ?>
 
-<link rel="stylesheet" href="/TravelPal/restaurant/restaurant.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/TravelPal/restaurant/restaurant.css?v=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<section class="welcome-hero">
-    <div class="welcome-badge">TASTE THE BEST OF SEA</div>
-    <h1>Discover Local Flavors <span class="plane-icon">🍴</span></h1>
-    <p class="subtitle">Find top-rated restaurants across Thailand, Vietnam, Indonesia, and Malaysia.</p>
-</section>
-
-
-<section class="search-container">
-    <div class="search">
-        <input type="text" id="searchBar" placeholder="Search for dishes, restaurants, or cities...">
-        <button type="button" onclick="navigateSearch()" id="searching" title="Search"></button>
-    </div>
-    <div class="error-message" id="searchError"></div>
-</section>
-
-
-<section class="scrolling-section">
-    <h2>Taste of Malaysia<br><span>Rich spices and vibrant street food culture</span></h2>
-    <div class="slider-wrapper">
-        <div class="images" id="slider-malaysia">
-            <!-- 1. Kuala Lumpur -->
-			<a href="detail.php">
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&q=80" alt="KL Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Madam Kwan's</span><span class="country-tag">Kuala Lumpur</span></div></div>
-			</a>
-            <!-- 2. Penang -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1565299624-44c66f470508?w=500&q=80" alt="Penang Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Line Clear Nasi Kandar</span><span class="country-tag">Penang</span></div></div>
-            <!-- 3. Melaka -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1627067828062-8e108d8e1247?w=500&q=80" alt="Melaka Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Jonker 88</span><span class="country-tag">Melaka</span></div></div>
-            <!-- 4. Perak (Ipoh) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=500&q=80" alt="Ipoh Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Lou Wong Bean Sprout Chicken</span><span class="country-tag">Perak</span></div></div>
-            <!-- 5. Johor -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80" alt="Johor Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Restoran Hua Mui</span><span class="country-tag">Johor</span></div></div>
-            <!-- 6. Sarawak (Kuching) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" alt="Sarawak Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Lepau Restaurant</span><span class="country-tag">Sarawak</span></div></div>
-            <!-- 7. Sabah (Kota Kinabalu) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=500&q=80" alt="Sabah Seafood"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Welcome Seafood</span><span class="country-tag">Sabah</span></div></div>
-            <!-- 8. Kedah (Langkawi) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1606527581699-2826fc5d2a6a?w=500&q=80" alt="Kedah Food"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">The Cliff Restaurant</span><span class="country-tag">Kedah</span></div></div>
+<div class="food-guide-page">
+    <section class="food-hero">
+        <div class="food-hero__content">
+            <span class="food-kicker">MALAYSIA FOOD GUIDE</span>
+            <h1>Plan what to eat before heading out</h1>
+            <p>Filter local food by state and city, then save your choices into one simple travel food list.</p>
         </div>
-        <button type="button" class="next-arrow" onclick="scrollSlider('slider-malaysia')" title="Next">➔</button>
-    </div>
-</section>
+    </section>
 
-
-<section class="scrolling-section">
-    <h2>Must-Try in Thailand<br><span>The perfect balance of sweet, sour, spicy, and salty</span></h2>
-    <div class="slider-wrapper">
-        <div class="images" id="slider-thailand">
-            <!-- 1. Bangkok -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" alt="Bangkok"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Blue Elephant</span><span class="country-tag">Bangkok</span></div></div>
-            <!-- 2. Chiang Mai -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=500&q=80" alt="Chiang Mai"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Khao Soi Mae Sai</span><span class="country-tag">Chiang Mai</span></div></div>
-            <!-- 3. Phuket -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?w=500&q=80" alt="Phuket"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Raya Restaurant</span><span class="country-tag">Phuket</span></div></div>
-            <!-- 4. Chonburi (Pattaya) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1626804475297-41609ea004eb?w=500&q=80" alt="Chonburi"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">The Glass House</span><span class="country-tag">Chonburi</span></div></div>
-            <!-- 5. Krabi -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1565557618462-06b9cc86e582?w=500&q=80" alt="Krabi"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">The Grotto</span><span class="country-tag">Krabi</span></div></div>
-            <!-- 6. Prachuap Khiri Khan (Hua Hin) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500&q=80" alt="Hua Hin"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Chao Lay Seafood</span><span class="country-tag">Prachuap Khiri Khan</span></div></div>
-            <!-- 7. Ayutthaya -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=500&q=80" alt="Ayutthaya"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Sala Ayutthaya Eatery</span><span class="country-tag">Ayutthaya</span></div></div>
-            <!-- 8. Khon Kaen -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500&q=80" alt="Khon Kaen"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Kai Yang Rabeab</span><span class="country-tag">Khon Kaen</span></div></div>
+    <section class="food-filter-section" aria-labelledby="filterTitle">
+        <div class="food-section-heading">
+            <div>
+                <span class="food-eyebrow">Explore local flavours</span>
+                <h2 id="filterTitle">Find food for your trip</h2>
+            </div>
+            <p>Available for eight selected Malaysian states.</p>
         </div>
-        <button type="button" class="next-arrow" onclick="scrollSlider('slider-thailand')" title="Next">➔</button>
-    </div>
-</section>
 
+        <form id="foodFilterForm" class="food-filter-bar">
+            <div class="food-field">
+                <label for="stateFilter"><i class="fa-solid fa-map-location-dot"></i> State</label>
+                <select id="stateFilter" name="state">
+                    <option value="">All states</option>
+                    <?php foreach ($states as $state): ?>
+                        <option value="<?php echo food_escape($state); ?>"><?php echo food_escape($state); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-<section class="scrolling-section">
-    <h2>Vietnam Flavors<br><span>Fresh herbs, pho, and authentic street eats</span></h2>
-    <div class="slider-wrapper">
-        <div class="images" id="slider-vietnam">
-            <!-- 1. Ho Chi Minh City -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&q=80" alt="HCMC"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Secret Garden</span><span class="country-tag">Ho Chi Minh City</span></div></div>
-            <!-- 2. Hanoi -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80" alt="Hanoi"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Bun Cha Huong Lien</span><span class="country-tag">Hanoi</span></div></div>
-            <!-- 3. Da Nang -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&q=80" alt="Da Nang"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Ngon Villa</span><span class="country-tag">Da Nang</span></div></div>
-            <!-- 4. Quang Nam (Hoi An) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1627067828062-8e108d8e1247?w=500&q=80" alt="Hoi An"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Morning Glory Original</span><span class="country-tag">Quang Nam</span></div></div>
-            <!-- 5. Thua Thien Hue (Hue) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=500&q=80" alt="Hue"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Hanh Restaurant</span><span class="country-tag">Hue</span></div></div>
-            <!-- 6. Khanh Hoa (Nha Trang) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1565557618462-06b9cc86e582?w=500&q=80" alt="Nha Trang"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Sailing Club</span><span class="country-tag">Khanh Hoa</span></div></div>
-            <!-- 7. Lam Dong (Da Lat) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80" alt="Da Lat"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Goc Ha Thanh</span><span class="country-tag">Lam Dong</span></div></div>
-            <!-- 8. Kien Giang (Phu Quoc) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" alt="Phu Quoc"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Xin Chao Restaurant</span><span class="country-tag">Kien Giang</span></div></div>
+            <div class="food-field">
+                <label for="cityFilter"><i class="fa-solid fa-city"></i> City</label>
+                <select id="cityFilter" name="city" disabled>
+                    <option value="">All cities</option>
+                </select>
+            </div>
+
+            <div class="food-field food-field--search">
+                <label for="foodSearch"><i class="fa-solid fa-magnifying-glass"></i> Food</label>
+                <input id="foodSearch" name="food" type="search" placeholder="Example: laksa or coffee">
+            </div>
+
+            <button type="submit" class="food-filter-button">
+                <i class="fa-solid fa-filter"></i> Apply filters
+            </button>
+        </form>
+
+        <div class="food-state-shortcuts" aria-label="Quick state filters">
+            <button type="button" class="food-state-chip active" data-state="">All</button>
+            <?php foreach ($states as $state): ?>
+                <button type="button" class="food-state-chip" data-state="<?php echo food_escape($state); ?>">
+                    <?php echo food_escape($state); ?>
+                </button>
+            <?php endforeach; ?>
         </div>
-        <button type="button" class="next-arrow" onclick="scrollSlider('slider-vietnam')" title="Next">➔</button>
-    </div>
-</section>
+    </section>
 
+    <section class="food-content-section">
+        <div class="food-results-column">
+            <div class="food-results-header">
+                <div>
+                    <span class="food-eyebrow">Recommended dishes</span>
+                    <h2>Food options</h2>
+                </div>
+                <span id="foodResultCount" class="food-result-count"><?php echo count($foodOptions); ?> options</span>
+            </div>
 
-<section class="scrolling-section">
-    <h2>Indonesia Delights<br><span>Discover the rich archipelago flavors</span></h2>
-    <div class="slider-wrapper">
-        <div class="images" id="slider-indonesia">
-            <!-- 1. Bali -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=500&q=80" alt="Bali"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Bebek Bengil</span><span class="country-tag">Bali</span></div></div>
-            <!-- 2. Jakarta -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1565557618462-06b9cc86e582?w=500&q=80" alt="Jakarta"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Bandar Djakarta</span><span class="country-tag">Jakarta</span></div></div>
-            <!-- 3. Special Region of Yogyakarta -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80" alt="Yogyakarta"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">House of Raminten</span><span class="country-tag">Yogyakarta</span></div></div>
-            <!-- 4. West Java (Bandung) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1626804475297-41609ea004eb?w=500&q=80" alt="West Java"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Kampung Daun</span><span class="country-tag">West Java</span></div></div>
-            <!-- 5. East Java (Surabaya) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?w=500&q=80" alt="East Java"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Layar Seafood</span><span class="country-tag">East Java</span></div></div>
-            <!-- 6. North Sumatra (Medan) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&q=80" alt="North Sumatra"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Tip Top Restaurant</span><span class="country-tag">North Sumatra</span></div></div>
-            <!-- 7. West Nusa Tenggara (Lombok) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=500&q=80" alt="Lombok"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Asmara Restaurant</span><span class="country-tag">West Nusa Tenggara</span></div></div>
-            <!-- 8. South Sulawesi (Makassar) -->
-            <div class="image-card"><img src="https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=500&q=80" alt="South Sulawesi"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><div class="image-info"><span class="place-name">Konro Karebosi</span><span class="country-tag">South Sulawesi</span></div></div>
+            <div id="foodCards" class="food-card-grid">
+                <?php foreach ($foodOptions as $food): ?>
+                    <article class="food-card"
+                             data-id="<?php echo (int)$food['id']; ?>"
+                             data-state="<?php echo food_escape($food['state']); ?>"
+                             data-city="<?php echo food_escape($food['city']); ?>"
+                             data-search="<?php echo food_escape(strtolower($food['name'] . ' ' . $food['category'] . ' ' . $food['description'])); ?>">
+                        <div class="food-card__image-wrap">
+                            <img src="<?php echo food_escape($food['image']); ?>"
+                                 alt="<?php echo food_escape($food['name']); ?>"
+                                 loading="lazy">
+                            <span class="food-card__category"><?php echo food_escape($food['category']); ?></span>
+                        </div>
+
+                        <div class="food-card__body">
+                            <div class="food-card__location">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <?php echo food_escape($food['city']); ?>, <?php echo food_escape($food['state']); ?>
+                            </div>
+                            <h3><?php echo food_escape($food['name']); ?></h3>
+                            <p><?php echo food_escape($food['description']); ?></p>
+
+                            <div class="food-card__meta">
+                                <span><i class="fa-solid fa-wallet"></i> <?php echo food_escape($food['price']); ?></span>
+                                <span><i class="fa-regular fa-clock"></i> <?php echo food_escape($food['best_time']); ?></span>
+                            </div>
+
+                            <button type="button" class="food-add-button" data-food-id="<?php echo (int)$food['id']; ?>">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add to Food List</span>
+                            </button>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+
+            <div id="foodEmptyState" class="food-empty-state" hidden>
+                <i class="fa-solid fa-bowl-food"></i>
+                <h3>No food options found</h3>
+                <p>Try another state, city or search word.</p>
+                <button type="button" id="resetFoodFilters">Reset filters</button>
+            </div>
         </div>
-        <button type="button" class="next-arrow" onclick="scrollSlider('slider-indonesia')" title="Next">➔</button>
-    </div>
-</section>
 
-<section class="top-picks-section">
-    <h2 class="section-title" style="color: #111827;">Highest Rated</h2>
-    <div class="slider-wrapper">
-        <div id="topPicks" class="images">
-            <!-- 1-8 -->
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500&q=80" alt="Bar"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Canopy Rooftop Bar</p><div class="rating">⭐ 4.9 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Malaysia)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1544148103-0773bf10d330?w=500&q=80" alt="Dining"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Gaggan Anand</p><div class="rating">⭐ 4.9 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Thailand)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=80" alt="BBQ"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Naughty Nuri's</p><div class="rating">⭐ 4.8 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Indonesia)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&q=80" alt="Banh Mi"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Bánh Mì Huỳnh Hoa</p><div class="rating">⭐ 4.8 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Vietnam)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=500&q=80" alt="Seafood"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Jay Fai</p><div class="rating">⭐ 4.9 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Thailand)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&q=80" alt="Local"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Locavore</p><div class="rating">⭐ 4.8 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Indonesia)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1627067828062-8e108d8e1247?w=500&q=80" alt="Dining"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>De.Wan 1958</p><div class="rating">⭐ 4.7 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Malaysia)</span></div></div>
-            <div class="pick-card"><img class="pick-image" src="https://images.unsplash.com/photo-1565557618462-06b9cc86e582?w=500&q=80" alt="Dining"><button type="button" class="save-btn" onclick="toggleSave(this)"><i class="far fa-star"></i></button><p>Cuc Gach Quan</p><div class="rating">⭐ 4.8 <span style="color:#777; font-size:0.8rem; font-weight:normal;">(Vietnam)</span></div></div>
-        </div>
-        <button type="button" class="next-arrow" onclick="scrollSlider('topPicks')" title="Next">➔</button>
-    </div>
-</section>
+        <aside class="food-list-panel" aria-labelledby="foodListTitle">
+            <div class="food-list-panel__header">
+                <div>
+                    <span class="food-eyebrow">Before heading out</span>
+                    <h2 id="foodListTitle">My Food List</h2>
+                </div>
+                <span id="savedFoodCount" class="food-list-count">0</span>
+            </div>
 
+            <p class="food-list-help">Your choices stay on this device even after refreshing the page.</p>
+
+            <div id="savedFoodList" class="saved-food-list"></div>
+
+            <div id="savedFoodEmpty" class="saved-food-empty">
+                <i class="fa-regular fa-clipboard"></i>
+                <p>Your list is empty.</p>
+                <span>Add food options from the guide.</span>
+            </div>
+
+            <div class="food-list-actions">
+                <button type="button" id="printFoodList" class="food-list-action food-list-action--primary">
+                    <i class="fa-solid fa-print"></i> Print list
+                </button>
+                <button type="button" id="clearFoodList" class="food-list-action">
+                    <i class="fa-regular fa-trash-can"></i> Clear
+                </button>
+            </div>
+        </aside>
+    </section>
+</div>
+
+<div id="foodToast" class="food-toast" role="status" aria-live="polite"></div>
 
 <script>
-   
-    function toggleSave(btn) {
-        btn.classList.toggle('saved');
-        const icon = btn.querySelector('i');
-        
-        if (btn.classList.contains('saved')) {
-            icon.classList.remove('far');
-            icon.classList.add('fas');
-        } else {
-            icon.classList.remove('fas');
-            icon.classList.add('far');
-        }
-    }
+const foodOptions = <?php echo json_encode($foodOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
+const foodById = new Map(foodOptions.map(food => [Number(food.id), food]));
+const storageKey = 'travelpal_food_list_v1';
 
-   
-    function scrollSlider(sliderId) {
-        const slider = document.getElementById(sliderId);
-        if (slider) {
-            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
-                slider.scrollTo({ left: 0, behavior: "smooth" });
-            } else {
-                slider.scrollBy({ left: 270, behavior: "smooth" });
-            }
-        }
+const stateFilter = document.getElementById('stateFilter');
+const cityFilter = document.getElementById('cityFilter');
+const foodSearch = document.getElementById('foodSearch');
+const foodCards = Array.from(document.querySelectorAll('.food-card'));
+const resultCount = document.getElementById('foodResultCount');
+const emptyState = document.getElementById('foodEmptyState');
+const savedListElement = document.getElementById('savedFoodList');
+const savedEmptyElement = document.getElementById('savedFoodEmpty');
+const savedCountElement = document.getElementById('savedFoodCount');
+const toast = document.getElementById('foodToast');
+
+let savedFoodIds = loadSavedFoodIds();
+let toastTimer;
+
+function loadSavedFoodIds() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        return Array.isArray(stored) ? stored.map(Number).filter(id => foodById.has(id)) : [];
+    } catch (error) {
+        return [];
     }
+}
+
+function saveFoodIds() {
+    localStorage.setItem(storageKey, JSON.stringify(savedFoodIds));
+}
+
+function getCitiesForState(state) {
+    return [...new Set(foodOptions.filter(food => !state || food.state === state).map(food => food.city))].sort();
+}
+
+function updateCityFilter() {
+    const selectedState = stateFilter.value;
+    const previousCity = cityFilter.value;
+    const cities = getCitiesForState(selectedState);
+
+    cityFilter.innerHTML = '<option value="">All cities</option>';
+    cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        cityFilter.appendChild(option);
+    });
+
+    cityFilter.disabled = selectedState === '';
+    if (cities.includes(previousCity)) cityFilter.value = previousCity;
+}
+
+function applyFilters() {
+    const state = stateFilter.value;
+    const city = cityFilter.value;
+    const search = foodSearch.value.trim().toLowerCase();
+    let visibleCount = 0;
+
+    foodCards.forEach(card => {
+        const isVisible = (!state || card.dataset.state === state)
+            && (!city || card.dataset.city === city)
+            && (!search || card.dataset.search.includes(search));
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+    });
+
+    resultCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'option' : 'options'}`;
+    emptyState.hidden = visibleCount !== 0;
+    updateStateChips();
+}
+
+function updateStateChips() {
+    document.querySelectorAll('.food-state-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.state === stateFilter.value);
+    });
+}
+
+function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function toggleFood(foodId) {
+    const existingIndex = savedFoodIds.indexOf(foodId);
+    if (existingIndex >= 0) {
+        savedFoodIds.splice(existingIndex, 1);
+        showToast('Removed from your Food List');
+    } else {
+        savedFoodIds.push(foodId);
+        showToast('Added to your Food List');
+    }
+    saveFoodIds();
+    renderSavedFoodList();
+    updateAddButtons();
+}
+
+function renderSavedFoodList() {
+    savedListElement.innerHTML = '';
+    savedFoodIds.forEach(id => {
+        const food = foodById.get(id);
+        if (!food) return;
+
+        const item = document.createElement('div');
+        item.className = 'saved-food-item';
+        const details = document.createElement('div');
+        details.className = 'saved-food-item__details';
+        const name = document.createElement('strong');
+        name.textContent = food.name;
+        const location = document.createElement('span');
+        location.textContent = `${food.city}, ${food.state}`;
+        const price = document.createElement('small');
+        price.textContent = food.price;
+        details.append(name, location, price);
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'saved-food-remove';
+        removeButton.title = `Remove ${food.name}`;
+        removeButton.setAttribute('aria-label', `Remove ${food.name}`);
+        removeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        removeButton.addEventListener('click', () => toggleFood(id));
+        item.append(details, removeButton);
+        savedListElement.appendChild(item);
+    });
+
+    savedCountElement.textContent = savedFoodIds.length;
+    savedEmptyElement.hidden = savedFoodIds.length > 0;
+    document.getElementById('printFoodList').disabled = savedFoodIds.length === 0;
+    document.getElementById('clearFoodList').disabled = savedFoodIds.length === 0;
+}
+
+function updateAddButtons() {
+    document.querySelectorAll('.food-add-button').forEach(button => {
+        const isSaved = savedFoodIds.includes(Number(button.dataset.foodId));
+        button.classList.toggle('saved', isSaved);
+        button.querySelector('i').className = isSaved ? 'fa-solid fa-check' : 'fa-solid fa-plus';
+        button.querySelector('span').textContent = isSaved ? 'Added to Food List' : 'Add to Food List';
+    });
+}
+
+function resetFilters() {
+    stateFilter.value = '';
+    cityFilter.value = '';
+    foodSearch.value = '';
+    updateCityFilter();
+    applyFilters();
+}
+
+document.getElementById('foodFilterForm').addEventListener('submit', event => {
+    event.preventDefault();
+    applyFilters();
+});
+stateFilter.addEventListener('change', () => {
+    updateCityFilter();
+    applyFilters();
+});
+cityFilter.addEventListener('change', applyFilters);
+foodSearch.addEventListener('input', applyFilters);
+document.querySelectorAll('.food-state-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        stateFilter.value = chip.dataset.state;
+        updateCityFilter();
+        applyFilters();
+    });
+});
+document.querySelectorAll('.food-add-button').forEach(button => {
+    button.addEventListener('click', () => toggleFood(Number(button.dataset.foodId)));
+});
+document.getElementById('resetFoodFilters').addEventListener('click', resetFilters);
+document.getElementById('clearFoodList').addEventListener('click', () => {
+    if (savedFoodIds.length === 0) return;
+    savedFoodIds = [];
+    saveFoodIds();
+    renderSavedFoodList();
+    updateAddButtons();
+    showToast('Your Food List was cleared');
+});
+document.getElementById('printFoodList').addEventListener('click', () => window.print());
+
+updateCityFilter();
+applyFilters();
+renderSavedFoodList();
+updateAddButtons();
 </script>
 
-<?php 
-include '../footer.php'; 
-?>
+<?php include __DIR__ . '/../footer.php'; ?>

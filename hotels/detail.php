@@ -24,6 +24,10 @@ foreach ($all_hotels as $h) {
 
 // 没找到默认载入第一个
 if (!$hotel) $hotel = $all_hotels[0];
+
+// 🔗 构造跳转到 Google Maps 的链接（自动包含酒店名称、城市和州）
+$map_query = urlencode($hotel['name'] . ' ' . $hotel['city'] . ', ' . $hotel['state'] . ', Malaysia');
+$google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_query;
 ?>
 
 <link rel="stylesheet" href="../css/modules/hotels.css">
@@ -42,7 +46,6 @@ if (!$hotel) $hotel = $all_hotels[0];
 </style>
 
 <main class="detail-container">
-    <!-- 头部标题与收藏 -->
     <div class="detail-header">
         <div>
             <h1 class="detail-title"><?php echo htmlspecialchars($hotel['name']); ?></h1>
@@ -52,12 +55,10 @@ if (!$hotel) $hotel = $all_hotels[0];
             <button class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
                 <i class="fa-solid fa-star"></i> <span>Save to Favorites</span>
             </button>
-            <!-- 🆕 提示消息 -->
             <div id="favLoginMsg">⚠️ Please login first</div>
         </div>
     </div>
 
-    <!-- 三图组合相册 -->
     <div class="photo-gallery">
         <img class="gallery-main" src="<?php echo $hotel['img_main']; ?>" alt="Hotel Exterior">
         <div class="gallery-sub-grid">
@@ -72,13 +73,31 @@ if (!$hotel) $hotel = $all_hotels[0];
         </div>
     </div>
 
-    <!-- 内容与预订侧边栏 -->
     <div class="detail-layout">
-        <!-- 左侧信息区 -->
         <div>
             <div class="info-card">
                 <h3 style="font-size: 1.2rem; margin-bottom: 12px; color: #0f172a; text-decoration: underline;">About the Accommodation</h3>
                 <p style="color: #475569; line-height: 1.6;"><?php echo htmlspecialchars($hotel['desc']); ?> Designed with modern comforts and premium hospitality to ensure a memorable staycation experience in <?php echo htmlspecialchars($hotel['state']); ?>.</p>
+            </div>
+
+            <div class="info-card" style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="width: 48px; height: 48px; border-radius: 10px; background: #f0fdf4; color: #166534; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; border: 1px solid #bbf7d0;">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </div>
+                    <div>
+                        <span style="font-size: 0.75rem; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 0.05em;">Location & Explore</span>
+                        <h4 style="font-size: 1rem; font-weight: 600; color: #0f172a; margin: 2px 0 4px 0;"><?php echo htmlspecialchars($hotel['name']); ?></h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin: 0; line-height: 1.4;">
+                            <?php echo htmlspecialchars($hotel['city']); ?>, <?php echo htmlspecialchars($hotel['state']); ?>, Malaysia
+                        </p>
+                    </div>
+                </div>
+                
+                <a href="<?php echo $google_map_url; ?>" target="_blank" style="background: #0f172a; color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='#1e293b'" onmouseout="this.style.background='#0f172a'">
+                    <span>Open Map</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem; color: #4ade80;"></i>
+                </a>
             </div>
 
             <div class="info-card">
@@ -93,7 +112,6 @@ if (!$hotel) $hotel = $all_hotels[0];
                 </div>
             </div>
 
-            <!-- 评论区域（已精简：移除房型与出行方式副标题） -->
             <div class="info-card" style="margin-top: 24px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
                     <h3 style="font-size: 1.2rem; color: #0f172a; display: flex; align-items: center; gap: 8px; margin: 0;">
@@ -109,19 +127,17 @@ if (!$hotel) $hotel = $all_hotels[0];
                     <?php if (!empty($hotel['reviews'])): ?>
                         <?php foreach ($hotel['reviews'] as $index => $review): ?>
                             <?php 
-                                // 🎨 预定义一组好看且互不相同的头像背景与文字配色
                                 $avatar_colors = [
-                                    ['bg' => '#d1fae5', 'text' => '#065f46'], // 绿
-                                    ['bg' => '#dbeafe', 'text' => '#1e40af'], // 蓝
-                                    ['bg' => '#fee2e2', 'text' => '#991b1b'], // 红
-                                    ['bg' => '#f3e8ff', 'text' => '#6b21a8'], // 紫
-                                    ['bg' => '#ffedd5', 'text' => '#9a3412'], // 橙
-                                    ['bg' => '#fce7f3', 'text' => '#831843'], // 粉
+                                    ['bg' => '#d1fae5', 'text' => '#065f46'], 
+                                    ['bg' => '#dbeafe', 'text' => '#1e40af'], 
+                                    ['bg' => '#fee2e2', 'text' => '#991b1b'], 
+                                    ['bg' => '#f3e8ff', 'text' => '#6b21a8'], 
+                                    ['bg' => '#ffedd5', 'text' => '#9a3412'], 
+                                    ['bg' => '#fce7f3', 'text' => '#831843'], 
                                 ];
                                 $color_index = abs(crc32($review['user'])) % count($avatar_colors);
                                 $chosen_color = $avatar_colors[$color_index];
                             ?>
-                            <!-- 🌟 默认第 6 条及以后的评论加入 review-hidden 并隐藏 -->
                             <div class="review-row <?php echo $index >= 5 ? 'review-hidden' : ''; ?>" style="<?php echo $index >= 5 ? 'display: none;' : ''; ?> padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -149,7 +165,6 @@ if (!$hotel) $hotel = $all_hotels[0];
                             </div>
                         <?php endforeach; ?>
 
-                        <!-- 🌟 View More 按钮（当评论数大于 5 时显示） -->
                         <?php if (count($hotel['reviews']) > 5): ?>
                             <div style="text-align: center; margin-top: 10px;">
                                 <button type="button" id="viewMoreReviewsBtn" data-expanded="false" onclick="toggleReviews()" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
@@ -165,7 +180,6 @@ if (!$hotel) $hotel = $all_hotels[0];
             </div>
         </div>
 
-        <!-- 右侧预订区 -->
         <div>
             <div class="booking-card">
                 <div style="display: flex; justify-content: space-between; align-items: baseline;">
@@ -232,7 +246,6 @@ function toggleDetailFav(btn) {
     }
 }
 
-// 🌟 评论展开/折叠控制函数
 function toggleReviews() {
     const hiddenReviews = document.querySelectorAll('.review-hidden');
     const btn = document.getElementById('viewMoreReviewsBtn');

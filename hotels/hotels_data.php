@@ -1036,4 +1036,58 @@ $all_hotels = [
         ]
     ]
 ];
+$master_review_pool = [
+    ['user' => 'Lim Kok Wai', 'date' => '2026-04-12', 'rating' => 9, 'comment' => 'Very pleasant stay! Clean rooms and friendly front desk staff.'],
+    ['user' => 'Siti Nurhaliza', 'date' => '2026-04-05', 'rating' => 10, 'comment' => 'Exceptional hospitality. Will definitely choose this hotel again.'],
+    ['user' => 'John Smith', 'date' => '2026-03-20', 'rating' => 8, 'comment' => 'Good location, convenient to get around. Room was comfortable.'],
+    ['user' => 'Tan Mei Yee', 'date' => '2026-03-15', 'rating' => 9, 'comment' => 'Loved the interior design and the atmosphere. Great value for money.'],
+    ['user' => 'Mohd Rizal', 'date' => '2026-03-10', 'rating' => 8, 'comment' => 'Satisfied with the overall experience. Decent breakfast and fast check-in.'],
+    ['user' => 'Jessica Wong', 'date' => '2026-02-28', 'rating' => 10, 'comment' => 'Amazing views and top-notch facilities. Highly recommended!'],
+    ['user' => 'David Tan', 'date' => '2026-02-14', 'rating' => 9, 'comment' => 'Quiet environment, perfect for a weekend relaxation.'],
+    ['user' => 'Farhanah B.', 'date' => '2026-01-30', 'rating' => 8, 'comment' => 'Nice hotel with great service. Cleanliness can be slightly improved, but overall great.'],
+    ['user' => 'Alex Turner', 'date' => '2026-01-15', 'rating' => 9, 'comment' => 'Superb location near local attractions. Staff were very helpful with recommendations.'],
+    ['user' => 'Grace Lee', 'date' => '2026-01-02', 'rating' => 10, 'comment' => 'A wonderful experience from start to finish. Exceeded expectations!'],
+    ['user' => 'Ahmad Faizal', 'date' => '2026-05-11', 'rating' => 9, 'comment' => 'Spacious room and very comfortable bed. Will come back.'],
+    ['user' => 'Chloe Chen', 'date' => '2026-05-02', 'rating' => 10, 'comment' => 'Stunning rooftop pool and great sunset view.'],
+    ['user' => 'Raj Kumar', 'date' => '2026-04-20', 'rating' => 8, 'comment' => 'Smooth check-in process and reliable Wi-Fi throughout the stay.'],
+    ['user' => 'Nurul Ain', 'date' => '2026-04-18', 'rating' => 9, 'comment' => 'Strategic location close to shopping malls and public transit.'],
+    ['user' => 'Kevin O\'Connor', 'date' => '2026-03-29', 'rating' => 10, 'comment' => 'Outstanding customer service. The concierge went above and beyond.'],
+    ['user' => 'Michelle Ng', 'date' => '2026-03-11', 'rating' => 7, 'comment' => 'Decent stay overall, though the hallway can get a bit noisy at night.'],
+    ['user' => 'Hassan Ali', 'date' => '2026-02-22', 'rating' => 9, 'comment' => 'Loved the breakfast buffet spread with local and western options.'],
+    ['user' => 'Emily Watson', 'date' => '2026-02-08', 'rating' => 10, 'comment' => 'Immaculate cleanliness and very cozy room ambiance.'],
+    ['user' => 'Jason Wong', 'date' => '2026-01-25', 'rating' => 8, 'comment' => 'Good value for money. Free parking was a big plus.'],
+    ['user' => 'Fatimah Zahra', 'date' => '2026-01-10', 'rating' => 9, 'comment' => 'Friendly staff and very prompt room service. Thumbs up!']
+];
+
+foreach ($all_hotels as &$hotel) {
+    if (!isset($hotel['reviews'])) {
+        $hotel['reviews'] = [];
+    }
+    
+    $existing_users = [];
+    $existing_comments = [];
+    
+    foreach ($hotel['reviews'] as $rev) {
+        $existing_users[] = $rev['user'];
+        $existing_comments[] = $rev['comment'];
+    }
+    
+    $available_pool = [];
+    foreach ($master_review_pool as $pool_item) {
+        if (!in_array($pool_item['user'], $existing_users) && !in_array($pool_item['comment'], $existing_comments)) {
+            $available_pool[] = $pool_item;
+        }
+    }
+    
+    shuffle($available_pool);
+    
+    $pool_index = 0;
+    while (count($hotel['reviews']) < 10 && isset($available_pool[$pool_index])) {
+        $hotel['reviews'][] = $available_pool[$pool_index];
+        $existing_users[] = $available_pool[$pool_index]['user'];
+        $existing_comments[] = $available_pool[$pool_index]['comment'];
+        $pool_index++;
+    }
+}
+unset($hotel);
 ?>

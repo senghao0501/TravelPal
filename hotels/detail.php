@@ -93,31 +93,75 @@ if (!$hotel) $hotel = $all_hotels[0];
                 </div>
             </div>
 
-            <!-- 评论区域 -->
-            <div class="reviews-section">
-                <h3>
-                    <i class="fa-solid fa-comments"></i> Guest Reviews
-                    <span class="review-count">(<?php echo count($hotel['reviews']); ?> reviews)</span>
-                </h3>
+            <!-- 评论区域（已精简：移除房型与出行方式副标题） -->
+            <div class="info-card" style="margin-top: 24px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <h3 style="font-size: 1.2rem; color: #0f172a; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <i class="fa-solid fa-comments text-emerald-600"></i> Guest Reviews 
+                        <span style="font-size: 0.9rem; font-weight: normal; color: #64748b;">(<?php echo !empty($hotel['reviews']) ? count($hotel['reviews']) : 0; ?>)</span>
+                    </h3>
+                    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #166534;">
+                        Rating: <?php echo $hotel['rating']; ?> / 10
+                    </div>
+                </div>
 
-                <?php if (!empty($hotel['reviews'])): ?>
-                    <?php foreach ($hotel['reviews'] as $review): ?>
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div>
-                                    <span class="review-user"><?php echo htmlspecialchars($review['user']); ?></span>
-                                    <span class="review-date">
-                                        <i class="fa-regular fa-calendar"></i> <?php echo date('d M Y', strtotime($review['date'])); ?>
-                                    </span>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <?php if (!empty($hotel['reviews'])): ?>
+                        <?php foreach ($hotel['reviews'] as $index => $review): ?>
+                            <?php 
+                                // 🎨 预定义一组好看且互不相同的头像背景与文字配色
+                                $avatar_colors = [
+                                    ['bg' => '#d1fae5', 'text' => '#065f46'], // 绿
+                                    ['bg' => '#dbeafe', 'text' => '#1e40af'], // 蓝
+                                    ['bg' => '#fee2e2', 'text' => '#991b1b'], // 红
+                                    ['bg' => '#f3e8ff', 'text' => '#6b21a8'], // 紫
+                                    ['bg' => '#ffedd5', 'text' => '#9a3412'], // 橙
+                                    ['bg' => '#fce7f3', 'text' => '#831843'], // 粉
+                                ];
+                                $color_index = abs(crc32($review['user'])) % count($avatar_colors);
+                                $chosen_color = $avatar_colors[$color_index];
+                            ?>
+                            <!-- 🌟 默认第 6 条及以后的评论加入 review-hidden 并隐藏 -->
+                            <div class="review-row <?php echo $index >= 5 ? 'review-hidden' : ''; ?>" style="<?php echo $index >= 5 ? 'display: none;' : ''; ?> padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 50%; background: <?php echo $chosen_color['bg']; ?>; color: <?php echo $chosen_color['text']; ?>; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                                            <?php 
+                                                $initials = isset($review['avatar_initials']) ? $review['avatar_initials'] : strtoupper(substr($review['user'], 0, 1));
+                                                echo htmlspecialchars($initials); 
+                                            ?>
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size: 0.9rem; font-weight: 600; color: #0f172a; margin: 0;">
+                                                <?php echo htmlspecialchars($review['user']); ?> 
+                                                <span style="font-size: 0.75rem; color: #94a3b8; font-weight: normal; margin-left: 4px;"><?php echo htmlspecialchars($review['country'] ?? 'MY'); ?></span>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <span style="background: #047857; color: white; font-size: 0.75rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;"><?php echo $review['rating']; ?> / 10</span>
+                                        <p style="font-size: 0.7rem; color: #94a3b8; margin: 4px 0 0 0;"><?php echo date('d M Y', strtotime($review['date'])); ?></p>
+                                    </div>
                                 </div>
-                                <span class="review-rating"><?php echo $review['rating']; ?> / 10</span>
+                                <p style="font-size: 0.85rem; color: #475569; margin-top: 10px; line-height: 1.5;">
+                                    <?php echo htmlspecialchars($review['comment']); ?>
+                                </p>
                             </div>
-                            <p class="review-comment"><?php echo htmlspecialchars($review['comment']); ?></p>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p class="no-reviews">No reviews yet for this property.</p>
-                <?php endif; ?>
+                        <?php endforeach; ?>
+
+                        <!-- 🌟 View More 按钮（当评论数大于 5 时显示） -->
+                        <?php if (count($hotel['reviews']) > 5): ?>
+                            <div style="text-align: center; margin-top: 10px;">
+                                <button type="button" id="viewMoreReviewsBtn" data-expanded="false" onclick="toggleReviews()" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    View More Reviews (<?php echo count($hotel['reviews']) - 5; ?>) <i class="fa-solid fa-chevron-down" style="margin-left: 4px; font-size: 0.75rem;"></i>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+
+                    <?php else: ?>
+                        <p style="color: #64748b; text-align: center; padding: 20px;">No reviews available yet.</p>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
 
@@ -171,11 +215,8 @@ function handleBooking(event) {
 
 function toggleDetailFav(btn) {
     if (!isLoggedIn) {
-        // 🆕 在按钮下方显示 "Please login first" 提示
         const msg = document.getElementById('favLoginMsg');
         msg.style.display = 'block';
-        
-        // 3秒后自动隐藏
         setTimeout(() => {
             msg.style.display = 'none';
         }, 3000);
@@ -188,6 +229,25 @@ function toggleDetailFav(btn) {
         label.innerText = 'Saved to Favorites';
     } else {
         label.innerText = 'Save to Favorites';
+    }
+}
+
+// 🌟 评论展开/折叠控制函数
+function toggleReviews() {
+    const hiddenReviews = document.querySelectorAll('.review-hidden');
+    const btn = document.getElementById('viewMoreReviewsBtn');
+    
+    const isExpanded = btn.getAttribute('data-expanded') === 'true';
+
+    if (!isExpanded) {
+        hiddenReviews.forEach(el => el.style.display = 'block');
+        btn.innerHTML = 'Show Less <i class="fa-solid fa-chevron-up" style="margin-left: 4px; font-size: 0.75rem;"></i>';
+        btn.setAttribute('data-expanded', 'true');
+    } else {
+        hiddenReviews.forEach(el => el.style.display = 'none');
+        btn.innerHTML = `View More Reviews (${hiddenReviews.length}) <i class="fa-solid fa-chevron-down" style="margin-left: 4px; font-size: 0.75rem;"></i>`;
+        btn.setAttribute('data-expanded', 'false');
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 </script>

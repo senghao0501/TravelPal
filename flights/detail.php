@@ -15,6 +15,10 @@ $tripType = normalizeTripType($_GET['trip_type'] ?? 'one_way');
 $departDate = sanitizeDate($_GET['depart_date'] ?? date('Y-m-d'));
 $returnDate = sanitizeDate($_GET['return_date'] ?? date('Y-m-d', strtotime($departDate . ' +1 day')));
 $passengers = normalizePassengers($_GET['passengers'] ?? 1);
+$cabinClass = strtoupper(trim($_GET['cabin_class'] ?? 'ECONOMY'));
+if (!in_array($cabinClass, ['ECONOMY', 'BUSINESS', 'FIRST'], true)) {
+    $cabinClass = 'ECONOMY';
+}
 
 // ========== 获取出站航班 ==========
 $outbound = null;
@@ -99,6 +103,196 @@ if (!$return && $tripType === 'round_trip' && $outbound) {
     ];
 }
 
+/**
+ * Find the price of the selected flight in a Booking.com/RapidAPI
+ * cabin-specific search response. The API has changed response shapes
+ * between versions, so this accepts both "flights" and "flightOffers" payloads.
+ */
+function tp_find_cabin_fare($response, $flightNumber, $airline = '') {
+    if (!is_array($response)) {
+        return null;
+    }
+
+    $targetFlight = strtoupper(preg_replace('/[^A-Z0-9]/', '', (string)$flightNumber));
+    $targetAirline = strtoupper(trim((string)$airline));
+
+    $containsFlight = function ($node) use (&$containsFlight, $targetFlight) {
+        if (!is_array($node)) {
+            return false;
+        }
+
+        foreach (['flightNumber', 'flight_number', 'flightNo', 'flight_no'] as $key) {
+            if (isset($node[$key])) {
+                $candidate = strtoupper(preg_replace('/[^A-Z0-9]/', '', (string)$node[$key]));
+                if ($candidate !== '' && $candidate === $targetFlight) {
+                    return true;
+                }
+            }
+        }
+
+        foreach ($node as $child) {
+            if (is_array($child) && $containsFlight($child)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $walk = function ($node) use (&$walk, $containsFlight, $targetFlight, $targetAirline) {
+        if (!is_array($node)) {
+            return null;
+        }
+
+        $localFlightNo = $node['flightNumber']
+            ?? $node['flight_number']
+            ?? $node['flightNo']
+            ?? $node['flight_no']
+            ?? null;
+
+        $localAirline = $node['airline']
+            ?? $node['marketingAirline']
+            ?? $node['carrier']
+            ?? $node['airlineName']
+            ?? '';
+
+        $normalizedLocalFlight = strtoupper(preg_replace('/[^A-Z0-9]/', '', (string)$localFlightNo));
+        $flightMatches = $targetFlight !== '' && $normalizedLocalFlight !== ''
+            && $normalizedLocalFlight === $targetFlight;
+
+        $airlineMatches = $targetAirline === '' || trim((string)$localAirline) === ''
+            || stripos((string)$localAirline, $targetAirline) !== false
+            || stripos($targetAirline, (string)$localAirline) !== false;
+
+        $nodeContainsTargetFlight = $flightMatches || $containsFlight($node);
+
+        if ($nodeContainsTargetFlight && $airlineMatches) {
+            $priceCandidates = [
+                $node['price'] ?? null,
+                $node['priceBreakdown']['grossPrice']['value'] ?? null,
+                $node['priceBreakdown']['total'] ?? null,
+                $node['price']['total'] ?? null,
+                $node['price']['book'] ?? null,
+                $node['totalPrice'] ?? null,
+                $node['amount'] ?? null
+            ];
+
+            foreach ($priceCandidates as $candidate) {
+                if (is_numeric($candidate)) {
+                    return (float)$candidate;
+                }
+                if (is_string($candidate) && preg_match('/[\d,.]+/', $candidate, $m)) {
+                    return (float)str_replace(',', '', $m[0]);
+                }
+            }
+        }
+
+        foreach ($node as $child) {
+            if (is_array($child)) {
+                $found = $walk($child);
+                if ($found !== null) {
+                    return $found;
+                }
+            }
+        }
+
+        return null;
+    };
+
+    return $walk($response);
+}
+
+/**
+ * Fetch a cabin-specific fare for one selected flight.
+ * Live Booking.com/RapidAPI is tried first. A local multiplier is used only
+ * when the requested cabin is unavailable in the API response.
+ */
+function tp_get_cabin_fare($flight, $date, $passengers, $cabinClass) {
+    $basePrice = (float)($flight['price'] ?? 0);
+    $cabinClass = strtoupper($cabinClass);
+
+    if ($cabinClass === 'ECONOMY') {
+        return [
+            'price' => $basePrice,
+            'source' => 'local',
+            'available' => true
+        ];
+    }
+
+    if (!empty(RAPIDAPI_KEY) && !empty($flight['from_code']) && !empty($flight['to_code'])) {
+        try {
+            $response = callBookingAPI('searchFlights', [
+                'fromId' => getApiAirportCode($flight['from_code']),
+                'toId' => getApiAirportCode($flight['to_code']),
+                'departDate' => $date,
+                'pageNo' => 1,
+                'adults' => 1,
+                'children' => '0,17',
+                'sort' => 'BEST',
+                'cabinClass' => $cabinClass,
+                'currency_code' => 'MYR'
+            ]);
+
+            $apiPrice = tp_find_cabin_fare(
+                $response,
+                $flight['flight_no'] ?? '',
+                $flight['airline'] ?? ''
+            );
+
+            if ($apiPrice !== null && $apiPrice > 0) {
+                return [
+                    'price' => $apiPrice,
+                    'source' => 'api',
+                    'available' => true
+                ];
+            }
+        } catch (Throwable $e) {
+            error_log('Cabin fare API failed: ' . $e->getMessage());
+        }
+    }
+
+    // Assignment fallback when the selected cabin is not returned by the API.
+    $multipliers = [
+        'BUSINESS' => 2.15,
+        'FIRST' => 3.35
+    ];
+
+    $multiplier = $multipliers[$cabinClass] ?? 1.0;
+
+    return [
+        'price' => round($basePrice * $multiplier, 2),
+        'source' => 'fallback',
+        'available' => true
+    ];
+}
+
+if (($_GET['ajax'] ?? '') === 'cabin_fare') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    $requestedCabin = strtoupper(trim($_GET['cabin_class'] ?? 'ECONOMY'));
+    if (!in_array($requestedCabin, ['ECONOMY', 'BUSINESS', 'FIRST'], true)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid cabin class.']);
+        exit;
+    }
+
+    $outFare = tp_get_cabin_fare($outbound, $departDate, $passengers, $requestedCabin);
+    $returnFare = null;
+
+    if ($tripType === 'round_trip' && $return) {
+        $returnFare = tp_get_cabin_fare($return, $returnDate, $passengers, $requestedCabin);
+    }
+
+    echo json_encode([
+        'success' => true,
+        'cabin_class' => $requestedCabin,
+        'outbound' => round((float)$outFare['price'], 2),
+        'return' => $returnFare ? round((float)$returnFare['price'], 2) : 0,
+        'source' => ($outFare['source'] === 'api' || ($returnFare && $returnFare['source'] === 'api')) ? 'api' : 'fallback'
+    ]);
+    exit;
+}
+
 if (!$outbound) {
     http_response_code(404);
     include __DIR__ . '/../header.php';
@@ -154,7 +348,7 @@ include __DIR__ . '/../header.php';
                     <div class="overview-item"><div class="label">Departure</div><div class="val"><?php echo h_detail($outbound['departure_time'] ?? 'N/A'); ?></div></div>
                     <div class="overview-item"><div class="label">Arrival</div><div class="val"><?php echo h_detail($outbound['arrival_time'] ?? 'N/A'); ?></div></div>
                     <div class="overview-item"><div class="label">Duration</div><div class="val"><?php echo h_detail($outbound['duration'] ?? 'N/A'); ?></div></div>
-                    <div class="overview-item"><div class="label">Class</div><div class="val"><?php echo h_detail($outbound['class_type'] ?? 'Economy'); ?></div></div>
+                    <div class="overview-item"><div class="label">Class</div><div class="val" id="detail-flight-class"><?php echo h_detail(ucwords(strtolower(str_replace('_', ' ', $cabinClass)))); ?></div></div>
                     <div class="overview-item"><div class="label">Date</div><div class="val"><?php echo h_detail(date('d M Y', strtotime($departDate))); ?></div></div>
                     <div class="overview-item"><div class="label">Stops</div><div class="val"><?php echo (int)($outbound['stops'] ?? 0) === 0 ? 'Non-stop' : ((int)$outbound['stops'] . ' stop'); ?></div></div>
                 </div>
@@ -342,6 +536,7 @@ include __DIR__ . '/../header.php';
                     <input type="hidden" name="trip_type" value="<?php echo h_detail($tripType); ?>">
                     <input type="hidden" name="depart_date" value="<?php echo h_detail($departDate); ?>">
                     <input type="hidden" name="return_date" value="<?php echo h_detail($returnDate); ?>">
+                    <input type="hidden" name="cabin_class" id="detail-cabin-class-input" value="<?php echo h_detail($cabinClass); ?>">
 
                     <div class="form-group">
                         <label for="detail-passengers">Passengers</label>
@@ -352,6 +547,36 @@ include __DIR__ . '/../header.php';
                                 </option>
                             <?php endfor; ?>
                         </select>
+                    </div>
+
+                    <div class="form-group cabin-form-group">
+                        <label>Cabin class</label>
+                        <div class="cabin-selector" role="radiogroup" aria-label="Cabin class">
+                            <label class="cabin-option">
+                                <input type="radio" name="cabin_class_ui" value="ECONOMY" <?php echo $cabinClass === 'ECONOMY' ? 'checked' : ''; ?>>
+                                <span class="cabin-option-copy">
+                                    <strong>Economy</strong>
+                                    <small>Standard fare</small>
+                                </span>
+                            </label>
+
+                            <label class="cabin-option">
+                                <input type="radio" name="cabin_class_ui" value="BUSINESS" <?php echo $cabinClass === 'BUSINESS' ? 'checked' : ''; ?>>
+                                <span class="cabin-option-copy">
+                                    <strong>Business</strong>
+                                    <small>More space &amp; service</small>
+                                </span>
+                            </label>
+
+                            <label class="cabin-option">
+                                <input type="radio" name="cabin_class_ui" value="FIRST" <?php echo $cabinClass === 'FIRST' ? 'checked' : ''; ?>>
+                                <span class="cabin-option-copy">
+                                    <strong>First</strong>
+                                    <small>Premium cabin</small>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="cabin-api-status" id="cabin-api-status" aria-live="polite"></div>
                     </div>
 
                     <button type="submit" class="btn-checkout">
@@ -370,17 +595,144 @@ document.addEventListener('DOMContentLoaded', function () {
     const passengerSelect = document.getElementById('detail-passengers');
     const fareAmount = document.getElementById('fare-amount');
     const fareTotal = document.getElementById('fare-total');
+    const fareBreakdown = document.querySelector('.fare-breakdown');
+    const classValue = document.getElementById('detail-flight-class');
+    const cabinInput = document.getElementById('detail-cabin-class-input');
+    const cabinStatus = document.getElementById('cabin-api-status');
+    const cabinOptions = document.querySelectorAll('input[name="cabin_class_ui"]');
 
-    const basePerPassenger = <?php echo json_encode($perPassengerTotal); ?>;
+    const defaultOutbound = <?php echo json_encode($outboundPrice); ?>;
+    const defaultReturn = <?php echo json_encode($returnPrice); ?>;
+    const tripType = <?php echo json_encode($tripType); ?>;
+    const ajaxUrl = <?php echo json_encode($_SERVER['PHP_SELF']); ?>;
+    const flightId = <?php echo json_encode($flightId); ?>;
+    const returnId = <?php echo json_encode($returnId); ?>;
+    const departDate = <?php echo json_encode($departDate); ?>;
+    const returnDate = <?php echo json_encode($returnDate); ?>;
 
-    function updateTotal() {
-        const count = Math.max(1, Number(passengerSelect.value) || 1);
-        const total = basePerPassenger * count;
-        fareAmount.textContent = 'RM ' + basePerPassenger.toFixed(2);
-        fareTotal.textContent = 'Total for ' + count + (count === 1 ? ' passenger' : ' passengers') + ': RM ' + total.toFixed(2);
+    let currentOutbound = defaultOutbound;
+    let currentReturn = defaultReturn;
+    let requestSerial = 0;
+
+    function formatCabin(cabin) {
+        return cabin.charAt(0) + cabin.slice(1).toLowerCase();
     }
 
-    passengerSelect.addEventListener('change', updateTotal);
+    function renderFare() {
+        const count = Math.max(1, Number(passengerSelect.value) || 1);
+        const perPassenger = currentOutbound + (tripType === 'round_trip' ? currentReturn : 0);
+        const total = perPassenger * count;
+
+        fareAmount.textContent = 'RM ' + perPassenger.toFixed(2);
+        fareTotal.textContent =
+            'Total for ' + count +
+            (count === 1 ? ' passenger' : ' passengers') +
+            ': RM ' + total.toFixed(2);
+
+        if (fareBreakdown) {
+            const returnMarkup = tripType === 'round_trip'
+                ? '<span>Return</span><strong>RM ' + currentReturn.toFixed(2) + '</strong>'
+                : '';
+            fareBreakdown.innerHTML =
+                '<span>Outbound</span><strong>RM ' + currentOutbound.toFixed(2) + '</strong>' +
+                returnMarkup;
+        }
+    }
+
+    function setLoading(isLoading) {
+        cabinOptions.forEach(function (option) {
+            option.disabled = isLoading;
+        });
+        if (isLoading) {
+            cabinStatus.textContent = 'Checking live cabin fare…';
+        }
+    }
+
+    function fetchCabinFare(cabin) {
+        const serial = ++requestSerial;
+        const params = new URLSearchParams({
+            ajax: 'cabin_fare',
+            id: flightId || '',
+            return_id: returnId || '',
+            trip_type: tripType,
+            depart_date: departDate,
+            return_date: returnDate,
+            passengers: passengerSelect.value,
+            cabin_class: cabin
+        });
+
+        setLoading(true);
+
+        fetch(ajaxUrl + '?' + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error('Fare request failed');
+            }
+            return response.json();
+        })
+        .then(function (data) {
+            if (serial !== requestSerial || !data.success) {
+                return;
+            }
+
+            currentOutbound = Number(data.outbound) || 0;
+            currentReturn = Number(data.return) || 0;
+            cabinInput.value = cabin;
+            classValue.textContent = formatCabin(cabin);
+            renderFare();
+
+            if (data.source === 'api') {
+                cabinStatus.textContent = 'Live fare checked';
+            } else {
+                cabinStatus.textContent = 'Live cabin fare unavailable; showing estimated fare';
+            }
+        })
+        .catch(function () {
+            if (serial !== requestSerial) {
+                return;
+            }
+
+            cabinInput.value = cabin;
+            classValue.textContent = formatCabin(cabin);
+            cabinStatus.textContent = 'Unable to refresh live fare. Current fare retained.';
+            renderFare();
+        })
+        .finally(function () {
+            if (serial === requestSerial) {
+                setLoading(false);
+            }
+        });
+    }
+
+    passengerSelect.addEventListener('change', function () {
+        renderFare();
+    });
+
+    cabinOptions.forEach(function (option) {
+        option.addEventListener('change', function () {
+            if (!this.checked) {
+                return;
+            }
+
+            const cabin = this.value;
+            cabinInput.value = cabin;
+            classValue.textContent = formatCabin(cabin);
+
+            if (cabin === 'ECONOMY') {
+                currentOutbound = defaultOutbound;
+                currentReturn = defaultReturn;
+                cabinStatus.textContent = '';
+                renderFare();
+                return;
+            }
+
+            fetchCabinFare(cabin);
+        });
+    });
+
+    renderFare();
 });
 </script>
 

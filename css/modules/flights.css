@@ -2534,3 +2534,192 @@ input:focus-visible {
         animation-duration: 0.01ms !important;
     }
 }
+/* =========================================================
+   TRAVELPAL SEARCH BAR / CABIN SELECTOR OVERRIDES
+   Keeps the existing PHP/JS flow intact while fixing the
+   desktop search-bar proportions and adding realistic cabin UI.
+   ========================================================= */
+
+/* Desktop: keep the search bar anchored to the same left edge in every browser. */
+.search-container {
+    width: calc(100vw - 50px);
+    max-width: none;
+    margin-left: 50px;
+    margin-right: 0;
+    transform: none;
+    box-sizing: border-box;
+}
+
+.search-container form,
+.filter-bar {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.filter-bar {
+    grid-template-columns:
+        minmax(210px, 1.28fr)
+        42px
+        minmax(210px, 1.28fr)
+        minmax(155px, 1fr)
+        minmax(155px, 1fr)
+        minmax(155px, 0.95fr)
+        200px;
+}
+
+.btn-search {
+    min-width: 200px;
+    white-space: nowrap;
+    padding: 0 24px;
+}
+
+.btn-search span {
+    white-space: nowrap;
+}
+
+/* Cabin class selector in the booking summary. */
+.cabin-form-group {
+    margin-top: 2px;
+}
+
+.cabin-selector {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid #cfd5de;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.cabin-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 54px;
+    padding: 9px 12px 9px 42px;
+    border-bottom: 1px solid #e2e6eb;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cabin-option:last-child {
+    border-bottom: 0;
+}
+
+.cabin-option:hover {
+    background: #f7faff;
+}
+
+.cabin-option input {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    transform: translateY(-50%);
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.cabin-option:has(input:checked) {
+    background: #f1f7ff;
+    box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.cabin-option-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+}
+
+.cabin-option-copy strong {
+    color: #1f2937;
+    font-size: 13px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.cabin-option-copy small {
+    color: #7a8595;
+    font-size: 10px;
+    line-height: 1.25;
+}
+
+.cabin-api-status {
+    min-height: 16px;
+    margin-top: 5px;
+    color: #6f7c8e;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.cabin-option input:disabled {
+    cursor: wait;
+}
+
+/* Keep the booking summary comfortable after adding three cabin choices. */
+.booking-card {
+    padding: 21px;
+}
+
+@media (min-width: 1300px) {
+    .search-container {
+        width: calc(100% - 50px);
+        max-width: none;
+        margin-left: 50px;
+        margin-right: 0;
+        transform: none;
+    }
+}
+
+@media (max-width: 1050px) {
+    .search-container {
+        width: calc(100% - 48px);
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+        transform: none;
+    }
+
+    .filter-bar {
+        grid-template-columns:
+            minmax(160px, 1fr)
+            38px
+            minmax(160px, 1fr)
+            minmax(140px, 1fr)
+            minmax(140px, 1fr);
+    }
+
+    .btn-search {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 900px) {
+    .search-container {
+        width: calc(100% - 48px);
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+        transform: none;
+    }
+}
+
+@media (max-width: 560px) {
+    .search-container {
+        width: calc(100% - 24px);
+        transform: none;
+    }
+
+    .filter-bar {
+        width: 100%;
+    }
+
+    .btn-search {
+        width: 100%;
+        min-width: 0;
+    }
+}

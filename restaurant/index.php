@@ -87,19 +87,22 @@ sort($states);
                              data-state="<?php echo food_escape($food['state']); ?>"
                              data-city="<?php echo food_escape($food['city']); ?>"
                              data-search="<?php echo food_escape(strtolower($food['name'] . ' ' . $food['category'] . ' ' . $food['description'])); ?>">
-                        <div class="food-card__image-wrap">
-                            <img src="<?php echo food_escape($food['image']); ?>"
-                                 alt="<?php echo food_escape($food['name']); ?>"
-                                 loading="lazy">
-                            <span class="food-card__category"><?php echo food_escape($food['category']); ?></span>
-                        </div>
+                        <a class="food-card__image-link" href="detail.php?id=<?php echo (int)$food['id']; ?>" aria-label="View details for <?php echo food_escape($food['name']); ?>">
+                            <div class="food-card__image-wrap">
+                                <img src="<?php echo food_escape($food['image']); ?>"
+                                     alt="<?php echo food_escape($food['name']); ?>"
+                                     loading="lazy">
+                                <span class="food-card__category"><?php echo food_escape($food['category']); ?></span>
+                                <span class="food-card__view"><i class="fa-solid fa-arrow-up-right-from-square"></i> View details</span>
+                            </div>
+                        </a>
 
                         <div class="food-card__body">
                             <div class="food-card__location">
                                 <i class="fa-solid fa-location-dot"></i>
                                 <?php echo food_escape($food['city']); ?>, <?php echo food_escape($food['state']); ?>
                             </div>
-                            <h3><?php echo food_escape($food['name']); ?></h3>
+                            <h3><a href="detail.php?id=<?php echo (int)$food['id']; ?>"><?php echo food_escape($food['name']); ?></a></h3>
                             <p><?php echo food_escape($food['description']); ?></p>
 
                             <div class="food-card__meta">
@@ -109,7 +112,7 @@ sort($states);
 
                             <button type="button" class="food-add-button" data-food-id="<?php echo (int)$food['id']; ?>">
                                 <i class="fa-solid fa-plus"></i>
-                                <span>Add to Food List</span>
+                                <span>Add to Favorites</span>
                             </button>
                         </div>
                     </article>
@@ -128,25 +131,22 @@ sort($states);
             <div class="food-list-panel__header">
                 <div>
                     <span class="food-eyebrow">Before heading out</span>
-                    <h2 id="foodListTitle">My Food List</h2>
+                    <h2 id="foodListTitle">My Favorites</h2>
                 </div>
                 <span id="savedFoodCount" class="food-list-count">0</span>
             </div>
 
-            <p class="food-list-help">Your choices stay on this device even after refreshing the page.</p>
+            <p class="food-list-help">Saved food stays on this device. My Trips can use this same favorite list later.</p>
 
             <div id="savedFoodList" class="saved-food-list"></div>
 
             <div id="savedFoodEmpty" class="saved-food-empty">
-                <i class="fa-regular fa-clipboard"></i>
-                <p>Your list is empty.</p>
-                <span>Add food options from the guide.</span>
+                <i class="fa-regular fa-heart"></i>
+                <p>No favorites yet.</p>
+                <span>Save food options from the guide.</span>
             </div>
 
             <div class="food-list-actions">
-                <button type="button" id="printFoodList" class="food-list-action food-list-action--primary">
-                    <i class="fa-solid fa-print"></i> Print list
-                </button>
                 <button type="button" id="clearFoodList" class="food-list-action">
                     <i class="fa-regular fa-trash-can"></i> Clear
                 </button>
@@ -160,7 +160,9 @@ sort($states);
 <script>
 const foodOptions = <?php echo json_encode($foodOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
 const foodById = new Map(foodOptions.map(food => [Number(food.id), food]));
-const storageKey = 'travelpal_food_list_v1';
+// The My Trips page can read this same key when synchronization is added later.
+const storageKey = 'travelpal_food_favorites_v1';
+const previousStorageKey = 'travelpal_food_list_v1';
 
 const stateFilter = document.getElementById('stateFilter');
 const cityFilter = document.getElementById('cityFilter');
@@ -178,7 +180,12 @@ let toastTimer;
 
 function loadSavedFoodIds() {
     try {
-        const stored = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const currentValue = localStorage.getItem(storageKey);
+        const previousValue = localStorage.getItem(previousStorageKey);
+        const stored = JSON.parse(currentValue || previousValue || '[]');
+        if (!currentValue && previousValue) {
+            localStorage.setItem(storageKey, JSON.stringify(stored));
+        }
         return Array.isArray(stored) ? stored.map(Number).filter(id => foodById.has(id)) : [];
     } catch (error) {
         return [];
@@ -246,10 +253,10 @@ function toggleFood(foodId) {
     const existingIndex = savedFoodIds.indexOf(foodId);
     if (existingIndex >= 0) {
         savedFoodIds.splice(existingIndex, 1);
-        showToast('Removed from your Food List');
+        showToast('Removed from Favorites');
     } else {
         savedFoodIds.push(foodId);
-        showToast('Added to your Food List');
+        showToast('Added to Favorites');
     }
     saveFoodIds();
     renderSavedFoodList();
@@ -287,7 +294,6 @@ function renderSavedFoodList() {
 
     savedCountElement.textContent = savedFoodIds.length;
     savedEmptyElement.hidden = savedFoodIds.length > 0;
-    document.getElementById('printFoodList').disabled = savedFoodIds.length === 0;
     document.getElementById('clearFoodList').disabled = savedFoodIds.length === 0;
 }
 
@@ -295,8 +301,8 @@ function updateAddButtons() {
     document.querySelectorAll('.food-add-button').forEach(button => {
         const isSaved = savedFoodIds.includes(Number(button.dataset.foodId));
         button.classList.toggle('saved', isSaved);
-        button.querySelector('i').className = isSaved ? 'fa-solid fa-check' : 'fa-solid fa-plus';
-        button.querySelector('span').textContent = isSaved ? 'Added to Food List' : 'Add to Food List';
+        button.querySelector('i').className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        button.querySelector('span').textContent = isSaved ? 'Saved to Favorites' : 'Add to Favorites';
     });
 }
 
@@ -335,9 +341,8 @@ document.getElementById('clearFoodList').addEventListener('click', () => {
     saveFoodIds();
     renderSavedFoodList();
     updateAddButtons();
-    showToast('Your Food List was cleared');
+    showToast('Your Favorites were cleared');
 });
-document.getElementById('printFoodList').addEventListener('click', () => window.print());
 
 updateCityFilter();
 applyFilters();

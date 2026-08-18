@@ -1,209 +1,266 @@
-<?php 
-// 引入位于 travelPal 主目录下的头部文件
-include '../header.php'; 
+<?php
+require_once __DIR__ . '/food_data.php';
+
+function detail_escape(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
+
+function detail_build_reviews(array $food): array
+{
+    $names = ['Aina R.', 'Daniel L.', 'Mei Y.', 'Hafiz M.', 'Samantha K.', 'Arun P.', 'Nurul S.', 'Jason T.', 'Farah A.', 'Wei Jian C.', 'Izzati N.', 'Marcus G.'];
+    $dates = ['6 days ago', '2 weeks ago', '3 weeks ago', '1 month ago', '6 weeks ago', '2 months ago', '3 months ago'];
+    $notes = $food['review_notes'];
+    $offset = ((int)$food['id']) % count($names);
+    $ratings = [5, 4, 5, 5, 4, 5, 4];
+    $texts = [
+        'Tried ' . $food['name'] . ' on our first morning in ' . $food['city'] . '. The ' . $notes['flavour'] . ' made it feel very different from the versions I have had elsewhere.',
+        'What stayed with me was the contrast between ' . $notes['texture'] . '. It looked simple at first, but every bite had something going on.',
+        'The ' . $food['price'] . ' estimate was accurate for the stall we visited. It was filling without feeling too heavy, and I would happily order it again.',
+        'I was unsure whether this would suit me, but the ' . $notes['flavour'] . ' won me over. My friend preferred it milder, so sharing first was a good idea.',
+        'A useful tip from the person serving us: ' . $notes['tip'] . '. That small step made the whole dish taste more balanced.',
+        'We stopped for this around ' . strtolower($food['best_time']) . ' and did not have to wait long. The portion was comfortable for one person and the food arrived fresh.',
+        'This tasted like a dish connected to ' . $food['city'] . ', not just something prepared for tourists. I would come back for the ' . $notes['texture'] . ' alone.',
+    ];
+
+    $reviews = [];
+    foreach ($texts as $index => $text) {
+        $reviews[] = [
+            'name' => $names[($offset + $index) % count($names)],
+            'rating' => $ratings[$index],
+            'date' => $dates[$index],
+            'text' => $text,
+        ];
+    }
+
+    return $reviews;
+}
+
+$foodId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$food = null;
+
+foreach ($foodOptions as $option) {
+    if ((int)$option['id'] === (int)$foodId) {
+        $food = $option;
+        break;
+    }
+}
+
+if (!$food) {
+    http_response_code(404);
+}
+
+include __DIR__ . '/../header.php';
 ?>
 
-<!-- 引入独立的餐厅详情 CSS 文件和图标库 -->
-<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css?v=3">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<main class="detail-container">
-    
-    <!-- 1. 顶部标题与操作栏 -->
-    <div class="detail-header">
-        <div class="title-area">
-            <div class="detail-title">
-                <h1>Madam Kwan's</h1>
+<?php if (!$food): ?>
+    <section class="food-detail-error">
+        <i class="fa-solid fa-bowl-food"></i>
+        <h1>Food option not found</h1>
+        <p>The selected food may no longer be available in this guide.</p>
+        <a href="index.php"><i class="fa-solid fa-arrow-left"></i> Back to Food Guide</a>
+    </section>
+<?php else: ?>
+    <?php
+    $area = $foodAreas[$food['city']] ?? [
+        'name' => $food['city'] . ' Local Food Area',
+        'address' => $food['city'] . ', ' . $food['state'] . ', Malaysia',
+        'images' => [$food['image'], $food['image']],
+        'photo_labels' => [$food['city'] . ' food area', $food['state'] . ' local area'],
+    ];
+    $mapUrl = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($area['address']);
+    $galleryImages = [
+        $food['image'],
+        $area['images'][0],
+        $area['images'][1],
+    ];
+    $comments = detail_build_reviews($food);
+    ?>
+
+    <div class="food-detail-page">
+        <div class="food-detail-shell">
+            <a class="food-detail-back" href="index.php">
+                <i class="fa-solid fa-arrow-left"></i> Back to Food Guide
+            </a>
+
+            <header class="food-detail-heading">
+                <div>
+                    <div class="food-detail-tags">
+                        <span><?php echo detail_escape($food['category']); ?></span>
+                        <span><?php echo detail_escape($food['city']); ?>, <?php echo detail_escape($food['state']); ?></span>
+                    </div>
+                    <h1><?php echo detail_escape($food['name']); ?></h1>
+                    <p><i class="fa-solid fa-location-dot"></i> <?php echo detail_escape($area['name']); ?></p>
+                </div>
+
+                <button type="button" id="detailFavoriteButton" class="detail-favorite-button" data-food-id="<?php echo (int)$food['id']; ?>">
+                    <i class="fa-regular fa-heart"></i>
+                    <span>Add to Favorites</span>
+                </button>
+            </header>
+
+            <section class="food-detail-gallery" aria-label="Food and place photos">
+                <img class="food-detail-gallery__main" src="<?php echo detail_escape($galleryImages[0]); ?>" alt="<?php echo detail_escape($food['name']); ?>">
+                <img src="<?php echo detail_escape($galleryImages[1]); ?>" alt="<?php echo detail_escape($area['photo_labels'][0]); ?>">
+                <img src="<?php echo detail_escape($galleryImages[2]); ?>" alt="<?php echo detail_escape($area['photo_labels'][1]); ?>">
+            </section>
+
+            <div class="food-detail-layout">
+                <div class="food-detail-main">
+                    <section class="food-detail-card">
+                        <span class="food-detail-eyebrow">About this food</span>
+                        <h2>A local flavour to try</h2>
+                        <p><?php echo detail_escape($food['description']); ?></p>
+
+                        <div class="food-detail-facts">
+                            <div>
+                                <i class="fa-solid fa-wallet"></i>
+                                <span>Estimated price</span>
+                                <strong><?php echo detail_escape($food['price']); ?></strong>
+                            </div>
+                            <div>
+                                <i class="fa-regular fa-clock"></i>
+                                <span>Best time</span>
+                                <strong><?php echo detail_escape($food['best_time']); ?></strong>
+                            </div>
+                            <div>
+                                <i class="fa-solid fa-utensils"></i>
+                                <span>Category</span>
+                                <strong><?php echo detail_escape($food['category']); ?></strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="food-detail-card">
+                        <div class="food-comments-heading">
+                            <div>
+                                <span class="food-detail-eyebrow">Community notes</span>
+                                <h2>Traveler comments</h2>
+                            </div>
+                            <span class="sample-comment-label">7 reviews</span>
+                        </div>
+
+                        <div class="food-comment-list">
+                            <?php foreach ($comments as $commentIndex => $comment): ?>
+                                <article class="food-comment<?php echo $commentIndex >= 3 ? ' food-comment--extra' : ''; ?>">
+                                    <div class="food-comment__avatar"><?php echo detail_escape(substr($comment['name'], 0, 1)); ?></div>
+                                    <div class="food-comment__body">
+                                        <div class="food-comment__meta">
+                                            <div>
+                                                <strong><?php echo detail_escape($comment['name']); ?></strong>
+                                                <span><?php echo detail_escape($comment['date']); ?></span>
+                                            </div>
+                                            <div class="food-comment__stars" aria-label="<?php echo (int)$comment['rating']; ?> out of 5 stars">
+                                                <?php for ($star = 1; $star <= 5; $star++): ?>
+                                                    <i class="<?php echo $star <= $comment['rating'] ? 'fa-solid' : 'fa-regular'; ?> fa-star"></i>
+                                                <?php endfor; ?>
+                                            </div>
+                                        </div>
+                                        <p><?php echo detail_escape($comment['text']); ?></p>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <button type="button" id="toggleReviewsButton" class="food-reviews-toggle" aria-expanded="false">
+                            Show all 7 reviews <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </section>
+                </div>
+
+                <aside class="food-detail-sidebar">
+                    <section class="food-location-card">
+                        <div class="food-location-card__icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <span class="food-detail-eyebrow">Where to explore</span>
+                        <h2><?php echo detail_escape($area['name']); ?></h2>
+                        <p><?php echo detail_escape($area['address']); ?></p>
+                        <a href="<?php echo detail_escape($mapUrl); ?>" target="_blank" rel="noopener noreferrer">
+                            Open in Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </section>
+
+                    <section class="food-trip-note">
+                        <i class="fa-solid fa-suitcase-rolling"></i>
+                        <div>
+                            <strong>My Trips connection</strong>
+                            <p>Favorites are stored now and can be displayed in My Trips when that page is connected later.</p>
+                        </div>
+                    </section>
+                </aside>
             </div>
-            <div class="detail-rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star-half-alt"></i>
-                <span>4.8</span>
-                <span class="review-count">(1,245 Reviews)</span>
-                <span style="color:#d1d5db;">|</span>
-                <span style="color:#6b7280; font-weight:normal; font-size:0.95rem;">Malaysian, Asian, Halal</span>
-            </div>
-        </div>
-        <div class="action-btns">
-            <button class="btn"><i class="far fa-star"></i> Save</button>
-            <button class="btn"><i class="fas fa-share-alt"></i> Share</button>
-            <button class="btn btn-primary"><i class="fas fa-pen"></i> Write a Review</button>
         </div>
     </div>
 
-    <!-- 2. 相册展示 (3+1 布局) -->
-    <div class="gallery-grid">
-        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=1000&q=80" class="gallery-item main-img" alt="Main Dish">
-        <img src="https://images.unsplash.com/photo-1627067828062-8e108d8e1247?w=400&q=80" class="gallery-item" alt="Interior">
-        <img src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=400&q=80" class="gallery-item" alt="Food">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=80" class="gallery-item" alt="Drinks">
-    </div>
+    <div id="detailToast" class="detail-toast" role="status" aria-live="polite"></div>
 
-    <!-- 3. 主体内容左右分栏 -->
-    <div class="content-layout">
-        
-        <!-- 左侧：主要信息 (描述、菜单、评论) -->
-        <div class="main-content">
-            
-            <!-- 关于餐厅 -->
-            <div class="info-card">
-                <h2>About the Restaurant</h2>
-                <p style="color: #4b5563; line-height: 1.7;">
-                    Experience the true taste of Malaysia at Madam Kwan's. Known for combining recipes from different cultures across the country, this iconic restaurant offers a cozy ambiance and unforgettable flavors. From their signature Nasi Lemak to the rich Beef Rendang, every dish is prepared with passion and authentic ingredients.
-                </p>
-            </div>
+    <script>
+    const detailFoodId = <?php echo (int)$food['id']; ?>;
+    // The My Trips page can read this same key when synchronization is implemented.
+    const favoriteStorageKey = 'travelpal_food_favorites_v1';
+    const previousStorageKey = 'travelpal_food_list_v1';
+    const favoriteButton = document.getElementById('detailFavoriteButton');
+    const detailToast = document.getElementById('detailToast');
+    const toggleReviewsButton = document.getElementById('toggleReviewsButton');
+    let detailToastTimer;
 
-            <!-- 菜单展示 -->
-            <div class="info-card">
-                <h2>Signature Menu</h2>
-                <div class="menu-list">
-                    <div class="menu-item">
-                        <div>
-                            <div class="menu-name">Madam Kwan's Nasi Lemak</div>
-                            <div class="menu-desc">Coconut rice served with chicken curry, dried shrimp floss, and sambal.</div>
-                        </div>
-                        <div class="menu-price">RM 28.90</div>
-                    </div>
-                    <div class="menu-item">
-                        <div>
-                            <div class="menu-name">Malaysian Curry Laksa</div>
-                            <div class="menu-desc">Noodles in spicy coconut curry broth with chicken and prawns.</div>
-                        </div>
-                        <div class="menu-price">RM 24.50</div>
-                    </div>
-                    <div class="menu-item">
-                        <div>
-                            <div class="menu-name">Beef Rendang</div>
-                            <div class="menu-desc">Slow-cooked beef in rich coconut milk and traditional spices.</div>
-                        </div>
-                        <div class="menu-price">RM 32.00</div>
-                    </div>
-                    <div class="menu-item">
-                        <div>
-                            <div class="menu-name">Cendol</div>
-                            <div class="menu-desc">Traditional shaved ice dessert with pandan jelly and palm sugar.</div>
-                        </div>
-                        <div class="menu-price">RM 12.50</div>
-                    </div>
-                </div>
-            </div>
+    function getFavoriteIds() {
+        try {
+            const currentValue = localStorage.getItem(favoriteStorageKey);
+            const previousValue = localStorage.getItem(previousStorageKey);
+            const ids = JSON.parse(currentValue || previousValue || '[]');
+            const normalizedIds = Array.isArray(ids) ? ids.map(Number) : [];
+            if (!currentValue && previousValue) {
+                localStorage.setItem(favoriteStorageKey, JSON.stringify(normalizedIds));
+            }
+            return normalizedIds;
+        } catch (error) {
+            return [];
+        }
+    }
 
-            <!-- 评论区 (含照片) -->
-            <div class="info-card">
-                <h2>Traveler Reviews</h2>
-                
-                <!-- 评论 1 -->
-                <div class="review-item">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar" style="background:#3b82f6;">J</div>
-                        <div>
-                            <span class="reviewer-name">Jason Lee</span>
-                            <span class="review-date">Reviewed 2 weeks ago</span>
-                        </div>
-                        <div style="margin-left: auto; color: #f59e0b; font-size: 0.9rem;">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    <div class="review-text">
-                        Absolutely amazing Nasi Lemak! The chicken curry was tender and the sambal had the perfect kick. The restaurant was quite busy during lunch hours, but the service was incredibly fast and friendly. Highly recommend booking in advance.
-                    </div>
-                    <div class="review-photos">
-                        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=200&q=80" alt="Review Photo">
-                        <img src="https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=200&q=80" alt="Review Photo">
-                    </div>
-                </div>
+    function updateDetailFavoriteButton() {
+        const isFavorite = getFavoriteIds().includes(detailFoodId);
+        favoriteButton.classList.toggle('saved', isFavorite);
+        favoriteButton.querySelector('i').className = isFavorite ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+        favoriteButton.querySelector('span').textContent = isFavorite ? 'Saved to Favorites' : 'Add to Favorites';
+    }
 
-                <!-- 评论 2 -->
-                <div class="review-item" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
-                    <div class="reviewer-info">
-                        <div class="reviewer-avatar" style="background:#ec4899;">S</div>
-                        <div>
-                            <span class="reviewer-name">Sarah Wilson</span>
-                            <span class="review-date">Reviewed 1 month ago</span>
-                        </div>
-                        <div style="margin-left: auto; color: #f59e0b; font-size: 0.9rem;">
-                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-                        </div>
-                    </div>
-                    <div class="review-text">
-                        Great ambiance and very authentic flavors. The Beef Rendang melted in my mouth. A bit on the pricey side for local food, but the hygiene, environment, and quality completely justify it. Will definitely come back.
-                    </div>
-                </div>
-                
-            </div>
-        </div>
+    function showDetailToast(message) {
+        detailToast.textContent = message;
+        detailToast.classList.add('show');
+        clearTimeout(detailToastTimer);
+        detailToastTimer = setTimeout(() => detailToast.classList.remove('show'), 2200);
+    }
 
-        <!-- 右侧：侧边栏信息 (地址、联系方式、时间) -->
-        <div class="sidebar">
-            <div class="info-card">
-                <h2>Contact & Location</h2>
-                
-                <div class="sidebar-item">
-                    <i class="fas fa-map-marker-alt" style="color: #ef4444;"></i>
-                    <div>
-                        <strong>Address</strong>
-                        <p>Suria KLCC, Lot 420, 4th Floor,<br>Kuala Lumpur City Centre,<br>50088 Kuala Lumpur, Malaysia</p>
-                    </div>
-                </div>
-                
-                <div class="sidebar-item">
-                    <i class="fas fa-phone-alt" style="color: #3b82f6;"></i>
-                    <div>
-                        <strong>Phone Number</strong>
-                        <p>+60 3-2026 2297</p>
-                    </div>
-                </div>
+    favoriteButton.addEventListener('click', () => {
+        const ids = getFavoriteIds();
+        const existingIndex = ids.indexOf(detailFoodId);
 
-                <div class="sidebar-item">
-                    <i class="fas fa-globe" style="color: #10b981;"></i>
-                    <div>
-                        <strong>Website</strong>
-                        <p><a href="#" style="color: #2563eb; text-decoration: none;">www.madamkwans.com.my</a></p>
-                    </div>
-                </div>
-            </div>
+        if (existingIndex >= 0) {
+            ids.splice(existingIndex, 1);
+            showDetailToast('Removed from Favorites');
+        } else {
+            ids.push(detailFoodId);
+            showDetailToast('Added to Favorites');
+        }
 
-            <div class="info-card">
-                <h2>Operating Hours</h2>
-                <div class="sidebar-item">
-                    <i class="far fa-clock" style="color: #f59e0b;"></i>
-                    <div style="width: 100%;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Monday</span> <span>11:00 AM - 10:00 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Tuesday</span> <span>11:00 AM - 10:00 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Wednesday</span> <span>11:00 AM - 10:00 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Thursday</span> <span>11:00 AM - 10:00 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: #111827;">
-                            <span>Friday (Today)</span> <span>11:00 AM - 10:30 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>Saturday</span> <span>11:00 AM - 10:30 PM</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Sunday</span> <span>11:00 AM - 10:00 PM</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb; color: #10b981; font-weight: bold; text-align: center;">
-                    <i class="fas fa-circle" style="font-size: 0.6rem; vertical-align: middle; margin-right: 5px;"></i> Open Now
-                </div>
-            </div>
-        </div>
+        localStorage.setItem(favoriteStorageKey, JSON.stringify(ids));
+        updateDetailFavoriteButton();
+    });
 
-    </div>
-</main>
+    toggleReviewsButton.addEventListener('click', () => {
+        const isExpanded = document.body.classList.toggle('food-reviews-expanded');
+        toggleReviewsButton.setAttribute('aria-expanded', String(isExpanded));
+        toggleReviewsButton.innerHTML = isExpanded
+            ? 'Show fewer reviews <i class="fa-solid fa-chevron-up"></i>'
+            : 'Show all 7 reviews <i class="fa-solid fa-chevron-down"></i>';
+    });
 
-<?php 
-// 引入位于 travelPal 主目录下的底部文件
-include '../footer.php'; 
-?>
+    updateDetailFavoriteButton();
+    </script>
+<?php endif; ?>
+
+<?php include __DIR__ . '/../footer.php'; ?>

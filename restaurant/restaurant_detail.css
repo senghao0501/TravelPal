@@ -1,198 +1,280 @@
-/* ==========================================================================
-   C:\wamp64\www\travelPal\css\modules\restaurant_detail.css
-   餐厅详情页专属独立样式
-   ========================================================================== */
-
-body {
-    background-color: #f8fafc; 
-    color: #111827;
-    font-family: system-ui, -apple-system, sans-serif;
-    margin: 0;
-    padding: 0;
+:root {
+    --detail-lime: #c6ff34;
+    --detail-black: #0b0f12;
+    --detail-text: #111827;
+    --detail-muted: #6b7280;
+    --detail-border: #e5e7eb;
+    --detail-shadow: 0 14px 38px rgba(15, 23, 42, .1);
 }
 
-.detail-container {
-    max-width: 1150px;
-    margin: 40px auto;
-    padding: 0 20px;
+.food-detail-page,
+.food-detail-page * { box-sizing: border-box; }
+
+.food-detail-page {
+    min-height: 100vh;
+    padding: 42px 20px 90px;
+    background: #f7f8f5;
+    color: var(--detail-text);
 }
 
-/* 顶部标题区 */
-.detail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 20px;
-}
-.detail-title h1 {
-    font-size: 2.5rem;
-    font-weight: 800;
-    margin-bottom: 5px;
-}
-.detail-rating {
-    display: flex;
+.food-detail-shell { width: min(1240px, 100%); margin: 0 auto; }
+
+.food-detail-back {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.1rem;
-    color: #f59e0b; 
-    font-weight: bold;
-}
-.review-count {
-    color: #6b7280;
-    font-size: 0.95rem;
-    text-decoration: underline;
-    cursor: pointer;
-    font-weight: normal;
-}
-.action-btns .btn {
-    background: white;
-    border: 1px solid #d1d5db;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-left: 10px;
-    transition: 0.2s;
-}
-.action-btns .btn:hover {
-    background: #f3f4f6;
-}
-.action-btns .btn-primary {
-    background: #111827;
-    color: white;
-    border: none;
-}
-.action-btns .btn-primary:hover {
-    background: #C6FF34; 
-    color: #111827;
-}
-
-/* 相册网格 (左一大，右三小) */
-.gallery-grid {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-rows: repeat(3, 150px);
     gap: 8px;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 30px;
-}
-.gallery-item {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-.gallery-item:hover {
-    opacity: 0.9;
-}
-.main-img {
-    grid-column: 1 / 2;
-    grid-row: 1 / 4;
+    margin-bottom: 24px;
+    color: #536d00;
+    font-weight: 800;
+    text-decoration: none;
 }
 
-/* 左右分栏布局 */
-.content-layout {
+.food-detail-back:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+.food-detail-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 25px;
+}
+
+.food-detail-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.food-detail-tags span {
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #e9f9bd;
+    color: #4f6900;
+    font-size: .75rem;
+    font-weight: 850;
+}
+
+.food-detail-heading h1 {
+    margin: 12px 0 8px;
+    font-size: clamp(2.2rem, 5vw, 4.2rem);
+    line-height: 1.05;
+    letter-spacing: -.04em;
+}
+
+.food-detail-heading p { margin: 0; color: var(--detail-muted); }
+.food-detail-heading p i { margin-right: 5px; color: #739700; }
+
+.detail-favorite-button {
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 18px;
+    border: 1px solid var(--detail-black);
+    border-radius: 12px;
+    background: white;
+    color: var(--detail-black);
+    font-weight: 850;
+    cursor: pointer;
+}
+
+.detail-favorite-button:hover,
+.detail-favorite-button.saved { background: var(--detail-black); color: var(--detail-lime); }
+
+.food-detail-gallery {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 30px;
+    grid-template-rows: 210px 210px;
+    gap: 12px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: #e5e7eb;
+    box-shadow: var(--detail-shadow);
 }
 
-/* 模块通用卡片样式 */
-.info-card {
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    margin-bottom: 30px;
-    border: 1px solid #e5e7eb;
-}
-.info-card h2 {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f3f4f6;
+.food-detail-gallery img { width: 100%; height: 100%; object-fit: cover; }
+.food-detail-gallery__main { grid-row: 1 / 3; }
+
+.food-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 26px;
+    align-items: start;
+    margin-top: 30px;
 }
 
-/* 右侧侧边栏 (地址、电话、时间) */
-.sidebar-item {
+.food-detail-main { display: flex; flex-direction: column; gap: 22px; }
+
+.food-detail-card,
+.food-location-card,
+.food-trip-note {
+    border: 1px solid rgba(17, 24, 39, .09);
+    border-radius: 19px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, .06);
+}
+
+.food-detail-card { padding: 27px; }
+
+.food-detail-eyebrow {
+    color: #698900;
+    font-size: .73rem;
+    font-weight: 900;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.food-detail-card h2,
+.food-location-card h2 {
+    margin: 7px 0 12px;
+    color: var(--detail-text);
+    font-size: 1.55rem;
+}
+
+.food-detail-card > p { margin: 0; color: #4b5563; line-height: 1.75; }
+
+.food-detail-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.food-detail-facts > div {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3px 10px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f4f6ef;
+}
+
+.food-detail-facts i { grid-row: 1 / 3; align-self: center; color: #739700; font-size: 1.15rem; }
+.food-detail-facts span { color: var(--detail-muted); font-size: .72rem; }
+.food-detail-facts strong { color: var(--detail-text); font-size: .9rem; }
+
+.food-comments-heading {
     display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    font-size: 1.05rem;
-    color: #374151;
-}
-.sidebar-item i {
-    color: #111827;
-    font-size: 1.2rem;
-    margin-top: 3px;
-}
-.sidebar-item p { margin: 0; }
-.sidebar-item strong { display: block; margin-bottom: 5px; color: #111827;}
-
-/* 菜单列表 */
-.menu-item {
-    display: flex;
+    align-items: flex-end;
     justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px dashed #e5e7eb;
+    gap: 16px;
+    margin-bottom: 4px;
 }
-.menu-item:last-child { border-bottom: none; }
-.menu-name { font-weight: 600; font-size: 1.1rem; }
-.menu-desc { font-size: 0.9rem; color: #6b7280; margin-top: 4px; }
-.menu-price { font-weight: bold; color: #111827; font-size: 1.1rem; }
 
-/* 评论区 */
-.review-item {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f3f4f6;
+.sample-comment-label {
+    padding: 6px 9px;
+    border-radius: 7px;
+    background: #f3f4f6;
+    color: var(--detail-muted);
+    font-size: .7rem;
+    font-weight: 750;
 }
-.reviewer-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 10px;
-}
-.reviewer-avatar {
-    width: 45px;
-    height: 45px;
+
+.food-comment { display: flex; gap: 13px; padding: 20px 0; border-bottom: 1px solid var(--detail-border); }
+.food-comment:last-child { padding-bottom: 0; border-bottom: 0; }
+.food-comment--extra { display: none; }
+.food-reviews-expanded .food-comment--extra { display: flex; }
+
+.food-comment__avatar {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: #d1d5db;
+    background: var(--detail-black);
+    color: var(--detail-lime);
+    font-weight: 900;
+}
+
+.food-comment__body { flex: 1; min-width: 0; }
+.food-comment__meta { display: flex; justify-content: space-between; gap: 12px; }
+.food-comment__meta strong,
+.food-comment__meta span { display: block; }
+.food-comment__meta span { margin-top: 2px; color: var(--detail-muted); font-size: .72rem; }
+.food-comment__stars { flex: 0 0 auto; color: #e6a700; font-size: .78rem; }
+.food-comment__body p { margin: 10px 0 0; color: #4b5563; font-size: .9rem; line-height: 1.65; }
+
+.food-reviews-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    color: white;
-}
-.reviewer-name { font-weight: bold; display: block; }
-.review-date { font-size: 0.85rem; color: #9ca3af; }
-.review-text {
-    font-size: 1rem;
-    color: #374151;
-    line-height: 1.6;
-    margin-bottom: 15px;
-}
-
-/* 评论附加的照片网格 */
-.review-photos {
-    display: flex;
-    gap: 10px;
-}
-.review-photos img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
+    gap: 8px;
+    width: 100%;
+    margin-top: 18px;
+    padding: 11px 14px;
+    border: 1px solid #d9e4bb;
+    border-radius: 11px;
+    background: #f6fbe9;
+    color: #536d00;
+    font-weight: 850;
     cursor: pointer;
 }
-.review-photos img:hover { opacity: 0.8; }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-    .content-layout { grid-template-columns: 1fr; }
-    .gallery-grid { grid-template-rows: repeat(3, 100px); }
-    .detail-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+.food-reviews-toggle:hover { background: #ebf8ca; }
+
+.food-detail-sidebar { position: sticky; top: 95px; display: flex; flex-direction: column; gap: 17px; }
+.food-location-card { padding: 24px; }
+
+.food-location-card__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 18px;
+    border-radius: 13px;
+    background: var(--detail-lime);
+    color: var(--detail-black);
+    font-size: 1.25rem;
+}
+
+.food-location-card p { margin: 0 0 18px; color: var(--detail-muted); line-height: 1.65; }
+.food-location-card a { display: flex; justify-content: center; gap: 8px; padding: 11px; border-radius: 10px; background: var(--detail-black); color: var(--detail-lime); font-weight: 850; text-decoration: none; }
+
+.food-trip-note { display: flex; gap: 13px; padding: 18px; background: #f0ffd0; }
+.food-trip-note > i { color: #617f00; font-size: 1.35rem; }
+.food-trip-note strong { color: var(--detail-text); }
+.food-trip-note p { margin: 5px 0 0; color: #53603b; font-size: .78rem; line-height: 1.5; }
+
+.detail-toast {
+    position: fixed;
+    z-index: 1000;
+    right: 22px;
+    bottom: 22px;
+    padding: 13px 17px;
+    border-radius: 12px;
+    transform: translateY(20px);
+    background: var(--detail-black);
+    color: var(--detail-lime);
+    font-weight: 800;
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s ease;
+}
+
+.detail-toast.show { transform: translateY(0); opacity: 1; }
+
+.food-detail-error {
+    min-height: 65vh;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.food-detail-error > i { color: #7ba000; font-size: 3rem; }
+.food-detail-error h1 { margin: 16px 0 8px; }
+.food-detail-error p { margin: 0 0 20px; color: var(--detail-muted); }
+.food-detail-error a { padding: 11px 15px; border-radius: 10px; background: var(--detail-black); color: var(--detail-lime); font-weight: 800; text-decoration: none; }
+
+@media (max-width: 900px) {
+    .food-detail-layout { grid-template-columns: 1fr; }
+    .food-detail-sidebar { position: static; }
+}
+
+@media (max-width: 650px) {
+    .food-detail-page { padding: 28px 12px 65px; }
+    .food-detail-heading { align-items: stretch; flex-direction: column; }
+    .detail-favorite-button { width: 100%; }
+    .food-detail-gallery { grid-template-columns: 1fr 1fr; grid-template-rows: 250px 130px; }
+    .food-detail-gallery__main { grid-column: 1 / 3; grid-row: 1; }
+    .food-detail-card { padding: 20px 17px; }
+    .food-detail-facts { grid-template-columns: 1fr; }
+    .food-comments-heading,
+    .food-comment__meta { align-items: flex-start; flex-direction: column; }
 }

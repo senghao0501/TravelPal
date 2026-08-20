@@ -206,8 +206,8 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
                     <div id="loginMsg">⚠️ Please login first</div>
 
                     <button type="submit" class="btn-book-now">
-                        <i class="fa-solid fa-bolt"></i> Book Now
-                    </button>
+    Book Now
+</button>
                 </form>
             </div>
         </div>

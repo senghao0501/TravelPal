@@ -5,23 +5,12 @@ require_once 'api_functions.php';
 
 function detailEscape($value): string
 {
-    return htmlspecialchars(
-        (string) $value,
-        ENT_QUOTES,
-        'UTF-8'
-    );
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
-$localId = isset($_GET['id'])
-    ? trim((string) $_GET['id'])
-    : '';
-
-$slug = isset($_GET['slug'])
-    ? trim((string) $_GET['slug'])
-    : '';
-
+$localId = trim((string) ($_GET['id'] ?? ''));
+$slug = trim((string) ($_GET['slug'] ?? ''));
 $attraction = null;
-$apiWarning = null;
 
 if ($localId !== '') {
     $attraction = findLocalAttractionById($localId);
@@ -33,10 +22,6 @@ if ($slug !== '') {
 
     if (isset($apiResponse['error'])) {
         $attraction = $cachedAttraction;
-
-        $apiWarning = $cachedAttraction
-            ? 'Live details are temporarily unavailable. Showing the latest cached information.'
-            : $apiResponse['message'];
     } else {
         $attraction = normalizeApiAttractionDetails(
             $apiResponse,
@@ -48,14 +33,19 @@ if ($slug !== '') {
 
 $pageNotFound = $attraction === null;
 
+$placeholderSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760">'
+    . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+    . '<stop stop-color="#4c1d95"/><stop offset="1" stop-color="#0f9f75"/>'
+    . '</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/>'
+    . '<text x="50%" y="50%" text-anchor="middle" fill="white" '
+    . 'font-family="Arial" font-size="48" font-weight="700">TravelPal</text></svg>';
+
+$placeholderImage = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholderSvg);
+
 include '../header.php';
 ?>
 
-<link
-    rel="stylesheet"
-    href="../css/details/attractions_detail.css"
->
-
+<link rel="stylesheet" href="../css/details/attractions_detail.css">
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -65,7 +55,6 @@ include '../header.php';
     <div class="attraction-error-page">
         <div class="attraction-error-card">
             <i class="fa-solid fa-map-location-dot"></i>
-
             <h1>Attraction not found</h1>
 
             <p>
@@ -80,49 +69,28 @@ include '../header.php';
     </div>
 <?php else: ?>
     <?php
-    $favoriteId = $attraction['id'];
-    $location = $attraction['location'] ?? 'Malaysia';
-    $query = $attraction['query'] ?? $location;
+    $favoriteId = (string) $attraction['id'];
+    $location = (string) ($attraction['location'] ?? 'Malaysia');
     $activities = $attraction['activities'] ?? [];
     $reviewCount = (int) ($attraction['review_count'] ?? 0);
     $rating = $attraction['rating'] ?? 'N/A';
-
-    $isFree = stripos(
-        (string) $attraction['price'],
-        'free'
-    ) !== false;
+    $price = (string) ($attraction['price'] ?? 'Check price');
+    $isFree = stripos($price, 'free') !== false;
     ?>
 
     <div class="attraction-detail-page">
-        <nav
-            class="detail-breadcrumb"
-            aria-label="Breadcrumb"
-        >
+        <nav class="detail-breadcrumb" aria-label="Breadcrumb">
             <a href="index.php">Attractions</a>
             <i class="fa-solid fa-chevron-right"></i>
             <span><?= detailEscape($location) ?></span>
         </nav>
 
-        <?php if ($apiWarning): ?>
-            <div class="detail-api-warning">
-                <i class="fa-solid fa-circle-info"></i>
-                <?= detailEscape($apiWarning) ?>
-            </div>
-        <?php endif; ?>
-
         <section class="detail-heading">
             <div>
                 <div class="detail-label-row">
                     <span class="detail-type-label">
-                        <?= detailEscape($attraction['type']) ?>
+                        <?= detailEscape($attraction['type'] ?? 'Attraction') ?>
                     </span>
-
-                    <?php if (($attraction['source'] ?? '') === 'api'): ?>
-                        <span class="detail-live-label">
-                            <i class="fa-solid fa-bolt"></i>
-                            Live API data
-                        </span>
-                    <?php endif; ?>
                 </div>
 
                 <h1><?= detailEscape($attraction['name']) ?></h1>
@@ -138,7 +106,7 @@ include '../header.php';
                     <span>Tickets</span>
 
                     <strong class="<?= $isFree ? 'free' : '' ?>">
-                        <?= detailEscape($attraction['price']) ?>
+                        <?= detailEscape($price) ?>
                     </strong>
                 </div>
 
@@ -156,20 +124,18 @@ include '../header.php';
 
         <section class="detail-hero">
             <img
-                src="<?= detailEscape($attraction['image']) ?>"
+                src="<?= detailEscape($attraction['image'] ?? '') ?>"
                 alt="<?= detailEscape($attraction['name']) ?>"
+                onerror="this.onerror=null;this.src='<?= detailEscape($placeholderImage) ?>';"
             >
 
             <div class="detail-hero-overlay">
                 <div class="detail-rating">
                     <i class="fa-solid fa-star"></i>
-
                     <strong><?= detailEscape($rating) ?></strong>
 
                     <?php if ($reviewCount > 0): ?>
-                        <span>
-                            <?= number_format($reviewCount) ?> reviews
-                        </span>
+                        <span><?= number_format($reviewCount) ?> reviews</span>
                     <?php endif; ?>
                 </div>
             </div>
@@ -185,7 +151,7 @@ include '../header.php';
                     <h2>Introduction</h2>
 
                     <p class="detail-description">
-                        <?= detailEscape($attraction['description']) ?>
+                        <?= detailEscape($attraction['description'] ?? '') ?>
                     </p>
                 </section>
 
@@ -222,9 +188,8 @@ include '../header.php';
 
                             <div>
                                 <span>Opening information</span>
-
                                 <strong>
-                                    <?= detailEscape($attraction['hours']) ?>
+                                    <?= detailEscape($attraction['hours'] ?? 'Check before visiting') ?>
                                 </strong>
                             </div>
                         </div>
@@ -234,9 +199,8 @@ include '../header.php';
 
                             <div>
                                 <span>Recommended duration</span>
-
                                 <strong>
-                                    <?= detailEscape($attraction['duration']) ?>
+                                    <?= detailEscape($attraction['duration'] ?? 'Varies') ?>
                                 </strong>
                             </div>
                         </div>
@@ -246,9 +210,8 @@ include '../header.php';
 
                             <div>
                                 <span>Best for</span>
-
                                 <strong>
-                                    <?= detailEscape($attraction['best_for']) ?>
+                                    <?= detailEscape($attraction['best_for'] ?? 'All travellers') ?>
                                 </strong>
                             </div>
                         </div>
@@ -258,10 +221,7 @@ include '../header.php';
 
                             <div>
                                 <span>Destination</span>
-
-                                <strong>
-                                    <?= detailEscape($location) ?>
-                                </strong>
+                                <strong><?= detailEscape($location) ?></strong>
                             </div>
                         </div>
                     </div>
@@ -302,24 +262,12 @@ include '../header.php';
                     <span>Plan your visit</span>
 
                     <strong class="<?= $isFree ? 'free' : '' ?>">
-                        <?= detailEscape($attraction['price']) ?>
+                        <?= detailEscape($price) ?>
                     </strong>
                 </div>
 
-                <form
-                    action="after_search.php"
-                    method="GET"
-                    class="booking-form"
-                >
-                    <input
-                        type="hidden"
-                        name="query"
-                        value="<?= detailEscape($query) ?>"
-                    >
-
-                    <label for="detailVisitDate">
-                        Visit date
-                    </label>
+                <form class="booking-form" onsubmit="return false;">
+                    <label for="detailVisitDate">Visit date</label>
 
                     <div class="booking-input">
                         <i class="fa-regular fa-calendar"></i>
@@ -332,17 +280,12 @@ include '../header.php';
                         >
                     </div>
 
-                    <label for="detailAdults">
-                        Adults
-                    </label>
+                    <label for="detailAdults">Adults</label>
 
                     <div class="booking-input">
                         <i class="fa-solid fa-user"></i>
 
-                        <select
-                            id="detailAdults"
-                            name="adults"
-                        >
+                        <select id="detailAdults" name="adults">
                             <?php for ($adult = 1; $adult <= 10; $adult++): ?>
                                 <option
                                     value="<?= $adult ?>"
@@ -355,17 +298,12 @@ include '../header.php';
                         </select>
                     </div>
 
-                    <label for="detailChildren">
-                        Children
-                    </label>
+                    <label for="detailChildren">Children</label>
 
                     <div class="booking-input">
                         <i class="fa-solid fa-child"></i>
 
-                        <select
-                            id="detailChildren"
-                            name="children"
-                        >
+                        <select id="detailChildren" name="children">
                             <?php for ($child = 0; $child <= 10; $child++): ?>
                                 <option value="<?= $child ?>">
                                     <?= $child ?>
@@ -376,30 +314,13 @@ include '../header.php';
                     </div>
 
                     <button
-                        type="submit"
+                        type="button"
                         class="detail-primary-button booking-submit"
                     >
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        Check tickets
+                        <i class="fa-solid fa-ticket"></i>
+                        Buy tickets
                     </button>
                 </form>
-
-                <div class="booking-benefits">
-                    <p>
-                        <i class="fa-solid fa-shield-heart"></i>
-                        Local Malaysia travel selection
-                    </p>
-
-                    <p>
-                        <i class="fa-solid fa-bolt"></i>
-                        Live availability when API data is available
-                    </p>
-
-                    <p>
-                        <i class="fa-solid fa-heart"></i>
-                        Save attractions to your TravelPal trip
-                    </p>
-                </div>
             </aside>
         </div>
     </div>
@@ -455,10 +376,7 @@ if (saveButton) {
         savedItems = readDetailSavedItems();
 
         if (savedItems.includes(attractionId)) {
-            savedItems = savedItems.filter(
-                item => item !== attractionId
-            );
-
+            savedItems = savedItems.filter(item => item !== attractionId);
             updateDetailSaveButton(false);
         } else {
             savedItems.push(attractionId);

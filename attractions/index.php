@@ -3,23 +3,23 @@
 require_once 'attractions_data.php';
 require_once 'api_functions.php';
 
-$mustVisitAttractions = getMustVisitAttractions(
-    $attraction_regions,
-    2
-);
+/* Must-Visit stays local: two attractions from each of the eight states. */
+$mustVisitAttractions = getMustVisitAttractions($attraction_regions, 2);
 
-$liveApiCount = count(array_filter(
-    $mustVisitAttractions,
-    static fn(array $item): bool => ($item['source'] ?? '') === 'api'
-));
+$destinationDescriptions = [
+    'johor' => 'Theme parks, islands and royal heritage',
+    'melaka' => 'Historic streets and riverside culture',
+    'selangor' => 'Caves, city attractions and family fun',
+    'perak' => 'Limestone caves and Ipoh heritage',
+    'penang' => 'UNESCO heritage, hills and beaches',
+    'pahang' => 'Highlands, rainforest and theme parks',
+    'sabah' => 'Mountains, islands and wildlife',
+    'sarawak' => 'Rainforests, caves and living culture'
+];
 
 function attractionEscape($value): string
 {
-    return htmlspecialchars(
-        (string) $value,
-        ENT_QUOTES,
-        'UTF-8'
-    );
+    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
 function attractionDetailUrl(array $attraction): string
@@ -28,13 +28,20 @@ function attractionDetailUrl(array $attraction): string
         ($attraction['source'] ?? '') === 'api'
         && !empty($attraction['slug'])
     ) {
-        return 'detail.php?slug='
-            . rawurlencode($attraction['slug']);
+        return 'detail.php?slug=' . rawurlencode((string) $attraction['slug']);
     }
 
-    return 'detail.php?id='
-        . rawurlencode($attraction['id']);
+    return 'detail.php?id=' . rawurlencode((string) $attraction['id']);
 }
+
+$placeholderSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760">'
+    . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
+    . '<stop stop-color="#4c1d95"/><stop offset="1" stop-color="#0f9f75"/>'
+    . '</linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/>'
+    . '<text x="50%" y="50%" text-anchor="middle" fill="white" '
+    . 'font-family="Arial" font-size="48" font-weight="700">TravelPal</text></svg>';
+
+$placeholderImage = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholderSvg);
 
 include '../header.php';
 ?>
@@ -58,19 +65,6 @@ include '../header.php';
     color: #6b7280;
     font-size: 13px;
     white-space: nowrap;
-}
-
-.live-source-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-left: 8px;
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: #d1fae5;
-    color: #047857;
-    font-size: 11px;
-    font-weight: 700;
 }
 
 .carousel-wrapper {
@@ -104,7 +98,7 @@ include '../header.php';
     z-index: 2;
     padding: 5px 9px;
     border-radius: 999px;
-    background: rgba(46, 16, 101, 0.9);
+    background: rgba(46, 16, 101, .9);
     color: #fff;
     font-size: 11px;
     font-weight: 700;
@@ -214,25 +208,41 @@ include '../header.php';
         </div>
 
         <div class="vibe-tags">
-            <span class="vibe-pill active">
+            <button
+                type="button"
+                class="vibe-pill active"
+                data-category="all"
+            >
                 <i class="fa-solid fa-compass"></i>
                 All Attractions
-            </span>
+            </button>
 
-            <span class="vibe-pill">
+            <button
+                type="button"
+                class="vibe-pill"
+                data-category="heritage"
+            >
                 <i class="fa-solid fa-landmark-dome"></i>
                 Heritage & Culture
-            </span>
+            </button>
 
-            <span class="vibe-pill">
+            <button
+                type="button"
+                class="vibe-pill"
+                data-category="nature"
+            >
                 <i class="fa-solid fa-tree"></i>
                 Nature & Wildlife
-            </span>
+            </button>
 
-            <span class="vibe-pill">
+            <button
+                type="button"
+                class="vibe-pill"
+                data-category="theme"
+            >
                 <i class="fa-solid fa-ticket-simple"></i>
                 Theme Parks
-            </span>
+            </button>
         </div>
 
         <form
@@ -240,48 +250,28 @@ include '../header.php';
             method="GET"
             class="filter-bar"
         >
+            <input
+                type="hidden"
+                name="category"
+                id="categoryFilter"
+                value="all"
+            >
+
             <div class="input-group">
                 <i class="fa-solid fa-location-dot icon"></i>
 
                 <div class="input-wrapper">
                     <label for="destination">Destination / State</label>
 
-                    <select
-                        name="query"
-                        id="destination"
-                        required
-                    >
-                        <option value="Johor Bahru">
-                            Johor · Johor Bahru
-                        </option>
-
-                        <option value="Melaka">
-                            Melaka
-                        </option>
-
-                        <option value="Selangor" selected>
-                            Selangor
-                        </option>
-
-                        <option value="Ipoh">
-                            Perak · Ipoh
-                        </option>
-
-                        <option value="Penang">
-                            Penang
-                        </option>
-
-                        <option value="Pahang">
-                            Pahang
-                        </option>
-
-                        <option value="Sabah">
-                            Sabah
-                        </option>
-
-                        <option value="Sarawak">
-                            Sarawak
-                        </option>
+                    <select name="region" id="destination" required>
+                        <option value="johor">Johor · Johor Bahru</option>
+                        <option value="melaka">Melaka</option>
+                        <option value="selangor" selected>Selangor</option>
+                        <option value="perak">Perak · Ipoh</option>
+                        <option value="penang">Penang</option>
+                        <option value="pahang">Pahang</option>
+                        <option value="sabah">Sabah</option>
+                        <option value="sarawak">Sarawak</option>
                     </select>
                 </div>
             </div>
@@ -311,11 +301,7 @@ include '../header.php';
                     tabindex="0"
                 >
                     <label>Tickets</label>
-
-                    <div
-                        class="guest-display-text"
-                        id="ticketSummary"
-                    >
+                    <div class="guest-display-text" id="ticketSummary">
                         2 Adults
                     </div>
                 </div>
@@ -350,24 +336,15 @@ include '../header.php';
                                 type="button"
                                 class="btn-counter"
                                 onclick="updateTicket('adults', -1)"
-                            >
-                                −
-                            </button>
+                            >−</button>
 
-                            <span
-                                class="counter-value"
-                                id="cnt_adults"
-                            >
-                                2
-                            </span>
+                            <span class="counter-value" id="cnt_adults">2</span>
 
                             <button
                                 type="button"
                                 class="btn-counter"
                                 onclick="updateTicket('adults', 1)"
-                            >
-                                +
-                            </button>
+                            >+</button>
                         </div>
                     </div>
 
@@ -382,24 +359,15 @@ include '../header.php';
                                 type="button"
                                 class="btn-counter"
                                 onclick="updateTicket('children', -1)"
-                            >
-                                −
-                            </button>
+                            >−</button>
 
-                            <span
-                                class="counter-value"
-                                id="cnt_children"
-                            >
-                                0
-                            </span>
+                            <span class="counter-value" id="cnt_children">0</span>
 
                             <button
                                 type="button"
                                 class="btn-counter"
                                 onclick="updateTicket('children', 1)"
-                            >
-                                +
-                            </button>
+                            >+</button>
                         </div>
                     </div>
 
@@ -413,10 +381,7 @@ include '../header.php';
                 </div>
             </div>
 
-            <button
-                type="submit"
-                class="btn-search"
-            >
+            <button type="submit" class="btn-search">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 Search Tickets
             </button>
@@ -425,10 +390,7 @@ include '../header.php';
 </section>
 
 <div class="main-content">
-    <section
-        class="gallery-section"
-        style="margin-bottom:55px;"
-    >
+    <section class="gallery-section" style="margin-bottom:55px;">
         <div class="must-visit-heading-row">
             <div class="section-header" style="margin-bottom:0;">
                 <h2>Must-Visit Attractions</h2>
@@ -440,14 +402,7 @@ include '../header.php';
             </div>
 
             <div class="carousel-meta">
-                8 destinations · 16 attractions
-
-                <?php if ($liveApiCount > 0): ?>
-                    <span class="live-source-badge">
-                        <i class="fa-solid fa-bolt"></i>
-                        <?= $liveApiCount ?> live API results
-                    </span>
-                <?php endif; ?>
+                8 destinations · <?= count($mustVisitAttractions) ?> attractions
             </div>
         </div>
 
@@ -470,13 +425,15 @@ include '../header.php';
                 <?php foreach ($mustVisitAttractions as $attraction): ?>
                     <?php
                     $detailUrl = attractionDetailUrl($attraction);
-                    $favoriteId = $attraction['id'];
+                    $favoriteId = (string) $attraction['id'];
                     ?>
 
                     <article
                         class="property-card"
                         data-type="<?= attractionEscape($attraction['type']) ?>"
-                        onclick="window.location.href='<?= attractionEscape($detailUrl) ?>'"
+                        data-url="<?= attractionEscape($detailUrl) ?>"
+                        tabindex="0"
+                        role="link"
                     >
                         <div class="card-img-wrapper">
                             <span class="card-region-badge">
@@ -487,6 +444,7 @@ include '../header.php';
                                 src="<?= attractionEscape($attraction['image']) ?>"
                                 alt="<?= attractionEscape($attraction['name']) ?>"
                                 loading="lazy"
+                                onerror="this.onerror=null;this.src='<?= attractionEscape($placeholderImage) ?>';"
                             >
 
                             <button
@@ -494,7 +452,6 @@ include '../header.php';
                                 class="heart-btn"
                                 data-id="<?= attractionEscape($favoriteId) ?>"
                                 aria-label="Save <?= attractionEscape($attraction['name']) ?>"
-                                onclick="event.stopPropagation(); toggleHeart(this);"
                             >
                                 <i class="fa-regular fa-heart"></i>
                             </button>
@@ -502,9 +459,7 @@ include '../header.php';
 
                         <div class="card-content">
                             <p class="card-source">
-                                <?= ($attraction['source'] ?? '') === 'api'
-                                    ? 'Live API experience'
-                                    : attractionEscape($attraction['type']) ?>
+                                <?= attractionEscape($attraction['type']) ?>
                             </p>
 
                             <h3
@@ -522,7 +477,6 @@ include '../header.php';
                             <div class="card-footer">
                                 <span class="rating">
                                     <i class="fa-solid fa-star"></i>
-
                                     <?= attractionEscape($attraction['rating']) ?>
 
                                     <?php if (!empty($attraction['review_count'])): ?>
@@ -550,7 +504,10 @@ include '../header.php';
         </div>
 
         <div class="carousel-progress">
-            <span id="carouselPosition">1 / 16</span>
+            <span id="carouselPosition">
+                <?= $mustVisitAttractions === [] ? 0 : 1 ?>
+                / <?= count($mustVisitAttractions) ?>
+            </span>
 
             <span class="carousel-progress-line">
                 <span
@@ -564,24 +521,39 @@ include '../header.php';
     <section class="property-types-section">
         <div class="section-header">
             <h2>Browse by Destination</h2>
-
-            <p>
-                Choose one of TravelPal’s eight Malaysian destinations
-            </p>
+            <p>Choose one of TravelPal’s eight Malaysian destinations</p>
         </div>
 
         <div class="property-grid">
-            <?php foreach ($attraction_regions as $region): ?>
+            <?php foreach ($attraction_regions as $regionKey => $region): ?>
                 <a
-                    href="after_search.php?query=<?= rawurlencode($region['query']) ?>"
+                    href="after_search.php?region=<?= rawurlencode($regionKey) ?>&amp;category=all"
                     class="category-card"
+                    aria-label="Explore attractions in <?= attractionEscape($region['label']) ?>"
                 >
-                    <div class="property-icon">
-                        <i class="fa-solid fa-location-dot"></i>
+                    <div class="destination-card-top">
+                        <div class="property-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+
+                        <span class="destination-arrow" aria-hidden="true">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </span>
                     </div>
 
                     <h3><?= attractionEscape($region['label']) ?></h3>
-                    <p>View available attractions</p>
+
+                    <p class="destination-description">
+                        <?= attractionEscape(
+                            $destinationDescriptions[$regionKey]
+                            ?? 'Discover popular Malaysian attractions'
+                        ) ?>
+                    </p>
+
+                    <span class="destination-action">
+                        Explore attractions
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
                 </a>
             <?php endforeach; ?>
         </div>
@@ -608,7 +580,6 @@ function getCarouselStep() {
 
     const style = window.getComputedStyle(carousel);
     const gap = parseFloat(style.columnGap || style.gap || 0);
-
     return card.getBoundingClientRect().width + gap;
 }
 
@@ -618,20 +589,12 @@ function moveCarousel(direction) {
     const nearEnd = carousel.scrollLeft >= maximumScroll - 8;
 
     if (direction > 0 && nearEnd) {
-        carousel.scrollTo({
-            left: 0,
-            behavior: 'smooth'
-        });
-
+        carousel.scrollTo({left: 0, behavior: 'smooth'});
         return;
     }
 
     if (direction < 0 && nearStart) {
-        carousel.scrollTo({
-            left: maximumScroll,
-            behavior: 'smooth'
-        });
-
+        carousel.scrollTo({left: maximumScroll, behavior: 'smooth'});
         return;
     }
 
@@ -645,7 +608,9 @@ function updateCarouselProgress() {
     const cards = carousel.querySelectorAll('.property-card');
     const step = getCarouselStep();
     const visibleIndex = Math.round(carousel.scrollLeft / step);
-    const current = Math.min(cards.length, visibleIndex + 1);
+    const current = cards.length === 0
+        ? 0
+        : Math.min(cards.length, visibleIndex + 1);
     const maximumScroll = carousel.scrollWidth - carousel.clientWidth;
 
     positionText.textContent = current + ' / ' + cards.length;
@@ -692,28 +657,11 @@ function readSavedAttractions() {
     }
 }
 
-function toggleHeart(button) {
-    const id = button.dataset.id;
+function updateHeart(button, isSaved) {
     const icon = button.querySelector('i');
-    let savedItems = readSavedAttractions();
-    const isSaved = savedItems.includes(id);
-
-    if (isSaved) {
-        savedItems = savedItems.filter(item => item !== id);
-        icon.className = 'fa-regular fa-heart';
-        icon.style.color = '#68788c';
-        button.setAttribute('aria-pressed', 'false');
-    } else {
-        savedItems.push(id);
-        icon.className = 'fa-solid fa-heart';
-        icon.style.color = '#7c3aed';
-        button.setAttribute('aria-pressed', 'true');
-    }
-
-    localStorage.setItem(
-        'travelPal_attractions',
-        JSON.stringify(savedItems)
-    );
+    icon.className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+    icon.style.color = isSaved ? '#7c3aed' : '#68788c';
+    button.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
 }
 
 const ticketCounts = {
@@ -731,20 +679,13 @@ function updateTicket(type, change) {
     }
 
     ticketCounts[type] = nextValue;
+    document.getElementById('cnt_' + type).textContent = ticketCounts[type];
+    document.getElementById('input_' + type).value = ticketCounts[type];
 
-    document.getElementById('cnt_' + type).textContent =
-        ticketCounts[type];
-
-    document.getElementById('input_' + type).value =
-        ticketCounts[type];
-
-    const adultText =
-        ticketCounts.adults +
-        (ticketCounts.adults === 1 ? ' Adult' : ' Adults');
-
-    const childText =
-        ticketCounts.children +
-        (ticketCounts.children === 1 ? ' Child' : ' Children');
+    const adultText = ticketCounts.adults
+        + (ticketCounts.adults === 1 ? ' Adult' : ' Adults');
+    const childText = ticketCounts.children
+        + (ticketCounts.children === 1 ? ' Child' : ' Children');
 
     document.getElementById('ticketSummary').textContent =
         ticketCounts.children > 0
@@ -757,9 +698,7 @@ const ticketDropdown = document.getElementById('ticketDropdown');
 
 function toggleTicketDropdown() {
     ticketDropdown.style.display =
-        ticketDropdown.style.display === 'block'
-            ? 'none'
-            : 'block';
+        ticketDropdown.style.display === 'block' ? 'none' : 'block';
 }
 
 function closeTicketDropdown() {
@@ -785,18 +724,43 @@ ticketDropdown.addEventListener('click', function (event) {
 document.addEventListener('click', closeTicketDropdown);
 
 document.addEventListener('DOMContentLoaded', function () {
-    const savedItems = readSavedAttractions();
+    let savedItems = readSavedAttractions();
 
-    document.querySelectorAll('.heart-btn').forEach(button => {
-        if (!savedItems.includes(button.dataset.id)) {
-            return;
+    document.querySelectorAll('#mustVisitCarousel .property-card').forEach(
+        function (card) {
+            card.addEventListener('click', function () {
+                window.location.href = card.dataset.url;
+            });
+
+            card.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    window.location.href = card.dataset.url;
+                }
+            });
         }
+    );
 
-        const icon = button.querySelector('i');
+    document.querySelectorAll('.heart-btn').forEach(function (button) {
+        updateHeart(button, savedItems.includes(button.dataset.id));
 
-        icon.className = 'fa-solid fa-heart';
-        icon.style.color = '#7c3aed';
-        button.setAttribute('aria-pressed', 'true');
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
+            savedItems = readSavedAttractions();
+            const id = button.dataset.id;
+
+            if (savedItems.includes(id)) {
+                savedItems = savedItems.filter(item => item !== id);
+                updateHeart(button, false);
+            } else {
+                savedItems.push(id);
+                updateHeart(button, true);
+            }
+
+            localStorage.setItem(
+                'travelPal_attractions',
+                JSON.stringify(savedItems)
+            );
+        });
     });
 
     const dateInput = document.getElementById('visit_date');
@@ -808,8 +772,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     dateInput.min = localDate;
     dateInput.value = localDate;
-
     updateCarouselProgress();
+});
+
+const categoryInput = document.getElementById('categoryFilter');
+
+document.querySelectorAll('.vibe-pill').forEach(function (button) {
+    button.addEventListener('click', function () {
+        document.querySelectorAll('.vibe-pill').forEach(
+            item => item.classList.remove('active')
+        );
+
+        button.classList.add('active');
+        categoryInput.value = button.dataset.category;
+    });
 });
 </script>
 

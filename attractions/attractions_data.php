@@ -1,66 +1,72 @@
 <?php
 
+/* ==================== Supported Malaysian destinations ==================== */
+
 $attraction_regions = [
     'johor' => [
         'name' => 'Johor',
         'city' => 'Johor Bahru',
         'label' => 'Johor · Johor Bahru',
-        'query' => 'Johor Bahru'
+        'query' => 'Johor Bahru, Johor, Malaysia'
     ],
     'melaka' => [
         'name' => 'Melaka',
         'city' => 'Melaka',
         'label' => 'Melaka',
-        'query' => 'Melaka'
+        'query' => 'Melaka, Malaysia'
     ],
     'selangor' => [
         'name' => 'Selangor',
         'city' => 'Selangor',
         'label' => 'Selangor',
-        'query' => 'Selangor'
+        'query' => 'Selangor, Malaysia'
     ],
     'perak' => [
         'name' => 'Perak',
         'city' => 'Ipoh',
         'label' => 'Perak · Ipoh',
-        'query' => 'Ipoh'
+        'query' => 'Ipoh, Perak, Malaysia'
     ],
     'penang' => [
         'name' => 'Penang',
         'city' => 'George Town',
         'label' => 'Penang',
-        'query' => 'Penang'
+        'query' => 'Penang, Malaysia'
     ],
     'pahang' => [
         'name' => 'Pahang',
         'city' => 'Pahang',
         'label' => 'Pahang',
-        'query' => 'Pahang'
+        'query' => 'Pahang, Malaysia'
     ],
     'sabah' => [
         'name' => 'Sabah',
         'city' => 'Kota Kinabalu',
         'label' => 'Sabah',
-        'query' => 'Sabah'
+        'query' => 'Kota Kinabalu, Sabah, Malaysia'
     ],
     'sarawak' => [
         'name' => 'Sarawak',
         'city' => 'Kuching',
         'label' => 'Sarawak',
-        'query' => 'Sarawak'
+        'query' => 'Kuching, Sarawak, Malaysia'
     ]
 ];
 
+/*
+ * Local fallback data: two items per state.
+ * These are used by Must-Visit and only when the API has no usable results.
+ */
 $featured_attractions_by_region = [
     'johor' => [
         [
             'id' => 'johor-legoland-malaysia',
             'name' => 'LEGOLAND Malaysia Resort',
-            'type' => 'Theme Park',
+            'type' => 'Theme Parks',
             'price' => 'From RM 199',
             'rating' => 4.6,
             'review_count' => 12840,
-            'image' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/legoland.jpg',
             'description' => 'Malaysia’s first international theme park combines LEGO-inspired rides, a water park and SEA LIFE exhibits in Iskandar Puteri.',
             'activities' => [
                 'Explore LEGO-themed rides and family zones',
@@ -79,7 +85,7 @@ $featured_attractions_by_region = [
             'price' => 'Free',
             'rating' => 4.7,
             'review_count' => 2180,
-            'image' => 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/sultanAbuBakarJohorBahru.jpg',
             'description' => 'A landmark mosque overlooking the Straits of Johor that blends Victorian details with Moorish architecture.',
             'activities' => [
                 'Admire the Victorian-Moorish architecture',
@@ -97,11 +103,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'melaka-a-famosa',
             'name' => 'A Famosa Fort',
-            'type' => 'Historical',
+            'type' => 'Heritage & Culture',
             'price' => 'Free',
             'rating' => 4.5,
             'review_count' => 9620,
-            'image' => 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/AFamosa.jpg',
             'description' => 'Porta de Santiago is the surviving gateway of the Portuguese A Famosa fortress and one of Melaka’s most recognisable landmarks.',
             'activities' => [
                 'See the surviving Portuguese gateway',
@@ -116,11 +122,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'melaka-river-cruise',
             'name' => 'Melaka River Cruise',
-            'type' => 'Sightseeing Cruise',
+            'type' => 'Heritage & Culture',
             'price' => 'From RM 25',
             'rating' => 4.4,
             'review_count' => 7850,
-            'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/MelakaRiverCruise.webp',
             'description' => 'A relaxing river journey through historic Melaka, passing colourful murals, bridges, old shophouses and riverside cafés.',
             'activities' => [
                 'Cruise through central Melaka',
@@ -142,7 +148,7 @@ $featured_attractions_by_region = [
             'price' => 'Free',
             'rating' => 4.7,
             'review_count' => 34200,
-            'image' => 'https://images.unsplash.com/photo-1600122732958-9a9976b92a4e?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/BatuCaves.jpg',
             'description' => 'A dramatic limestone hill and Hindu temple complex famous for its giant Lord Murugan statue and 272 colourful steps.',
             'activities' => [
                 'Climb the 272 colourful steps',
@@ -157,11 +163,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'selangor-sunway-lagoon',
             'name' => 'Sunway Lagoon',
-            'type' => 'Theme Park',
+            'type' => 'Theme Parks',
             'price' => 'From RM 213',
             'rating' => 4.6,
             'review_count' => 19870,
-            'image' => 'https://images.unsplash.com/photo-1536961045126-a801c4f7d93b?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/SunwayLagoon.jpg',
             'description' => 'A large multi-zone theme park with water attractions, thrill rides, wildlife encounters and family entertainment.',
             'activities' => [
                 'Try the water slides and wave pools',
@@ -179,11 +185,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'perak-lost-world-tambun',
             'name' => 'Lost World of Tambun',
-            'type' => 'Theme Park',
+            'type' => 'Theme Parks',
             'price' => 'From RM 117',
             'rating' => 4.5,
             'review_count' => 11250,
-            'image' => 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/LostWorldofTambun.jpg',
             'description' => 'Surrounded by Ipoh’s limestone hills, this family destination combines a water park, rides, animals and hot springs.',
             'activities' => [
                 'Enjoy water-park attractions',
@@ -198,11 +204,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'perak-kellies-castle',
             'name' => "Kellie's Castle",
-            'type' => 'Historical',
+            'type' => 'Heritage & Culture',
             'price' => 'From RM 5',
             'rating' => 4.3,
             'review_count' => 6450,
-            'image' => 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1400&q=82',
+            'image' => "/TravelPal/images/attractions_image/Kellie'sCastle.jpg",
             'description' => 'An unfinished early-20th-century mansion near Batu Gajah, known for its corridors, rooftop views and mysterious stories.',
             'activities' => [
                 'Explore the unfinished mansion',
@@ -220,11 +226,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'penang-hill',
             'name' => 'Penang Hill',
-            'type' => 'Nature & Scenic Views',
+            'type' => 'Nature & Wildlife',
             'price' => 'From RM 30',
             'rating' => 4.6,
             'review_count' => 24800,
-            'image' => 'https://images.unsplash.com/photo-1584160226019-a1c2b40d4b3e?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/PenangHill.jpg',
             'description' => 'Ride the funicular railway into cooler hilltop air for panoramic views, forest walks and heritage buildings.',
             'activities' => [
                 'Ride the funicular railway',
@@ -243,7 +249,7 @@ $featured_attractions_by_region = [
             'price' => 'Free',
             'rating' => 4.7,
             'review_count' => 13700,
-            'image' => 'https://images.unsplash.com/photo-1620021671569-8a3fb9bfd6b6?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/KekLokSiTemple.webp',
             'description' => 'One of Southeast Asia’s largest Buddhist temple complexes, featuring prayer halls, gardens, a pagoda and a Guanyin statue.',
             'activities' => [
                 'Explore the temple halls and gardens',
@@ -261,11 +267,11 @@ $featured_attractions_by_region = [
         [
             'id' => 'pahang-genting-skyworlds',
             'name' => 'Genting SkyWorlds Theme Park',
-            'type' => 'Theme Park',
+            'type' => 'Theme Parks',
             'price' => 'From RM 151',
             'rating' => 4.5,
             'review_count' => 9650,
-            'image' => 'https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/GentingSkyWorldsThemePark.png',
             'description' => 'A highland outdoor theme park with cinematic worlds, family attractions and thrill rides in Genting Highlands.',
             'activities' => [
                 'Explore themed cinematic worlds',
@@ -284,7 +290,7 @@ $featured_attractions_by_region = [
             'price' => 'From RM 1',
             'rating' => 4.7,
             'review_count' => 5820,
-            'image' => 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/TamanNegaraNationalPark.jpg',
             'description' => 'Malaysia’s premier rainforest destination offers jungle trails, river journeys, wildlife and canopy-level views.',
             'activities' => [
                 'Walk rainforest trails',
@@ -306,7 +312,7 @@ $featured_attractions_by_region = [
             'price' => 'From RM 15',
             'rating' => 4.8,
             'review_count' => 8940,
-            'image' => 'https://images.unsplash.com/photo-1623484504840-9f49546a3b3f?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/KinabaluPark.jpg',
             'description' => 'A UNESCO-listed mountain park with exceptional biodiversity, forest trails and dramatic views of Mount Kinabalu.',
             'activities' => [
                 'Walk botanical and forest trails',
@@ -325,7 +331,7 @@ $featured_attractions_by_region = [
             'price' => 'From RM 30',
             'rating' => 4.7,
             'review_count' => 7360,
-            'image' => 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/SepilokOrangutanRehabilitationCentre.jpg',
             'description' => 'A respected rehabilitation centre where visitors can learn about orangutan conservation in protected rainforest.',
             'activities' => [
                 'Attend scheduled feeding sessions',
@@ -347,7 +353,7 @@ $featured_attractions_by_region = [
             'price' => 'From RM 20',
             'rating' => 4.7,
             'review_count' => 5260,
-            'image' => 'https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/BakoNationalPark.jpg',
             'description' => 'Sarawak’s oldest national park contains rainforest trails, coastal cliffs, beaches and proboscis monkey habitat.',
             'activities' => [
                 'Hike marked rainforest trails',
@@ -366,7 +372,7 @@ $featured_attractions_by_region = [
             'price' => 'From RM 60',
             'rating' => 4.6,
             'review_count' => 6870,
-            'image' => 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=1400&q=82',
+            'image' => '/TravelPal/images/attractions_image/SarawakCulturalVillage.jpg',
             'description' => 'A living cultural museum presenting the traditional homes, crafts, music and customs of Sarawak’s communities.',
             'activities' => [
                 'Enter traditional community houses',
@@ -388,6 +394,10 @@ function getLocalFeaturedAttractions(): array
     $items = [];
 
     foreach ($featured_attractions_by_region as $regionKey => $attractions) {
+        if (!isset($attraction_regions[$regionKey])) {
+            continue;
+        }
+
         $region = $attraction_regions[$regionKey];
 
         foreach ($attractions as $attraction) {
@@ -398,7 +408,6 @@ function getLocalFeaturedAttractions(): array
             $attraction['query'] = $region['query'];
             $attraction['source'] = 'local';
             $attraction['slug'] = null;
-
             $items[] = $attraction;
         }
     }
@@ -410,14 +419,15 @@ function getLocalAttractionsForRegion(string $regionKey): array
 {
     return array_values(array_filter(
         getLocalFeaturedAttractions(),
-        static fn(array $item): bool => $item['region_key'] === $regionKey
+        static fn(array $item): bool =>
+            ($item['region_key'] ?? '') === $regionKey
     ));
 }
 
 function findLocalAttractionById(string $id): ?array
 {
     foreach (getLocalFeaturedAttractions() as $attraction) {
-        if ($attraction['id'] === $id) {
+        if (($attraction['id'] ?? '') === $id) {
             return $attraction;
         }
     }

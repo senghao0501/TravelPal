@@ -509,46 +509,192 @@ button, input, select {
     margin-bottom: 50px;
 }
 
+.destination-step-label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--secondary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.destination-journey {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: -4px 0 24px;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.destination-journey span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.destination-journey b {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #eef2f7;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.destination-journey .current {
+    color: var(--secondary-dark);
+}
+
+.destination-journey .current b {
+    background: var(--secondary);
+    color: #fff;
+}
+
+.destination-journey > i {
+    color: #cbd5e1;
+    font-size: 9px;
+}
+
+.property-types-section .property-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+}
+
 .category-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 210px;
     background: var(--surface);
-    padding: 20px 16px;
+    padding: 22px;
     border-radius: var(--radius-md);
-    text-align: center;
+    text-align: left;
     text-decoration: none;
     color: var(--text-dark);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
-    transition: border-color 0.15s ease, background 0.15s ease;
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .category-card:hover {
-    border-color: var(--secondary); 
-    background: var(--secondary-soft);
+    transform: translateY(-4px);
+    border-color: var(--secondary);
+    background: #fff;
+    box-shadow: 0 16px 34px rgba(76, 29, 149, 0.13);
+}
+
+.category-card:focus-visible {
+    outline: 3px solid rgba(124, 58, 237, 0.22);
+    outline-offset: 3px;
+}
+
+.destination-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 18px;
 }
 
 .property-icon {
-    width: 42px;
-    height: 42px;
-    margin: 0 auto 12px;
+    width: 48px;
+    height: 48px;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--secondary-soft); /* 柔和紫色背景 */
+    background: var(--secondary-soft);
     border-radius: var(--radius-sm);
-    color: var(--secondary-dark); /* 深紫色图标 */
-    font-size: 18px;
+    color: var(--secondary-dark);
+    font-size: 19px;
+}
+
+.destination-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #f8fafc;
+    color: #94a3b8;
+    font-size: 12px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.category-card:hover .destination-arrow {
+    background: var(--secondary);
+    color: #fff;
 }
 
 .category-card h3 {
-    margin: 0 0 4px;
-    font-size: 14px;
-    font-weight: 700;
+    margin: 0 0 7px;
+    font-size: 16px;
+    font-weight: 800;
 }
 
 .category-card p {
     margin: 0;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
+}
+
+.category-card .destination-description {
+    line-height: 1.5;
+}
+
+.destination-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: auto;
+    padding-top: 18px;
+    color: var(--secondary-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.destination-action i {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.category-card:hover .destination-action i {
+    transform: translateX(4px);
+}
+
+@media (max-width: 1100px) {
+    .property-types-section .property-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .property-types-section .property-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .destination-journey {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    .destination-journey > i {
+        display: none;
+    }
+
+    .category-card {
+        min-height: 190px;
+    }
 }
 
 /* =========================================================

@@ -2667,10 +2667,11 @@ input:focus-visible {
 
 @media (min-width: 1300px) {
     .search-container {
-        width: calc(100% - 50px);
-        max-width: none;
-        margin-left: 50px;
-        margin-right: 0;
+        /* Use the same content column as the hero and main section. */
+        width: min(1240px, calc(100% - 48px));
+        max-width: 1240px;
+        margin-left: auto;
+        margin-right: auto;
         transform: none;
     }
 }

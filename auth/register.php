@@ -1,159 +1,56 @@
-<?php include '../header.php'; ?>
-<link rel="stylesheet" href="../css/modules/auth.css">
+<?php
+session_start();
+if (!isset($_SESSION['travelpal_accounts'])) {
+    $_SESSION['travelpal_accounts'] = [
+        'demo@travelpal.my' => ['name' => 'Aina Rahman', 'password' => password_hash('TravelPal123!', PASSWORD_DEFAULT)],
+    ];
+}
 
-<main class="auth-wrapper">
-    <div class="auth-container">
-        <!-- 左侧：故事感轮播图 (与 Login 保持一致) -->
-        <div class="auth-left slideshow-container">
-            <!-- Slide 1: Malaysia -->
-            <div class="slide fade active">
-                <img src="malaysia.jpe" alt="Kuala Lumpur">
-                <div class="caption">
-                    <span class="badge">Popular Destination</span>
-                    <h3>Kuala Lumpur</h3>
-                    <p>Malaysia</p>
-                    <div class="rating">★ 4.9 <span>(18,500+ Travelers)</span></div>
-                </div>
-            </div>
-
-            <!-- Slide 2: Indonesia -->
-            <div class="slide fade">
-                <img src="indonesia.jpe" alt="Bali">
-                <div class="caption">
-                    <span class="badge">Island Paradise</span>
-                    <h3>Bali</h3>
-                    <p>Indonesia</p>
-                    <div class="rating">★ 4.8 <span>(24,000+ Travelers)</span></div>
-                </div>
-            </div>
-
-            <!-- Slide 3: Vietnam -->
-            <div class="slide fade">
-                <img src="vietnam.jpe" alt="Hanoi">
-                <div class="caption">
-                    <span class="badge">Cultural Experience</span>
-                    <h3>Hanoi</h3>
-                    <p>Vietnam</p>
-                    <div class="rating">★ 4.7 <span>(12,300+ Travelers)</span></div>
-                </div>
-            </div>
-
-            <!-- Slide 4: Thailand -->
-            <div class="slide fade">
-                <img src="thailand.jpe" alt="Wat Arun">
-                <div class="caption">
-                    <span class="badge">Historical Landmark</span>
-                    <h3>Wat Arun</h3>
-                    <p>Thailand</p>
-                    <div class="rating">★ 4.9 <span>(15,100+ Travelers)</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 右侧：精简注册表单区 -->
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = trim($_POST['username'] ?? '');
+    $email = strtolower(trim($_POST['email'] ?? ''));
+    $password = $_POST['password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+    if (mb_strlen($name) < 2) $error = 'Please enter your full name.';
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = 'Please enter a valid email address.';
+    elseif (isset($_SESSION['travelpal_accounts'][$email])) $error = 'This email address is already registered.';
+    elseif (strlen($password) < 8) $error = 'Your password must contain at least 8 characters.';
+    elseif ($password !== $confirm) $error = 'Your passwords do not match.';
+    else {
+        $_SESSION['travelpal_accounts'][$email] = ['name' => $name, 'password' => password_hash($password, PASSWORD_DEFAULT)];
+        header('Location: login.php?registered=1'); exit;
+    }
+}
+include '../header.php';
+?>
+<link rel="stylesheet" href="../css/modules/auth.css?v=3">
+<section class="auth-wrapper" aria-label="Create a TravelPal account">
+    <div class="auth-container auth-register-layout">
+        <aside class="auth-left slideshow-container" aria-label="Malaysia destination highlights">
+            <article class="slide active"><img src="https://cdn.pixabay.com/photo/2016/11/13/12/52/kuala-lumpur-1820944_1280.jpg" alt="Kuala Lumpur skyline"><div class="caption"><span class="badge">City escape</span><h3>Kuala Lumpur</h3><p>Malaysia</p><div class="rating">★ 4.9 <span>18,640 travellers loved it</span></div></div></article>
+            <article class="slide"><img src="https://tse2.mm.bing.net/th/id/OIP.X1fhsvCuZZf1s1etea9A4AHaFS?r=0&amp;pid=Api&amp;h=220&amp;P=0" alt="Penang"><div class="caption"><span class="badge">Food &amp; heritage</span><h3>Penang</h3><p>Malaysia</p><div class="rating">★ 4.8 <span>12,980 travellers loved it</span></div></div></article>
+            <article class="slide"><img src="https://mediaim.expedia.com/destination/1/1fae69e907143c28cc0ea9771f67f041.jpg" alt="Semporna, Sabah"><div class="caption"><span class="badge">Island discovery</span><h3>Semporna, Sabah</h3><p>Malaysia</p><div class="rating">★ 4.9 <span>9,420 travellers loved it</span></div></div></article>
+            <article class="slide"><img src="https://content.r9cdn.net/rimg/dimg/2f/8e/5e54c6c2-city-44529-1732ead8292.jpg?width=1366&amp;height=768&amp;xhint=3180&amp;yhint=1735&amp;crop=true" alt="Johor Bahru"><div class="caption"><span class="badge">Weekend favourite</span><h3>Johor Bahru</h3><p>Malaysia</p><div class="rating">★ 4.7 <span>10,260 travellers loved it</span></div></div></article>
+            <div class="slide-dots" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
+        </aside>
         <div class="auth-right">
-            <div class="auth-header">
-                <h2>Create Account</h2>
-                <p class="sub-title">Start your journey with TravelPal today.</p>
-            </div>
-
-            <?php if (isset($_GET['error'])): ?>
-                <div class="auth-alert error"><?php echo htmlspecialchars($_GET['error']); ?></div>
-            <?php endif; ?>
-            <?php if (isset($_GET['success'])): ?>
-                <div class="auth-alert success">✓ Account created successfully! <a href="login.php">Sign in now</a></div>
-            <?php endif; ?>
-
-            <form action="register.php" method="POST" id="registerForm">
-                <!-- Full Name Input -->
-                <div class="input-group">
-                    <label for="username">Full Name</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="text" id="username" name="username" placeholder="Enter your full name" required>
-                    </div>
-                </div>
-
-                <!-- Email Input -->
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    </div>
-                </div>
-
-                <!-- Password Input -->
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="password" name="password" placeholder="Create a password" required>
-                        <button type="button" class="eye-btn" onclick="togglePassword('password')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Confirm Password Input -->
-                <div class="input-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
-                        <button type="button" class="eye-btn" onclick="togglePassword('confirm_password')">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Primary Submit Button -->
-                <button type="submit" name="submit_register" class="btn-primary" id="btnSubmit">Create Account</button>
+            <div class="auth-header"><span class="auth-eyebrow">Start exploring</span><h1>Create your account</h1><p>Save your favourite routes and keep every trip in one place.</p></div>
+            <?php if (isset($error)): ?><div class="auth-alert error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+            <form method="post" id="registerForm">
+                <div class="input-group"><label for="username">Full name</label><div class="input-wrapper"><span class="input-icon">◌</span><input type="text" id="username" name="username" autocomplete="name" placeholder="Your full name" required value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"></div></div>
+                <div class="input-group"><label for="email">Email address</label><div class="input-wrapper"><span class="input-icon">@</span><input type="email" id="email" name="email" autocomplete="email" placeholder="name@email.com" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"></div></div>
+                <div class="input-group"><label for="password">Password</label><div class="input-wrapper"><span class="input-icon">⌁</span><input type="password" id="password" name="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required><button type="button" class="eye-btn" data-password-toggle="password" aria-label="Show password">Show</button></div></div>
+                <div class="input-group"><label for="confirm_password">Confirm password</label><div class="input-wrapper"><span class="input-icon">⌁</span><input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" placeholder="Repeat your password" minlength="8" required><button type="button" class="eye-btn" data-password-toggle="confirm_password" aria-label="Show password">Show</button></div></div>
+                <button type="submit" class="btn-primary" id="submitButton">Create account</button>
             </form>
-
-            <div class="divider">
-                <span>OR</span>
-            </div>
-
-            <!-- Google Sign Up -->
-            <button class="btn-google">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
-                Continue with Google
-            </button>
-
-            <p class="auth-switch">Already have an account? <a href="login.php">Sign In</a></p>
+            <p class="auth-switch">Already have an account? <a href="login.php">Sign in</a></p>
+            <p class="form-note">This version stores new accounts only for the current browser session. Database storage will be added later.</p>
         </div>
     </div>
-</main>
-
+</section>
 <script>
-    // 1. 5秒自动轮播
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    function showSlides() {
-        slides.forEach(slide => slide.classList.remove('active'));
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-    }
-    setInterval(showSlides, 5000);
-
-    // 2. 动态密码显隐切换 (支持多个密码框)
-    function togglePassword(fieldId) {
-        const passwordInput = document.getElementById(fieldId);
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-        } else {
-            passwordInput.type = 'password';
-        }
-    }
-
-    // 3. 提交 Loading 状态展示
-    document.getElementById('registerForm').addEventListener('submit', function() {
-        const btn = document.getElementById('btnSubmit');
-        btn.innerText = 'Creating account...';
-        btn.style.opacity = '0.8';
-    });
+document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => { const input = document.getElementById(button.dataset.passwordToggle); input.type = input.type === 'password' ? 'text' : 'password'; button.textContent = input.type === 'password' ? 'Show' : 'Hide'; }));
+document.getElementById('registerForm').addEventListener('submit', () => { document.getElementById('submitButton').textContent = 'Creating account…'; });
+const slides = [...document.querySelectorAll('.slide')], dots = [...document.querySelectorAll('.slide-dots span')]; let active = 0; setInterval(() => { slides[active].classList.remove('active'); dots[active].classList.remove('active'); active = (active + 1) % slides.length; slides[active].classList.add('active'); dots[active].classList.add('active'); }, 5000);
 </script>
-
-</body>
-</html>
+</main></body></html>

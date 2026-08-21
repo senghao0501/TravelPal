@@ -1,146 +1,84 @@
-<?php include '../header.php'; ?>
-<link rel="stylesheet" href="../css/modules/auth.css">
+<?php
+session_start();
 
-<main class="auth-wrapper">
-    <div class="auth-container">
-        <div class="auth-left slideshow-container">
-            <!-- Slide 1: Malaysia -->
-            <div class="slide fade active">
-                <img src="malaysia.jpe" alt="Kuala Lumpur">
-                <div class="caption">
-                    <span class="badge">Popular Destination</span>
-                    <h3>Kuala Lumpur</h3>
-                    <p>Malaysia</p>
-                    <div class="rating">★ 4.9 <span>(18,500+ Travelers)</span></div>
-                </div>
-            </div>
+/* Temporary session-only accounts. Replace this with database queries later. */
+if (!isset($_SESSION['travelpal_accounts'])) {
+    $_SESSION['travelpal_accounts'] = [
+        'demo@travelpal.my' => [
+            'name' => 'Aina Rahman',
+            'password' => password_hash('TravelPal123!', PASSWORD_DEFAULT),
+        ],
+    ];
+}
 
-            <!-- Slide 2: Indonesia -->
-            <div class="slide fade">
-                <img src="indonesia.jpe" alt="Bali">
-                <div class="caption">
-                    <span class="badge">Island Paradise</span>
-                    <h3>Bali</h3>
-                    <p>Indonesia</p>
-                    <div class="rating">★ 4.8 <span>(24,000+ Travelers)</span></div>
-                </div>
-            </div>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = strtolower(trim($_POST['email'] ?? ''));
+    $password = $_POST['password'] ?? '';
+    $account = $_SESSION['travelpal_accounts'][$email] ?? null;
 
-            <!-- Slide 3: Vietnam -->
-            <div class="slide fade">
-                <img src="vietnam.jpe" alt="Hanoi">
-                <div class="caption">
-                    <span class="badge">Cultural Experience</span>
-                    <h3>Hanoi</h3>
-                    <p>Vietnam</p>
-                    <div class="rating">★ 4.7 <span>(12,300+ Travelers)</span></div>
-                </div>
-            </div>
+    if ($account && password_verify($password, $account['password'])) {
+        $_SESSION['user_id'] = $email;
+        $_SESSION['user_name'] = $account['name'];
+        header('Location: /TravelPal/index.php?login=success');
+        exit;
+    }
+    header('Location: login.php?error=1');
+    exit;
+}
 
-            <!-- Slide 4: Thailand -->
-            <div class="slide fade">
-                <img src="thailand.jpe" alt="Wat Arun">
-                <div class="caption">
-                    <span class="badge">Historical Landmark</span>
-                    <h3>Wat Arun</h3>
-                    <p>Thailand</p>
-                    <div class="rating">★ 4.9 <span>(15,100+ Travelers)</span></div>
-                </div>
-            </div>
-        </div>
+include '../header.php';
+?>
+<link rel="stylesheet" href="../css/modules/auth.css?v=3">
 
-        <!-- 右侧：精简 56% 表单区 -->
+<section class="auth-wrapper" aria-label="Sign in to TravelPal">
+    <div class="auth-container auth-login-layout">
+        <aside class="auth-left slideshow-container" aria-label="Malaysia destination highlights">
+            <article class="slide active">
+                <img src="https://cdn.pixabay.com/photo/2016/11/13/12/52/kuala-lumpur-1820944_1280.jpg" alt="Kuala Lumpur skyline">
+                <div class="caption"><span class="badge">City escape</span><h3>Kuala Lumpur</h3><p>Malaysia</p><div class="rating">★ 4.9 <span>18,640 travellers loved it</span></div></div>
+            </article>
+            <article class="slide">
+                <img src="https://tse2.mm.bing.net/th/id/OIP.X1fhsvCuZZf1s1etea9A4AHaFS?r=0&amp;pid=Api&amp;h=220&amp;P=0" alt="Penang">
+                <div class="caption"><span class="badge">Food &amp; heritage</span><h3>Penang</h3><p>Malaysia</p><div class="rating">★ 4.8 <span>12,980 travellers loved it</span></div></div>
+            </article>
+            <article class="slide">
+                <img src="https://mediaim.expedia.com/destination/1/1fae69e907143c28cc0ea9771f67f041.jpg" alt="Semporna, Sabah">
+                <div class="caption"><span class="badge">Island discovery</span><h3>Semporna, Sabah</h3><p>Malaysia</p><div class="rating">★ 4.9 <span>9,420 travellers loved it</span></div></div>
+            </article>
+            <article class="slide">
+                <img src="https://content.r9cdn.net/rimg/dimg/2f/8e/5e54c6c2-city-44529-1732ead8292.jpg?width=1366&amp;height=768&amp;xhint=3180&amp;yhint=1735&amp;crop=true" alt="Johor Bahru">
+                <div class="caption"><span class="badge">Weekend favourite</span><h3>Johor Bahru</h3><p>Malaysia</p><div class="rating">★ 4.7 <span>10,260 travellers loved it</span></div></div>
+            </article>
+            <div class="slide-dots" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
+        </aside>
+
         <div class="auth-right">
-            <div class="auth-header">
-                <h2>Sign In</h2>
-                <p class="sub-title">Continue planning your next adventure.</p>
-            </div>
+            <div class="auth-header"><span class="auth-eyebrow">Welcome back</span><h1>Sign in to TravelPal</h1><p>Manage your trips and discover your next stay.</p></div>
+            <?php if (isset($_GET['error'])): ?><div class="auth-alert error">The email or password is incorrect. Please try again.</div><?php endif; ?>
+            <?php if (isset($_GET['registered'])): ?><div class="auth-alert success">Your account is ready. Please sign in.</div><?php endif; ?>
+            <?php if (isset($_GET['logout'])): ?><div class="auth-alert success">You have signed out safely.</div><?php endif; ?>
 
-            <?php if (isset($_GET['error'])): ?>
-                <div class="auth-alert error">Invalid email or password.</div>
-            <?php endif; ?>
-            <?php if (isset($_GET['success'])): ?>
-                <div class="auth-alert success">✓ Login Successful</div>
-            <?php endif; ?>
-
-            <form action="login.php" method="POST" id="loginForm">
-                <!-- Email Input with Icon -->
-                <div class="input-group">
-                    <label for="email">Email</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                    </div>
-                </div>
-
-                <!-- Password Input with Icon & Toggle Eye -->
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                        <button type="button" class="eye-btn" onclick="togglePassword()">
-                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Remember Me & Forgot Password -->
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" name="remember">
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" class="forgot-link">Forgot password?</a>
-                </div>
-
-                <!-- Primary Submit Button -->
-                <button type="submit" name="submit_login" class="btn-primary" id="btnSubmit">Sign In</button>
+            <form method="post" id="loginForm" novalidate>
+                <div class="input-group"><label for="email">Email address</label><div class="input-wrapper"><span class="input-icon">@</span><input type="email" id="email" name="email" autocomplete="email" placeholder="name@email.com" required></div></div>
+                <div class="input-group"><label for="password">Password</label><div class="input-wrapper"><span class="input-icon">⌁</span><input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" class="eye-btn" data-password-toggle="password" aria-label="Show password">Show</button></div></div>
+                <div class="form-options"><label class="remember-me"><input type="checkbox" name="remember"> <span>Remember me</span></label><button type="button" class="text-button" id="resetNotice">Forgot password?</button></div>
+                <p class="form-note" id="resetMessage" hidden>Password reset will be available after email delivery is configured.</p>
+                <button type="submit" class="btn-primary" id="submitButton">Sign in</button>
             </form>
-
-            <div class="divider">
-                <span>OR</span>
-            </div>
-
-            <!-- Google Sign In -->
-            <button class="btn-google">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
-                Continue with Google
-            </button>
-
-            <p class="auth-switch">Don't have an account? <a href="register.php">Create account</a></p>
+            <p class="auth-switch">New to TravelPal? <a href="register.php">Create an account</a></p>
+            <p class="demo-hint">Demo account: <strong>demo@travelpal.my</strong> · <strong>TravelPal123!</strong></p>
         </div>
     </div>
-</main>
-
+</section>
 <script>
-    // 1. 5秒自动轮播
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    function showSlides() {
-        slides.forEach(slide => slide.classList.remove('active'));
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-    }
-    setInterval(showSlides, 5000);
-
-    // 2. 密码显隐切换
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-        } else {
-            passwordInput.type = 'password';
-        }
-    }
-
-    // 3. 提交 Loading 状态展示
-    document.getElementById('loginForm').addEventListener('submit', function() {
-        const btn = document.getElementById('btnSubmit');
-        btn.innerText = 'Signing in...';
-        btn.style.opacity = '0.8';
-    });
+document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    button.textContent = input.type === 'password' ? 'Show' : 'Hide';
+}));
+document.getElementById('resetNotice').addEventListener('click', () => document.getElementById('resetMessage').hidden = false);
+document.getElementById('loginForm').addEventListener('submit', () => { document.getElementById('submitButton').textContent = 'Signing in…'; });
+const slides = [...document.querySelectorAll('.slide')], dots = [...document.querySelectorAll('.slide-dots span')]; let active = 0;
+setInterval(() => { slides[active].classList.remove('active'); dots[active].classList.remove('active'); active = (active + 1) % slides.length; slides[active].classList.add('active'); dots[active].classList.add('active'); }, 5000);
 </script>
-
-</body>
-</html>
+</main></body></html>

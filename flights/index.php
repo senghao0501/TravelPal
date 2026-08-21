@@ -417,6 +417,20 @@ include __DIR__ . '/../header.php';
             </div>
         </section>
 
+        <section class="staycation-member-banner" aria-labelledby="staycation-member-title">
+            <div class="staycation-banner-icon" aria-hidden="true">
+                <i class="fa-solid fa-tags"></i>
+            </div>
+            <div class="staycation-banner-copy">
+                <h2 id="staycation-member-title">Unlock Member Flight Benefits</h2>
+    <p>Sign in to access member-only fares, saved flight preferences and faster booking.</p>
+            </div>
+            <div class="staycation-banner-actions">
+                <a href="/TravelPal/auth/login.php" class="staycation-btn staycation-btn-primary">Sign In</a>
+                <a href="/TravelPal/auth/register.php" class="staycation-btn staycation-btn-secondary">Register Free</a>
+            </div>
+        </section>
+
         <section class="features-section">
             <div class="feature-item"><div class="feature-icon-wrapper"><i class="fa-solid fa-route"></i></div><div class="feature-info"><h4>Route-aware Search</h4><p>Change origin, destination and travel dates directly in the search bar.</p></div></div>
             <div class="feature-item"><div class="feature-icon-wrapper"><i class="fa-solid fa-users"></i></div><div class="feature-info"><h4>Passenger-aware Pricing</h4><p>Choose up to 9 passengers and the displayed total updates accordingly.</p></div></div>

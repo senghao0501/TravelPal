@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 include '../header.php';
 ?>
-<link rel="stylesheet" href="../css/modules/auth.css?v=3">
+<link rel="stylesheet" href="../css/modules/auth.css?v=5">
 
 <section class="auth-wrapper" aria-label="Sign in to TravelPal">
     <div class="auth-container auth-login-layout">
@@ -38,7 +38,7 @@ include '../header.php';
                 <div class="caption"><span class="badge">City escape</span><h3>Kuala Lumpur</h3><p>Malaysia</p><div class="rating">★ 4.9 <span>18,640 travellers loved it</span></div></div>
             </article>
             <article class="slide">
-                <img src="https://tse2.mm.bing.net/th/id/OIP.X1fhsvCuZZf1s1etea9A4AHaFS?r=0&amp;pid=Api&amp;h=220&amp;P=0" alt="Penang">
+                <img src="https://a-us.storyblok.com/f/1018409/4000x2250/188672021b/malaysia-professional-visit-pass-9.jpg" alt="Penang">
                 <div class="caption"><span class="badge">Food &amp; heritage</span><h3>Penang</h3><p>Malaysia</p><div class="rating">★ 4.8 <span>12,980 travellers loved it</span></div></div>
             </article>
             <article class="slide">
@@ -60,7 +60,7 @@ include '../header.php';
 
             <form method="post" id="loginForm" novalidate>
                 <div class="input-group"><label for="email">Email address</label><div class="input-wrapper"><span class="input-icon">@</span><input type="email" id="email" name="email" autocomplete="email" placeholder="name@email.com" required></div></div>
-                <div class="input-group"><label for="password">Password</label><div class="input-wrapper"><span class="input-icon">⌁</span><input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" class="eye-btn" data-password-toggle="password" aria-label="Show password">Show</button></div></div>
+                <div class="input-group"><label for="password">Password</label><div class="input-wrapper"><span class="input-icon">⌁</span><input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" class="eye-btn" data-password-toggle="password" aria-label="Show password"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="eye-outline" d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.7"/></svg></button></div></div>
                 <div class="form-options"><label class="remember-me"><input type="checkbox" name="remember"> <span>Remember me</span></label><button type="button" class="text-button" id="resetNotice">Forgot password?</button></div>
                 <p class="form-note" id="resetMessage" hidden>Password reset will be available after email delivery is configured.</p>
                 <button type="submit" class="btn-primary" id="submitButton">Sign in</button>
@@ -73,8 +73,10 @@ include '../header.php';
 <script>
 document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => {
     const input = document.getElementById(button.dataset.passwordToggle);
-    input.type = input.type === 'password' ? 'text' : 'password';
-    button.textContent = input.type === 'password' ? 'Show' : 'Hide';
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    button.classList.toggle('is-visible', isHidden);
 }));
 document.getElementById('resetNotice').addEventListener('click', () => document.getElementById('resetMessage').hidden = false);
 document.getElementById('loginForm').addEventListener('submit', () => { document.getElementById('submitButton').textContent = 'Signing in…'; });

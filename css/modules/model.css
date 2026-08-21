@@ -1,631 +1,577 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+/* =========================================================
+   TravelPal - Attractions Module CSS
+   Unified Design based on flights.css
+   Path: /css/modules/attractions.css
+   ========================================================= */
+
+:root {
+    /* 与 Flights 模块完全统一的色彩系统 */
+    --primary: #006ce4;
+    --primary-dark: #0057b8;
+    --primary-soft: #eaf3ff;
+
+    --text: #1f2937;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --text-light: #9ca3af;
+
+    --background: #f5f7fa;
+    --surface: #ffffff;
+    --surface-soft: #f8fafc;
+
+    --border: #d9dee7;
+    --border-light: #e8ecf1;
+
+    --success: #00875a;
+    --success-soft: #e7f7f0;
+
+    --warning: #b7791f;
+    --warning-soft: #fff8e6;
+
+    --danger: #b42318;
+    --danger-soft: #fff1f0;
+
+    --shadow-soft: 0 1px 3px rgba(16, 24, 40, 0.06);
+    --shadow-card: 0 2px 8px rgba(16, 24, 40, 0.07);
+    --shadow-hover: 0 8px 24px rgba(16, 24, 40, 0.10);
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+}
+
+/* =========================================================
+   GLOBAL & LAYOUT
+   ========================================================= */
+html {
+    scroll-behavior: smooth;
+}
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #fcfbf9;
-    color: #1a1a1a;
     margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
-/* 顶部跑马灯标语 */
-.flight-ticker {
-    background: #0f172a;
-    color: #38bdf8;
-    font-size: 0.75rem;
+button, input, select {
+    font-family: inherit;
+}
+
+/* 统一最大宽度，保持页面对齐 */
+.hero-content,
+.search-container,
+.main-content,
+.detail-page-container {
+    width: min(1180px, calc(100% - 48px));
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* =========================================================
+   HERO SECTION
+   ========================================================= */
+.hero-section {
+    position: relative;
+    padding: 58px 0 52px;
+    /* 使用与 Flights 完全一致的渐变背景 */
+    background: linear-gradient(115deg, #0b1f3a 0%, #0d315b 52%, #075fa8 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+}
+
+.hero-content {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.hero-content h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+    line-height: 1.12;
     font-weight: 700;
-    letter-spacing: 1.5px;
-    text-align: center;
-    padding: 0.5rem;
-    text-transform: uppercase;
+    letter-spacing: -0.025em;
 }
 
-/* 1. English Airbnb Sticky Search Bar */
-.search-hero-container {
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    padding: 1.2rem 1rem;
+.hero-content p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 16px;
+}
+
+/* =========================================================
+   VIBE TAGS (Quick Filters)
+   ========================================================= */
+.vibe-tags {
     display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.vibe-pill {
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.vibe-pill i {
+    margin-right: 6px;
+}
+
+.vibe-pill:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.vibe-pill.active {
+    background-color: #ffffff;
+    color: var(--primary-dark);
+    border-color: #ffffff;
+}
+
+/* =========================================================
+   SEARCH BAR (Matches flights.css 7-column design language)
+   ========================================================= */
+.filter-bar {
+    display: grid;
+    /* 针对景点的特殊 Grid：目的地、日期、门票数、搜索按钮 */
+    grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) minmax(180px, 1fr) 145px;
+    align-items: stretch;
+    gap: 7px;
+    padding: 7px;
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.input-group {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 62px;
+    padding: 9px 12px;
+    background: #ffffff;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    box-sizing: border-box;
+    position: relative;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.input-group:hover {
+    background: #fafbfc;
+    border-color: #d7dce4;
+}
+
+.input-group:focus-within {
+    background: #ffffff;
+    border-color: var(--primary);
+    box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.input-group .icon {
+    flex: 0 0 auto;
+    color: #5f6b7a;
+    font-size: 16px;
+}
+
+.input-group:focus-within .icon {
+    color: var(--primary);
+}
+
+.input-wrapper {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-wrapper label {
+    margin-bottom: 3px;
+    color: #687386;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.045em;
+}
+
+.input-wrapper select,
+.input-wrapper input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.guest-display-text {
+    font-size: 14px;
+    line-height: 1.35;
+    font-weight: 600;
+    color: #172033;
+}
+
+/* =========================================================
+   TICKET DROPDOWN
+   ========================================================= */
+.guest-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 300px;
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-hover);
+    padding: 20px;
+    z-index: 100;
+    border: 1px solid var(--border);
+}
+
+.picker-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.picker-title {
+    font-weight: 700;
+    color: var(--text-dark);
+    display: block;
+    font-size: 14px;
+}
+
+.picker-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.counter-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-counter {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    background: #ffffff;
+    color: var(--primary);
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
 }
 
-.search-hero-container.sticky {
-    padding: 0.7rem 1rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.95);
+.btn-counter:hover {
+    background: var(--primary-soft);
 }
 
-.airbnb-search-bar {
+.counter-value {
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+    color: var(--text-dark);
+}
+
+.btn-picker-done {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.btn-picker-done:hover {
+    background: var(--primary-dark);
+}
+
+/* =========================================================
+   SEARCH BUTTON
+   ========================================================= */
+.btn-search {
     display: inline-flex;
     align-items: center;
-    background: #ffffff;
-    border: 1px solid #ebebeb;
-    border-radius: 40px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-    padding: 0.4rem 0.6rem 0.4rem 1.5rem;
-    position: relative;
-}
-
-.search-segment {
-    display: flex;
-    flex-direction: column;
-    padding: 0.4rem 1.2rem;
-    cursor: pointer;
-    border-radius: 30px;
-    position: relative;
-}
-
-.search-segment:hover { background: #f7f7f7; }
-
-.search-segment .label {
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #0f172a;
-}
-
-.search-segment .value {
-    font-size: 0.88rem;
-    color: #64748b;
-    margin-top: 2px;
-}
-
-.divider { width: 1px; height: 28px; background-color: #dddddd; }
-
-.search-btn {
-    background: #0284c7;
-    color: white;
-    border: none;
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    cursor: pointer;
-    margin-left: 0.5rem;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.search-btn svg { width: 18px; height: 18px; }
-.search-btn:hover { background: #0369a1; transform: scale(1.05); }
-
-/* 下拉菜单 */
-.airbnb-dropdown {
-    position: absolute;
-    top: calc(100% + 12px);
-    left: 0;
-    background: white;
-    border-radius: 24px;
-    padding: 1.5rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    border: 1px solid #eee;
-    width: 320px;
-    display: none;
-    z-index: 1000;
-}
-
-.airbnb-dropdown.show { display: block; }
-.dropdown-title { font-size: 0.85rem; font-weight: 800; color: #0f172a; margin-bottom: 0.8rem; text-transform: uppercase; }
-.dest-dropdown { width: 350px; }
-.dest-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.8rem;
-    border-radius: 12px;
-    text-decoration: none;
-    color: inherit;
-}
-
-.dest-item:hover { background: #f1f5f9; }
-.dest-item .icon-box { font-size: 1.8rem; }
-.dest-item strong { display: block; font-size: 0.95rem; }
-.dest-item span { font-size: 0.75rem; color: #64748b; }
-
-.date-dropdown { width: 360px; }
-.picker-tabs { display: flex; gap: 10px; margin-bottom: 1rem; background: #f0f0f0; padding: 4px; border-radius: 20px; }
-.picker-tabs span { flex: 1; text-align: center; padding: 6px; font-size: 0.8rem; border-radius: 16px; cursor: pointer; }
-.picker-tabs span.active { background: white; font-weight: bold; }
-.dummy-calendar h4 { margin: 0 0 10px 0; font-size: 0.9rem; text-align: center; }
-.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; font-size: 0.8rem; color: #555; }
-.cal-days span.sel { background: #0284c7; color: white; border-radius: 50%; font-weight: bold; }
-.guest-row { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f0f0f0; }
-.counter span { display: inline-block; width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ccc; text-align: center; line-height: 24px; cursor: pointer; }
-
-
-/* 2. 收藏星星按钮（Top-Left Favorites Star） */
-.fav-btn {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    z-index: 15;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(8px);
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.fav-btn svg {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: #0f172a;
-    stroke-width: 2;
-    transition: all 0.2s ease;
-}
-
-.fav-btn:hover {
-    transform: scale(1.15);
-    background: #ffffff;
-}
-
-.fav-btn.active svg {
-    fill: #f59e0b; /* 金黄色点亮 */
-    stroke: #f59e0b;
-}
-
-
-/* 3. 杂志式排版结构 */
-.magazine-container {
-    max-width: 1280px;
-    margin: 2rem auto 5rem;
-    padding: 0 2rem;
-}
-
-.magazine-issue { margin-bottom: 5.5rem; }
-
-.issue-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 0.4rem;
-}
-
-.issue-tag {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: #0284c7;
-}
-
-.flight-route-badge {
-    background: #e0f2fe;
-    color: #0369a1;
-    font-size: 0.7rem;
+    gap: 8px;
+    border: 0;
+    background: var(--primary);
+    color: #ffffff;
     font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.editorial-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 3.2rem;
-    line-height: 1.05;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -1px;
-    margin: 0 0 1rem 0;
-    color: #0f172a;
+.btn-search:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 4px 10px rgba(0, 108, 228, 0.22);
 }
 
-.editorial-line { width: 100%; height: 2px; background: #0f172a; }
+.btn-search:active {
+    transform: translateY(1px);
+}
 
-.magazine-layout {
+/* =========================================================
+   MAIN CONTENT & SECTION HEADERS
+   ========================================================= */
+.main-content {
+    margin-top: 40px;
+    margin-bottom: 70px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0 0 5px;
+    color: var(--text-dark);
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.section-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* =========================================================
+   CARDS (Matches .hotel-style-card from flights)
+   ========================================================= */
+.attraction-grid, .property-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 2rem;
-    align-items: stretch;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
 }
 
-.reverse-layout .magazine-layout { grid-template-columns: 1fr 1.3fr; }
-.reverse-layout .hero-card { grid-column: 2; }
-.reverse-layout .small-cards-grid { grid-column: 1; grid-row: 1; }
-
-/* Hero Card (Featured) */
-.hero-card {
-    position: relative;
-    text-decoration: none;
-    color: white;
-    border-radius: 24px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: 520px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hero-card:hover { transform: translateY(-6px); }
-
-.hero-img-wrapper { position: absolute; inset: 0; }
-.hero-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
-.hero-card:hover .hero-img-wrapper img { transform: scale(1.06); }
-
-.card-badge {
-    position: absolute;
-    top: 14px;
-    right: 14px; /* 右上方展示航线代码 */
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.4rem 0.8rem;
-    border-radius: 30px;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-.hero-caption {
-    position: relative;
-    z-index: 2;
-    padding: 2.2rem;
-    background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.92) 100%);
-}
-
-.card-meta-line {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 0.6rem;
-}
-
-.flight-tag {
-    background: #0284c7;
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.2rem 0.6rem;
+.property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 6px;
-}
-
-.rating-pill {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    color: #fbbf24;
-    font-size: 0.8rem;
-    font-weight: 800;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-}
-
-.rating-pill small {
-    color: #e2e8f0;
-    font-weight: 500;
-    margin-left: 2px;
-}
-
-.hero-caption .city-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    display: block;
-    margin-bottom: 0.3rem;
-}
-
-.hero-caption .quote {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 0.98rem;
-    color: #cbd5e1;
-    margin: 0 0 0.8rem 0;
-}
-
-.flight-schedule {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    margin-bottom: 1rem;
-}
-
-.hero-caption .explore-link {
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #38bdf8;
-}
-
-
-/* Small Cards Grid */
-.small-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.2rem;
-}
-
-.mini-card {
-    position: relative;
-    background: white;
-    border-radius: 18px;
     overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.mini-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.08);
-}
-
-.mini-plane-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(4px);
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    color: #ffffff;
-}
-
-.mini-card img { width: 100%; height: 130px; object-fit: cover; }
-.mini-info { padding: 0.9rem; }
-
-.mini-rating {
-    font-size: 0.75rem;
-    font-weight: 800;
-    color: #d97706;
-    margin-bottom: 2px;
-}
-
-.mini-rating span {
-    color: #94a3b8;
-    font-weight: 500;
-}
-
-.mini-info h4 { margin: 0 0 0.2rem 0; font-size: 0.95rem; font-weight: 700; color: #0f172a; }
-.mini-info .flight-time { margin: 0 0 0.4rem 0; font-size: 0.75rem; color: #64748b; }
-.mini-info .price { margin: 0; font-size: 0.8rem; color: #64748b; }
-.mini-info .price strong { color: #0284c7; font-size: 0.95rem; }
-
-/* 优惠套餐样式 (Flight Packages) */
-.packages-section {
-    margin-top: 4rem;
-    margin-bottom: 5rem;
-}
-
-.section-title-box {
-    text-align: center;
-    margin-bottom: 2.5rem;
-}
-
-.section-title-box h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 0.4rem 0;
-}
-
-.section-title-box p {
-    color: #64748b;
-    font-size: 0.95rem;
-    margin: 0;
-}
-
-.packages-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-}
-
-.package-card {
-    position: relative;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 2rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.package-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-}
-
-.package-card.featured {
-    border: 2px solid #0284c7;
-    box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
-}
-
-.pkg-badge {
-    position: absolute;
-    top: -12px;
-    left: 20px;
-    background: #0f172a;
-    color: #fff;
-    font-size: 0.68rem;
-    font-weight: 800;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-}
-
-.pkg-badge.gold {
-    background: #d97706;
-}
-
-.pkg-header h3 {
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 0.3rem 0;
-}
-
-.pkg-header .route {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #0284c7;
-    margin: 0 0 1.2rem 0;
-}
-
-.pkg-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1.8rem 0;
-}
-
-.pkg-features li {
-    font-size: 0.85rem;
-    color: #475569;
-    margin-bottom: 0.6rem;
-}
-
-.pkg-price-box {
-    margin-bottom: 1.2rem;
-}
-
-.pkg-price-box .from {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #16a34a;
-    display: block;
-}
-
-.pkg-price-box .price {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #0f172a;
-}
-
-.pkg-price-box .price span {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #94a3b8;
-}
-
-.pkg-btn {
-    display: block;
-    text-align: center;
-    background: #f1f5f9;
-    color: #0f172a;
-    font-weight: 700;
-    font-size: 0.85rem;
-    padding: 0.75rem;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: background 0.2s ease, color 0.2s ease;
-}
-
-.package-card.featured .pkg-btn, .pkg-btn:hover {
-    background: #0284c7;
-    color: #ffffff;
-}
-
-/* Tips 手风琴样式 (Tips on Booking Cheap Flights) */
-.tips-section {
-    margin-top: 5rem;
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 3rem 2.5rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-    border: 1px solid #f1f5f9;
-}
-
-.tips-main-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 2rem 0;
-}
-
-.accordion-container {
-    display: flex;
-    flex-direction: column;
-}
-
-.accordion-item {
-    border-bottom: 1px solid #edf2f7;
-}
-
-.accordion-header {
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 1.2rem 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    box-shadow: var(--shadow-soft);
     cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.property-card:hover {
+    border-color: #b8c2cf;
+    box-shadow: var(--shadow-hover);
+}
+
+.card-img-wrapper {
+    position: relative;
+    height: 180px;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.heart-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.heart-btn:hover {
+    background: var(--surface-soft);
+}
+
+.heart-btn i {
     font-size: 1rem;
+    color: #68788c;
+}
+
+.card-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-content h3 {
+    margin: 0 0 5px;
+    color: var(--text-dark);
+    font-size: 15px;
+    line-height: 1.2;
     font-weight: 700;
-    color: #1e293b;
-    text-align: left;
-    transition: color 0.2s ease;
 }
 
-.accordion-header:hover {
-    color: #0284c7;
+.location {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 12px;
 }
 
-.acc-icon {
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: #64748b;
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: auto;
 }
 
-.accordion-content {
-    display: none;
-    padding-bottom: 1.2rem;
-}
-
-.accordion-content p {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #64748b;
-    margin: 0;
-}
-
-/* 响应式调整 */
-@media (max-width: 900px) {
-    .packages-grid { grid-template-columns: 1fr; }
-    .tips-section { padding: 2rem 1.2rem; }
-    .magazine-layout, .reverse-layout .magazine-layout { grid-template-columns: 1fr; }
-    .reverse-layout .hero-card, .reverse-layout .small-cards-grid { grid-column: 1; }
-    .editorial-title { font-size: 2.3rem; }
-}
-
-/* Natural, standard type for country section headings */
-.issue-tag,
-.flight-route-badge,
-.editorial-title {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-}
-
-.editorial-title {
-    font-weight: 750;
-    letter-spacing: -0.5px;
-}
-
-.issue-tag {
-    letter-spacing: 1px;
-}
-
-.flight-route-badge {
+.rating {
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0;
+    color: var(--text-dark);
+}
+
+.rating i {
+    color: var(--warning);
+    margin-right: 3px;
+}
+
+.price {
+    font-weight: 750;
+    font-size: 18px;
+    color: var(--text-dark);
+    letter-spacing: -0.015em;
+}
+
+.free-price {
+    color: var(--success);
+}
+
+/* =========================================================
+   CATEGORIES GRID
+   ========================================================= */
+.property-types-section {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.category-card {
+    background: var(--surface);
+    padding: 20px 16px;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-dark);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.category-card:hover {
+    border-color: #a9bfd8;
+    background: #fbfdff;
+}
+
+.property-icon {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-soft);
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+    font-size: 18px;
+}
+
+.category-card h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.category-card p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN (Adapted from flights.css)
+   ========================================================= */
+@media (max-width: 1050px) {
+    .filter-bar {
+        grid-template-columns: 1fr 1fr;
+    }
+    .btn-search {
+        grid-column: span 2;
+        min-height: 56px;
+    }
+}
+
+@media (max-width: 760px) {
+    .hero-content,
+    .search-container,
+    .main-content {
+        width: calc(100% - 32px);
+    }
+    .hero-section {
+        padding: 40px 0 38px;
+    }
+    .hero-content h1 {
+        font-size: 28px;
+    }
+    .filter-bar {
+        grid-template-columns: 1fr;
+    }
+    .btn-search {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 560px) {
+    .hero-content,
+    .search-container,
+    .main-content {
+        width: calc(100% - 24px);
+    }
+    .hero-content h1 {
+        font-size: 25px;
+    }
+    .input-group {
+        min-height: 58px;
+    }
 }

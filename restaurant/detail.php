@@ -1,266 +1,112 @@
 <?php
-require_once __DIR__ . '/food_data.php';
-
-function detail_escape(string $value): string
-{
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
-function detail_build_reviews(array $food): array
-{
-    $names = ['Aina R.', 'Daniel L.', 'Mei Y.', 'Hafiz M.', 'Samantha K.', 'Arun P.', 'Nurul S.', 'Jason T.', 'Farah A.', 'Wei Jian C.', 'Izzati N.', 'Marcus G.'];
-    $dates = ['6 days ago', '2 weeks ago', '3 weeks ago', '1 month ago', '6 weeks ago', '2 months ago', '3 months ago'];
-    $notes = $food['review_notes'];
-    $offset = ((int)$food['id']) % count($names);
-    $ratings = [5, 4, 5, 5, 4, 5, 4];
-    $texts = [
-        'Tried ' . $food['name'] . ' on our first morning in ' . $food['city'] . '. The ' . $notes['flavour'] . ' made it feel very different from the versions I have had elsewhere.',
-        'What stayed with me was the contrast between ' . $notes['texture'] . '. It looked simple at first, but every bite had something going on.',
-        'The ' . $food['price'] . ' estimate was accurate for the stall we visited. It was filling without feeling too heavy, and I would happily order it again.',
-        'I was unsure whether this would suit me, but the ' . $notes['flavour'] . ' won me over. My friend preferred it milder, so sharing first was a good idea.',
-        'A useful tip from the person serving us: ' . $notes['tip'] . '. That small step made the whole dish taste more balanced.',
-        'We stopped for this around ' . strtolower($food['best_time']) . ' and did not have to wait long. The portion was comfortable for one person and the food arrived fresh.',
-        'This tasted like a dish connected to ' . $food['city'] . ', not just something prepared for tourists. I would come back for the ' . $notes['texture'] . ' alone.',
-    ];
-
-    $reviews = [];
-    foreach ($texts as $index => $text) {
-        $reviews[] = [
-            'name' => $names[($offset + $index) % count($names)],
-            'rating' => $ratings[$index],
-            'date' => $dates[$index],
-            'text' => $text,
-        ];
-    }
-
-    return $reviews;
-}
-
-$foodId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-$food = null;
-
-foreach ($foodOptions as $option) {
-    if ((int)$option['id'] === (int)$foodId) {
-        $food = $option;
-        break;
-    }
-}
-
-if (!$food) {
-    http_response_code(404);
-}
-
-include __DIR__ . '/../header.php';
+$id = preg_replace('/[^0-9]/', '', (string)($_GET['id'] ?? ''));
+$citySlug = preg_replace('/[^a-z0-9-]/', '', strtolower((string)($_GET['city'] ?? '')));
+$partySize = max(1, min(8, (int)($_GET['party'] ?? 2)));
+$cities = require __DIR__ . '/api/city_data.php';
+$selectedCity = $cities[$citySlug] ?? ['city' => '', 'state' => ''];
+include '../header.php';
 ?>
+<link rel="stylesheet" href="restaurants.css?v=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css?v=3">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<?php if (!$food): ?>
-    <section class="food-detail-error">
-        <i class="fa-solid fa-bowl-food"></i>
-        <h1>Food option not found</h1>
-        <p>The selected food may no longer be available in this guide.</p>
-        <a href="index.php"><i class="fa-solid fa-arrow-left"></i> Back to Food Guide</a>
-    </section>
-<?php else: ?>
-    <?php
-    $area = $foodAreas[$food['city']] ?? [
-        'name' => $food['city'] . ' Local Food Area',
-        'address' => $food['city'] . ', ' . $food['state'] . ', Malaysia',
-        'images' => [$food['image'], $food['image']],
-        'photo_labels' => [$food['city'] . ' food area', $food['state'] . ' local area'],
-    ];
-    $mapUrl = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($area['address']);
-    $galleryImages = [
-        $food['image'],
-        $area['images'][0],
-        $area['images'][1],
-    ];
-    $comments = detail_build_reviews($food);
-    ?>
-
-    <div class="food-detail-page">
-        <div class="food-detail-shell">
-            <a class="food-detail-back" href="index.php">
-                <i class="fa-solid fa-arrow-left"></i> Back to Food Guide
-            </a>
-
-            <header class="food-detail-heading">
-                <div>
-                    <div class="food-detail-tags">
-                        <span><?php echo detail_escape($food['category']); ?></span>
-                        <span><?php echo detail_escape($food['city']); ?>, <?php echo detail_escape($food['state']); ?></span>
-                    </div>
-                    <h1><?php echo detail_escape($food['name']); ?></h1>
-                    <p><i class="fa-solid fa-location-dot"></i> <?php echo detail_escape($area['name']); ?></p>
-                </div>
-
-                <button type="button" id="detailFavoriteButton" class="detail-favorite-button" data-food-id="<?php echo (int)$food['id']; ?>">
-                    <i class="fa-regular fa-heart"></i>
-                    <span>Add to Favorites</span>
-                </button>
-            </header>
-
-            <section class="food-detail-gallery" aria-label="Food and place photos">
-                <img class="food-detail-gallery__main" src="<?php echo detail_escape($galleryImages[0]); ?>" alt="<?php echo detail_escape($food['name']); ?>">
-                <img src="<?php echo detail_escape($galleryImages[1]); ?>" alt="<?php echo detail_escape($area['photo_labels'][0]); ?>">
-                <img src="<?php echo detail_escape($galleryImages[2]); ?>" alt="<?php echo detail_escape($area['photo_labels'][1]); ?>">
-            </section>
-
-            <div class="food-detail-layout">
-                <div class="food-detail-main">
-                    <section class="food-detail-card">
-                        <span class="food-detail-eyebrow">About this food</span>
-                        <h2>A local flavour to try</h2>
-                        <p><?php echo detail_escape($food['description']); ?></p>
-
-                        <div class="food-detail-facts">
-                            <div>
-                                <i class="fa-solid fa-wallet"></i>
-                                <span>Estimated price</span>
-                                <strong><?php echo detail_escape($food['price']); ?></strong>
-                            </div>
-                            <div>
-                                <i class="fa-regular fa-clock"></i>
-                                <span>Best time</span>
-                                <strong><?php echo detail_escape($food['best_time']); ?></strong>
-                            </div>
-                            <div>
-                                <i class="fa-solid fa-utensils"></i>
-                                <span>Category</span>
-                                <strong><?php echo detail_escape($food['category']); ?></strong>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="food-detail-card">
-                        <div class="food-comments-heading">
-                            <div>
-                                <span class="food-detail-eyebrow">Community notes</span>
-                                <h2>Traveler comments</h2>
-                            </div>
-                            <span class="sample-comment-label">7 reviews</span>
-                        </div>
-
-                        <div class="food-comment-list">
-                            <?php foreach ($comments as $commentIndex => $comment): ?>
-                                <article class="food-comment<?php echo $commentIndex >= 3 ? ' food-comment--extra' : ''; ?>">
-                                    <div class="food-comment__avatar"><?php echo detail_escape(substr($comment['name'], 0, 1)); ?></div>
-                                    <div class="food-comment__body">
-                                        <div class="food-comment__meta">
-                                            <div>
-                                                <strong><?php echo detail_escape($comment['name']); ?></strong>
-                                                <span><?php echo detail_escape($comment['date']); ?></span>
-                                            </div>
-                                            <div class="food-comment__stars" aria-label="<?php echo (int)$comment['rating']; ?> out of 5 stars">
-                                                <?php for ($star = 1; $star <= 5; $star++): ?>
-                                                    <i class="<?php echo $star <= $comment['rating'] ? 'fa-solid' : 'fa-regular'; ?> fa-star"></i>
-                                                <?php endfor; ?>
-                                            </div>
-                                        </div>
-                                        <p><?php echo detail_escape($comment['text']); ?></p>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
-                        </div>
-
-                        <button type="button" id="toggleReviewsButton" class="food-reviews-toggle" aria-expanded="false">
-                            Show all 7 reviews <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </section>
-                </div>
-
-                <aside class="food-detail-sidebar">
-                    <section class="food-location-card">
-                        <div class="food-location-card__icon"><i class="fa-solid fa-map-location-dot"></i></div>
-                        <span class="food-detail-eyebrow">Where to explore</span>
-                        <h2><?php echo detail_escape($area['name']); ?></h2>
-                        <p><?php echo detail_escape($area['address']); ?></p>
-                        <a href="<?php echo detail_escape($mapUrl); ?>" target="_blank" rel="noopener noreferrer">
-                            Open in Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </section>
-
-                    <section class="food-trip-note">
-                        <i class="fa-solid fa-suitcase-rolling"></i>
-                        <div>
-                            <strong>My Trips connection</strong>
-                            <p>Favorites are stored now and can be displayed in My Trips when that page is connected later.</p>
-                        </div>
-                    </section>
-                </aside>
-            </div>
-        </div>
+<div class="rp-page">
+    <div class="rp-shell rp-detail">
+        <a class="rp-back" href="all.php?city=<?php echo urlencode($citySlug ?: 'johor-bahru'); ?>&party=<?php echo $partySize; ?>"><i class="fa-solid fa-arrow-left"></i> Back to restaurants</a>
+        <div class="rp-state" id="detailState"><div class="rp-spinner"></div><h2>Loading restaurant details</h2><p>Getting live photos, information and traveler reviews.</p></div>
+        <div id="restaurantDetail" hidden></div>
     </div>
+</div>
 
-    <div id="detailToast" class="detail-toast" role="status" aria-live="polite"></div>
+<script src="restaurant_app.js?v=1"></script>
+<script>
+const restaurantId = <?php echo json_encode($id); ?>;
+const restaurantCitySlug = <?php echo json_encode($citySlug); ?>;
+const restaurantParty = <?php echo $partySize; ?>;
+const restaurantCity = <?php echo json_encode($selectedCity['city']); ?>;
+const restaurantState = <?php echo json_encode($selectedCity['state']); ?>;
+const detailState = document.getElementById('detailState');
+const detailRoot = document.getElementById('restaurantDetail');
+let currentRestaurant = null;
 
-    <script>
-    const detailFoodId = <?php echo (int)$food['id']; ?>;
-    // The My Trips page can read this same key when synchronization is implemented.
-    const favoriteStorageKey = 'travelpal_food_favorites_v1';
-    const previousStorageKey = 'travelpal_food_list_v1';
-    const favoriteButton = document.getElementById('detailFavoriteButton');
-    const detailToast = document.getElementById('detailToast');
-    const toggleReviewsButton = document.getElementById('toggleReviewsButton');
-    let detailToastTimer;
+function stars(value) {
+    const rating = Math.max(0, Math.min(5, Math.round(Number(value || 0))));
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+}
 
-    function getFavoriteIds() {
-        try {
-            const currentValue = localStorage.getItem(favoriteStorageKey);
-            const previousValue = localStorage.getItem(previousStorageKey);
-            const ids = JSON.parse(currentValue || previousValue || '[]');
-            const normalizedIds = Array.isArray(ids) ? ids.map(Number) : [];
-            if (!currentValue && previousValue) {
-                localStorage.setItem(favoriteStorageKey, JSON.stringify(normalizedIds));
-            }
-            return normalizedIds;
-        } catch (error) {
-            return [];
-        }
-    }
+function externalLink(url, text) {
+    return url ? `<a href="${escapeRestaurantHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeRestaurantHtml(text)}</a>` : '';
+}
 
-    function updateDetailFavoriteButton() {
-        const isFavorite = getFavoriteIds().includes(detailFoodId);
-        favoriteButton.classList.toggle('saved', isFavorite);
-        favoriteButton.querySelector('i').className = isFavorite ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-        favoriteButton.querySelector('span').textContent = isFavorite ? 'Saved to Favorites' : 'Add to Favorites';
-    }
+function renderGallery(photos, name) {
+    if (!photos.length) return '<div class="rp-gallery"><div class="rp-gallery__empty"><i class="fa-solid fa-utensils fa-2x"></i></div></div>';
+    const side = photos.slice(1, 3);
+    return `<div class="rp-gallery"><img class="rp-gallery__main" src="${escapeRestaurantHtml(photos[0])}" alt="${escapeRestaurantHtml(name)}">${side.length ? `<div class="rp-gallery__side">${side.map((url, index) => `<img src="${escapeRestaurantHtml(url)}" alt="${escapeRestaurantHtml(name)} photo ${index + 2}">`).join('')}${side.length === 1 ? `<img src="${escapeRestaurantHtml(photos[0])}" alt="${escapeRestaurantHtml(name)}">` : ''}</div>` : ''}</div>`;
+}
 
-    function showDetailToast(message) {
-        detailToast.textContent = message;
-        detailToast.classList.add('show');
-        clearTimeout(detailToastTimer);
-        detailToastTimer = setTimeout(() => detailToast.classList.remove('show'), 2200);
-    }
+function renderReviews(reviews) {
+    if (!reviews.length) return '<p>No recent traveler comments were included in this API response.</p>';
+    return reviews.map(review => `<article class="rp-review">
+        <div class="rp-review__head"><div class="rp-review__user"><span class="rp-review__avatar">${review.avatar ? `<img src="${escapeRestaurantHtml(review.avatar)}" alt="">` : escapeRestaurantHtml((review.author || 'T')[0])}</span><span><h3>${escapeRestaurantHtml(review.author || 'Traveler')}</h3><small>${escapeRestaurantHtml([review.hometown, review.date].filter(Boolean).join(' · '))}</small></span></div><span class="rp-rating" aria-label="${escapeRestaurantHtml(review.rating || 0)} out of 5">${stars(review.rating)}</span></div>
+        ${review.title ? `<h4>${escapeRestaurantHtml(review.title)}</h4>` : ''}<p>${escapeRestaurantHtml(review.text)}</p>${review.visitDate ? `<small>Visited ${escapeRestaurantHtml(review.visitDate)}</small>` : ''}
+    </article>`).join('');
+}
 
-    favoriteButton.addEventListener('click', () => {
-        const ids = getFavoriteIds();
-        const existingIndex = ids.indexOf(detailFoodId);
+function renderDetail(item) {
+    currentRestaurant = {
+        id: item.id || restaurantId,
+        name: item.name,
+        image: item.photos?.[0] || '',
+        rating: item.rating,
+        reviewCount: item.reviewCount,
+        summary: item.summary || item.description,
+        city: restaurantCity,
+        state: restaurantState,
+        citySlug: restaurantCitySlug,
+        party: restaurantParty
+    };
+    const saved = isRestaurantSaved(currentRestaurant.id);
+    const addressMap = item.latitude && item.longitude
+        ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${item.latitude},${item.longitude}`)}`
+        : item.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}` : '';
+    const infoItems = [
+        item.address ? `<li><i class="fa-solid fa-location-dot"></i><span>${externalLink(addressMap, item.address)}</span></li>` : '',
+        item.phone ? `<li><i class="fa-solid fa-phone"></i><span><a href="tel:${escapeRestaurantHtml(item.phone)}">${escapeRestaurantHtml(item.phone)}</a></span></li>` : '',
+        item.website ? `<li><i class="fa-solid fa-globe"></i><span>${externalLink(item.website, 'Visit restaurant website')}</span></li>` : '',
+        item.menuUrl ? `<li><i class="fa-solid fa-book-open"></i><span>${externalLink(item.menuUrl, 'Open menu')}</span></li>` : '',
+        item.hours?.length ? `<li><i class="fa-regular fa-clock"></i><span>${item.hours.map(escapeRestaurantHtml).join('<br>')}</span></li>` : ''
+    ].filter(Boolean).join('');
+    const menu = (item.menu || []).filter(entry => entry.name).slice(0, 8);
 
-        if (existingIndex >= 0) {
-            ids.splice(existingIndex, 1);
-            showDetailToast('Removed from Favorites');
-        } else {
-            ids.push(detailFoodId);
-            showDetailToast('Added to Favorites');
-        }
-
-        localStorage.setItem(favoriteStorageKey, JSON.stringify(ids));
-        updateDetailFavoriteButton();
+    detailRoot.innerHTML = `<header class="rp-detail-head"><div><span class="rp-kicker">Live restaurant details</span><h1>${escapeRestaurantHtml(item.name)}</h1><p>${item.rating ? `<span class="rp-rating">★ ${escapeRestaurantHtml(item.rating)}</span> ${escapeRestaurantHtml(item.reviewCount || '')} reviews` : 'Traveler information'}${item.status ? ` · ${escapeRestaurantHtml(item.status)}` : ''}</p></div><button class="rp-btn rp-btn--outline rp-detail-fav ${saved ? 'is-saved' : ''}" id="detailFavorite"><i class="${saved ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${saved ? 'Saved to Favorites' : 'Add to Favorites'}</button></header>
+        ${renderGallery(item.photos || [], item.name)}
+        <div class="rp-detail-grid"><main>
+            <section class="rp-panel"><span class="rp-kicker">About this restaurant</span><h2>What travelers can expect</h2><p>${escapeRestaurantHtml(item.description || item.summary || 'More information is available from the restaurant provider.')}</p>${item.cuisines?.length ? `<h3>Cuisines</h3><div class="rp-chip-list">${item.cuisines.map(value => `<span class="rp-chip">${escapeRestaurantHtml(value)}</span>`).join('')}</div>` : ''}${item.serves?.length ? `<h3>Meals</h3><div class="rp-chip-list">${item.serves.map(value => `<span class="rp-chip">${escapeRestaurantHtml(value)}</span>`).join('')}</div>` : ''}</section>
+            ${menu.length ? `<section class="rp-panel"><span class="rp-kicker">Menu preview</span><h2>Popular menu items</h2>${menu.map(entry => `<article class="rp-menu-item"><h3>${escapeRestaurantHtml(entry.name)} ${entry.price ? `<span class="rp-rating">${escapeRestaurantHtml(entry.price)}</span>` : ''}</h3>${entry.description ? `<p>${escapeRestaurantHtml(entry.description)}</p>` : ''}</article>`).join('')}</section>` : ''}
+            <section class="rp-panel"><span class="rp-kicker">Community notes</span><h2>Traveler comments</h2>${renderReviews(item.reviews || [])}</section>
+        </main><aside><section class="rp-panel"><span class="rp-kicker">Plan your visit</span><h2>Restaurant information</h2>${infoItems ? `<ul class="rp-info-list">${infoItems}</ul>` : '<p>Contact and location information was not returned.</p>'}${item.tripadvisorUrl ? `<p style="margin-top:20px">${externalLink(item.tripadvisorUrl, 'View source listing')}</p>` : ''}</section><section class="rp-panel"><span class="rp-kicker">Save for later</span><h2>Your favorites</h2><p>Saved restaurants appear on your separate favorites page and can be connected to My Trips after the database is ready.</p><a class="rp-btn rp-btn--outline" href="favorites.php">View favorites</a></section></aside></div>`;
+    detailRoot.hidden = false;
+    detailState.hidden = true;
+    document.title = `${item.name} | TravelPal`;
+    document.getElementById('detailFavorite').addEventListener('click', () => {
+        toggleRestaurantFavorite(currentRestaurant);
+        renderDetail(item);
     });
+}
 
-    toggleReviewsButton.addEventListener('click', () => {
-        const isExpanded = document.body.classList.toggle('food-reviews-expanded');
-        toggleReviewsButton.setAttribute('aria-expanded', String(isExpanded));
-        toggleReviewsButton.innerHTML = isExpanded
-            ? 'Show fewer reviews <i class="fa-solid fa-chevron-up"></i>'
-            : 'Show all 7 reviews <i class="fa-solid fa-chevron-down"></i>';
-    });
-
-    updateDetailFavoriteButton();
-    </script>
-<?php endif; ?>
-
-<?php include __DIR__ . '/../footer.php'; ?>
+async function loadRestaurantDetail() {
+    if (!restaurantId) {
+        detailState.innerHTML = '<h2>Restaurant not found</h2><p>No valid restaurant was selected.</p>';
+        return;
+    }
+    try {
+        const response = await fetch(`api/restaurant_details.php?id=${encodeURIComponent(restaurantId)}&party=${restaurantParty}`);
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) throw new Error(payload.message || 'The restaurant details could not be loaded.');
+        renderDetail(payload.data);
+    } catch (error) {
+        detailState.innerHTML = `<div class="rp-feature__icon" style="margin-inline:auto"><i class="fa-solid fa-triangle-exclamation"></i></div><h2>Details unavailable</h2><p>${escapeRestaurantHtml(error.message || 'Please try again shortly.')}</p>`;
+    }
+}
+loadRestaurantDetail();
+</script>
+<?php include '../footer.php'; ?>

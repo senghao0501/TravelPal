@@ -1,28 +1,21 @@
 <?php include '../header.php'; ?>
-<link rel="stylesheet" href="../css/modules/hotels.css">
+<link rel="stylesheet" href="../css/modules/hotels.css?v=6">
 
-<!-- 1. Hero & Hotel Search Box -->
 <section class="hero-section">
     <div class="hero-content">
         <h1>Find Your Perfect Stay in Malaysia</h1>
-        <p>From heritage mansions in Penang to overwater villas in Sabah</p>
+        <p>Compare real-time prices and availability across top destinations.</p>
     </div>
 
     <div class="search-container">
-        <!-- Hotel Vibe Quick Filters -->
-        <div class="vibe-tags">
-            <span class="vibe-pill active"><i class="fa-solid fa-compass"></i> All Stays</span>
-            <span class="vibe-pill"><i class="fa-solid fa-umbrella-beach"></i> Beach Resorts</span>
-            <span class="vibe-pill"><i class="fa-solid fa-landmark"></i> Heritage</span>
-            <span class="vibe-pill"><i class="fa-solid fa-mountain"></i> Highlands</span>
-            <span class="vibe-pill"><i class="fa-solid fa-hot-tub-person"></i> Hot Springs</span>
-        </div>
-
-        <!-- Filter Bar -->
         <form action="after_search.php" method="GET" class="filter-bar">
-            <!-- Destination State Dropdown -->
+            <div style="display: none;">
+                <input type="hidden" name="adults" id="input_adults" value="2">
+                <input type="hidden" name="children" id="input_children" value="0">
+                <input type="hidden" name="rooms" id="input_rooms" value="1">
+            </div>
+
             <div class="input-group">
-                <i class="fa-solid fa-location-dot icon"></i>
                 <div class="input-wrapper">
                     <label>Destination / State</label>
                     <select name="query" required>
@@ -38,130 +31,85 @@
                 </div>
             </div>
 
-            <!-- Check-in Date -->
             <div class="input-group">
-                <i class="fa-solid fa-calendar-check icon"></i>
                 <div class="input-wrapper">
                     <label>Check-in Date</label>
                     <input type="date" name="check_in" id="check_in" required>
                 </div>
             </div>
 
-            <!-- Check-out Date -->
             <div class="input-group">
-                <i class="fa-solid fa-calendar-minus icon"></i>
                 <div class="input-wrapper">
                     <label>Check-out Date</label>
                     <input type="date" name="check_out" id="check_out" required>
                 </div>
             </div>
 
-            <!-- Guests & Rooms Custom Counter Dropdown -->
             <div class="input-group guest-selector-group">
-                <i class="fa-solid fa-user-group icon"></i>
-                <div class="input-wrapper" id="guestInputTrigger">
+                <div class="input-wrapper" id="guestInputTrigger" style="cursor: pointer;">
                     <label>Guests & Rooms</label>
-                    <div class="guest-display-text" id="guestSummary">2 Adults, 0 Children, 1 Room</div>
+                    <!-- 🚨 加入了箭头图标 🚨 -->
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="guest-display-text" id="guestSummary">2 Adults, 0 Children, 1 Room</div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#172033" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; margin-right: 8px; flex-shrink: 0;">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
                 </div>
 
-                <!-- 表单提交隐藏域 -->
-                <input type="hidden" name="adults" id="input_adults" value="2">
-                <input type="hidden" name="children" id="input_children" value="0">
-                <input type="hidden" name="rooms" id="input_rooms" value="1">
-
-                <!-- 弹出加减选择面板 -->
-                <div class="guest-picker-dropdown" id="guestDropdown" style="display: none;">
-                    <!-- Adults Row -->
+                <div class="guest-picker-dropdown" id="guestDropdown">
                     <div class="picker-row">
                         <div class="picker-info">
                             <span class="picker-title">Adults</span>
                             <span class="picker-subtitle">Ages 13+</span>
                         </div>
                         <div class="counter-controls">
-                            <button type="button" class="btn-counter" onclick="updateGuest('adults', -1)">-</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'adults', -1)">-</button>
                             <span class="counter-value" id="cnt_adults">2</span>
-                            <button type="button" class="btn-counter" onclick="updateGuest('adults', 1)">+</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'adults', 1)">+</button>
                         </div>
                     </div>
-
-                    <!-- Children Row -->
                     <div class="picker-row">
                         <div class="picker-info">
                             <span class="picker-title">Children</span>
                             <span class="picker-subtitle">Ages 0 - 12</span>
                         </div>
                         <div class="counter-controls">
-                            <button type="button" class="btn-counter" onclick="updateGuest('children', -1)">-</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'children', -1)">-</button>
                             <span class="counter-value" id="cnt_children">0</span>
-                            <button type="button" class="btn-counter" onclick="updateGuest('children', 1)">+</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'children', 1)">+</button>
                         </div>
                     </div>
-
-                    <!-- Rooms Row -->
                     <div class="picker-row">
                         <div class="picker-info">
                             <span class="picker-title">Rooms</span>
                             <span class="picker-subtitle">Number of rooms</span>
                         </div>
                         <div class="counter-controls">
-                            <button type="button" class="btn-counter" onclick="updateGuest('rooms', -1)">-</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'rooms', -1)">-</button>
                             <span class="counter-value" id="cnt_rooms">1</span>
-                            <button type="button" class="btn-counter" onclick="updateGuest('rooms', 1)">+</button>
+                            <button type="button" class="btn-counter" onclick="updateGuest(event, 'rooms', 1)">+</button>
                         </div>
                     </div>
-
-                    <button type="button" class="btn-picker-done" onclick="closeGuestDropdown()">Done</button>
+                    <button type="button" class="btn-picker-done" onclick="closeGuestDropdown(event)">Done</button>
                 </div>
             </div>
 
-            <!-- Search Button -->
             <button type="submit" class="btn-search">
-                <i class="fa-solid fa-magnifying-glass"></i> Search Hotels
+                Search Hotels
             </button>
         </form>
     </div>
 </section>
 
 <main class="main-content">
-    <!-- 2. Property Types Grid -->
-    <section class="property-types-section">
-        <div class="section-header">
-            <h2>Browse by Property Type</h2>
-            <p>Find the style of accommodation that suits your journey</p>
-        </div>
-
-        <div class="property-grid">
-            <a href="after_search.php?type=Luxury+Resort" class="property-card">
-                <div class="property-icon"><i class="fa-solid fa-hotel"></i></div>
-                <h3>Luxury Resorts</h3>
-                <p>5-Star beachfront & island retreats</p>
-            </a>
-            <a href="after_search.php?type=City+Hotel" class="property-card">
-                <div class="property-icon"><i class="fa-solid fa-city"></i></div>
-                <h3>City Hotels</h3>
-                <p>Prime locations near top malls & food</p>
-            </a>
-            <a href="after_search.php?type=Heritage+Boutique" class="property-card">
-                <div class="property-icon"><i class="fa-solid fa-house-chimney-window"></i></div>
-                <h3>Heritage Boutiques</h3>
-                <p>Colonial architecture & local culture</p>
-            </a>
-            <a href="after_search.php?type=Nature+Eco+Lodge" class="property-card">
-                <div class="property-icon"><i class="fa-solid fa-tree"></i></div>
-                <h3>Nature & Eco Lodges</h3>
-                <p>Highland escapes & rainforest villas</p>
-            </a>
-        </div>
-    </section>
-
-    <!-- 3. Member Exclusive Banner -->
     <section class="account-prompt-card">
-        <div class="prompt-icon">
-            <i class="fa-solid fa-gem"></i>
-        </div>
-        <div class="prompt-text">
-            <h3>Save 15% or More on Staycations</h3>
-            <p>Sign in to unlock Member Secret Prices, free room upgrades, and late check-outs.</p>
+        <div class="prompt-content-wrapper">
+            <div class="prompt-icon"></div>
+            <div class="prompt-text">
+                <h3>Save 15% or More on Staycations</h3>
+                <p>Sign in to unlock Member Secret Prices, free room upgrades, and late check-outs.</p>
+            </div>
         </div>
         <div class="prompt-buttons">
             <a href="../auth/login.php" class="btn-accent">Sign In</a>
@@ -169,66 +117,59 @@
         </div>
     </section>
 
-    <!-- 4. Destination Showcase -->
+    <!-- 底部内容 -->
     <section class="gallery-section">
         <div class="section-header">
             <h2>Top Staycation Destinations</h2>
             <p>Handpicked hotels across 8 stunning states in Malaysia</p>
         </div>
-
         <div class="gallery-grid">
             <a href="after_search.php?query=Penang" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500&q=80" alt="Penang">
                 <span class="price-badge">From RM 215 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Penang</h3>
-                    <p>8 Hotels • Heritage & Beachfront</p>
+                    <h3>Penang</h3><p>8 Hotels • Heritage & Beachfront</p>
                 </div>
             </a>
             <a href="after_search.php?query=Sabah" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?w=500&q=80" alt="Sabah">
                 <span class="price-badge">From RM 230 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Sabah</h3>
-                    <p>8 Hotels • Island Resorts & Diving</p>
+                    <h3>Sabah</h3><p>8 Hotels • Island Resorts & Diving</p>
                 </div>
             </a>
             <a href="after_search.php?query=Perak" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80" alt="Perak">
                 <span class="price-badge">From RM 170 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Perak</h3>
-                    <p>8 Hotels • Hot Springs & Foodie Stays</p>
+                    <h3>Perak</h3><p>8 Hotels • Hot Springs & Foodie Stays</p>
                 </div>
             </a>
             <a href="after_search.php?query=Pahang" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500&q=80" alt="Pahang">
                 <span class="price-badge">From RM 220 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Pahang</h3>
-                    <p>8 Hotels • Cameron Highlands & Genting</p>
+                    <h3>Pahang</h3><p>8 Hotels • Cameron Highlands & Genting</p>
                 </div>
             </a>
             <a href="after_search.php?query=Melaka" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=500&q=80" alt="Melaka">
                 <span class="price-badge">From RM 60 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Melaka</h3>
-                    <p>8 Hotels • Riverfront & Jonker Walk</p>
+                    <h3>Melaka</h3><p>8 Hotels • Riverfront & Jonker Walk</p>
                 </div>
             </a>
             <a href="after_search.php?query=Johor" class="gallery-card">
                 <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80" alt="Johor">
                 <span class="price-badge">From RM 220 / night</span>
                 <div class="gallery-overlay">
-                    <h3>Johor</h3>
-                    <p>8 Hotels • Desaru Coast & Legoland</p>
+                    <h3>Johor</h3><p>8 Hotels • Desaru Coast & Legoland</p>
                 </div>
             </a>
         </div>
     </section>
 
-    <!-- 5. Feature Highlights -->
+    <!-- Feature Highlights -->
     <section class="features-section">
         <div class="feature-item">
             <div class="feature-icon-wrapper">
@@ -261,7 +202,7 @@
         </div>
     </section>
 
-    <!-- 6. Travel Theme Dynamic Tabs -->
+    <!-- Travel Theme Dynamic Tabs -->
     <section class="routes-section">
         <div class="section-header">
             <h2>Find Stays by Travel Theme</h2>
@@ -274,7 +215,6 @@
             <button class="tab-btn" onclick="switchTab(event, 'foodie')">Foodie Escapes</button>
         </div>
 
-        <!-- Content 1: Romantic -->
         <div id="tab-romantic" class="tab-content active">
             <div class="theme-grid">
                 <a href="detail.php?id=801" class="theme-card">
@@ -301,7 +241,6 @@
             </div>
         </div>
 
-        <!-- Content 2: Family -->
         <div id="tab-family" class="tab-content">
             <div class="theme-grid">
                 <a href="detail.php?id=201" class="theme-card">
@@ -328,7 +267,6 @@
             </div>
         </div>
 
-        <!-- Content 3: Foodie -->
         <div id="tab-foodie" class="tab-content">
             <div class="theme-grid">
                 <a href="detail.php?id=101" class="theme-card">
@@ -358,21 +296,18 @@
 </main>
 
 <script>
-    // 1. 日期自动设置
     document.addEventListener("DOMContentLoaded", function () {
         const today = new Date();
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
 
         const formatDate = (date) => date.toISOString().split('T')[0];
-
         const checkInInput = document.getElementById('check_in');
         const checkOutInput = document.getElementById('check_out');
 
         if (checkInInput && checkOutInput) {
             checkInInput.min = formatDate(today);
             checkInInput.value = formatDate(today);
-
             checkOutInput.min = formatDate(tomorrow);
             checkOutInput.value = formatDate(tomorrow);
 
@@ -380,7 +315,6 @@
                 const selectedInDate = new Date(this.value);
                 const nextDay = new Date(selectedInDate);
                 nextDay.setDate(nextDay.getDate() + 1);
-
                 checkOutInput.min = formatDate(nextDay);
                 if (new Date(checkOutInput.value) <= selectedInDate) {
                     checkOutInput.value = formatDate(nextDay);
@@ -389,14 +323,12 @@
         }
     });
 
-    // 2. 加减控制逻辑
     let guestCounts = { adults: 2, children: 0, rooms: 1 };
 
-    function updateGuest(type, change) {
+    function updateGuest(event, type, change) {
+        if (event) event.stopPropagation(); // 阻止点击事件穿透关闭菜单
         let minLimit = (type === 'children') ? 0 : 1;
-        let maxLimit = 10;
-
-        if (guestCounts[type] + change >= minLimit && guestCounts[type] + change <= maxLimit) {
+        if (guestCounts[type] + change >= minLimit && guestCounts[type] + change <= 10) {
             guestCounts[type] += change;
             document.getElementById('cnt_' + type).innerText = guestCounts[type];
             document.getElementById('input_' + type).value = guestCounts[type];
@@ -406,61 +338,40 @@
 
     function updateGuestSummary() {
         let adultText = guestCounts.adults + (guestCounts.adults > 1 ? ' Adults' : ' Adult');
-        let childText = guestCounts.children + (guestCounts.children === 1 ? ' Child' : ' Children');
+        let childText = guestCounts.children > 0 ? `, ${guestCounts.children} ${guestCounts.children > 1 ? 'Children' : 'Child'}` : '';
         let roomText = guestCounts.rooms + (guestCounts.rooms > 1 ? ' Rooms' : ' Room');
-
-        document.getElementById('guestSummary').innerText = `${adultText}, ${childText}, ${roomText}`;
+        document.getElementById('guestSummary').innerText = `${adultText}${childText}, ${roomText}`;
     }
 
-    // 3. 点击切换显示/隐藏面板
     const guestTrigger = document.getElementById('guestInputTrigger');
     const guestDropdown = document.getElementById('guestDropdown');
 
     if (guestTrigger && guestDropdown) {
         guestTrigger.addEventListener('click', function (e) {
             e.stopPropagation();
-            if (guestDropdown.style.display === 'none' || guestDropdown.style.display === '') {
-                guestDropdown.style.display = 'block';
-            } else {
-                guestDropdown.style.display = 'none';
-            }
+            guestDropdown.classList.toggle('show');
         });
-
-        document.addEventListener('click', function (e) {
-            if (!guestDropdown.contains(e.target) && !guestTrigger.contains(e.target)) {
-                guestDropdown.style.display = 'none';
-            }
+        guestDropdown.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+        document.addEventListener('click', function () {
+            guestDropdown.classList.remove('show');
         });
     }
 
-    function closeGuestDropdown() {
-        if (guestDropdown) {
-            guestDropdown.style.display = 'none';
-        }
+    function closeGuestDropdown(e) {
+        if (e) e.stopPropagation();
+        if (guestDropdown) guestDropdown.classList.remove('show');
     }
 
-    // 4. Tab 切换
     function switchTab(evt, tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-
         document.getElementById('tab-' + tabName).classList.add('active');
         if (evt && evt.currentTarget) {
             evt.currentTarget.classList.add('active');
         }
     }
-
-    // 5. Vibe Pills 点击跳转支持
-    document.querySelectorAll('.vibe-pill').forEach(pill => {
-        pill.addEventListener('click', function() {
-            document.querySelectorAll('.vibe-pill').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            
-            const vibeText = this.innerText.trim();
-            if (vibeText !== 'All Stays') {
-                window.location.href = 'after_search.php?vibe=' + encodeURIComponent(vibeText);
-            }
-        });
-    });
 </script>
+
 <?php include __DIR__ . '/../footer.php'; ?>

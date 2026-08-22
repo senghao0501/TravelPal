@@ -778,3 +778,212 @@
     letter-spacing: 0.5px;
     margin-top: 3px;
 }
+
+/* ----------------------------------------------------
+   13. Account avatar + Settings
+   ---------------------------------------------------- */
+
+.profile-avatar {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #4b5563 !important;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.profile-avatar svg {
+    width: 21px;
+    height: 21px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.profile-avatar:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+    color: #111827 !important;
+}
+
+.settings-page {
+    min-height: calc(100vh - 100px);
+    padding: 55px 20px 80px;
+    background: #f7f8fa;
+}
+
+.settings-container {
+    width: min(760px, 100%);
+    margin: 0 auto;
+}
+
+.settings-header {
+    margin-bottom: 24px;
+}
+
+.settings-eyebrow {
+    display: block;
+    margin-bottom: 7px;
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.settings-header h1 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 32px;
+    line-height: 1.15;
+    font-weight: 750;
+}
+
+.settings-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.settings-card {
+    background: #ffffff;
+    border: 1px solid #e1e5ea;
+    border-radius: 8px;
+    box-shadow: 0 3px 12px rgba(16, 24, 40, 0.06);
+    padding: 28px;
+}
+
+.settings-profile {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.settings-avatar {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: #596579;
+}
+
+.settings-avatar svg {
+    width: 31px;
+    height: 31px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.settings-profile h2 {
+    margin: 0 0 4px;
+    color: #111827;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.settings-profile p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.settings-divider {
+    height: 1px;
+    margin: 26px 0 6px;
+    background: #e5e7eb;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 17px 0;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.settings-label {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.settings-value {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.settings-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    background: #ffffff;
+    color: #374151;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.settings-logout:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+    .profile-avatar {
+        width: 31px;
+        height: 31px;
+        flex-basis: 31px;
+    }
+
+    .profile-avatar svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .settings-page {
+        padding: 40px 16px 60px;
+    }
+
+    .settings-card {
+        padding: 22px;
+    }
+
+    .settings-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .settings-value {
+        text-align: left;
+    }
+}

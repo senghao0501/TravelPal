@@ -1,4 +1,9 @@
-<?php include '../header.php'; ?>
+<?php 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include '../header.php'; 
+?>
 <link rel="stylesheet" href="../css/modules/hotels.css?v=6">
 
 <section class="hero-section">
@@ -48,7 +53,6 @@
             <div class="input-group guest-selector-group">
                 <div class="input-wrapper" id="guestInputTrigger" style="cursor: pointer;">
                     <label>Guests & Rooms</label>
-                    <!-- 🚨 加入了箭头图标 🚨 -->
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="guest-display-text" id="guestSummary">2 Adults, 0 Children, 1 Room</div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#172033" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; margin-right: 8px; flex-shrink: 0;">
@@ -103,21 +107,8 @@
 </section>
 
 <main class="main-content">
-    <section class="account-prompt-card">
-        <div class="prompt-content-wrapper">
-            <div class="prompt-icon"></div>
-            <div class="prompt-text">
-                <h3>Save 15% or More on Staycations</h3>
-                <p>Sign in to unlock Member Secret Prices, free room upgrades, and late check-outs.</p>
-            </div>
-        </div>
-        <div class="prompt-buttons">
-            <a href="../auth/login.php" class="btn-accent">Sign In</a>
-            <a href="../auth/register.php" class="btn-outline">Register Free</a>
-        </div>
-    </section>
-
-    <!-- 底部内容 -->
+    
+    <!-- 1. 顶部先展示 Top Staycation Destinations 网格 -->
     <section class="gallery-section">
         <div class="section-header">
             <h2>Top Staycation Destinations</h2>
@@ -168,6 +159,30 @@
             </a>
         </div>
     </section>
+
+<!-- 2. Sign In / Register 提示卡片 (外部 CSS 版) -->
+    <?php if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])): ?>
+        <section class="hotel-promo-banner" aria-labelledby="hotel-promo-title">
+            
+            <!-- 左侧：图标 -->
+            <div class="hotel-promo-icon" aria-hidden="true">
+                <i class="fa-solid fa-tags"></i>
+            </div>
+            
+            <!-- 中间：文字说明 -->
+            <div class="hotel-promo-content">
+                <h2 id="hotel-promo-title">Unlock Member Secret Prices</h2>
+                <p>Sign in to access exclusive hotel discounts, free room upgrades, and late check-outs.</p>
+            </div>
+            
+            <!-- 右侧：按钮 -->
+            <div class="hotel-promo-actions">
+                <a href="../auth/login.php" class="hotel-btn hotel-btn-primary">Sign In</a>
+                <a href="../auth/register.php" class="hotel-btn hotel-btn-outline">Register Free</a>
+            </div>
+
+        </section>
+    <?php endif; ?>
 
     <!-- Feature Highlights -->
     <section class="features-section">
@@ -326,7 +341,7 @@
     let guestCounts = { adults: 2, children: 0, rooms: 1 };
 
     function updateGuest(event, type, change) {
-        if (event) event.stopPropagation(); // 阻止点击事件穿透关闭菜单
+        if (event) event.stopPropagation();
         let minLimit = (type === 'children') ? 0 : 1;
         if (guestCounts[type] + change >= minLimit && guestCounts[type] + change <= 10) {
             guestCounts[type] += change;
@@ -373,5 +388,9 @@
         }
     }
 </script>
+
+
+
+
 
 <?php include __DIR__ . '/../footer.php'; ?>

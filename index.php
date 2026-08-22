@@ -1,326 +1,173 @@
-<?php include 'header.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include 'header.php'; 
+?>
 
-<!-- 引入样式文件 -->
-<link rel="stylesheet" href="/TravelPal/css/style.css?v=2026">
+<!-- 这里已经改成了 time()，绝对不会再有缓存问题！ -->
+<link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<!-- 1. Welcome 标语区域 -->
-<section class="welcome-hero">
-    <div class="welcome-badge">EXPLORE MORE, JOURNEY BETTER</div>
-    <h1>Welcome to TravelPal <span class="plane-icon">✈️</span></h1>
-    <p class="subtitle">Your ultimate travel assistant.</p>
-</section>
+<main>
+    <!-- 1. 四个带有【智能实时数据】的分类方格 -->
+    <section class="home-grid-section">
+        <div class="grid-section-header">
+            <h2>Explore TravelPal by Category</h2>
+            <p>Your complete guide to traveling across Malaysia</p>
+        </div>
+        
+       <div class="home-interest-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <?php 
+            // 业务卡片数据
+            $smartData = [
+                'flights' => [
+                    'icon' => 'fa-plane',
+                    'title' => 'Flights', 'desc' => 'Domestic & International', 
+                    'label' => 'Lowest Fares From', 'val' => 'RM 89', 'trend' => 92,
+                    'link' => '/TravelPal/flights/index.php'
+                ],
+                'hotels' => [
+                    'icon' => 'fa-hotel',
+                    'title' => 'Hotels', 'desc' => 'Resorts & City Stays', 
+                    'label' => 'Properties Available', 'val' => '120+', 'trend' => 85,
+                    'link' => '/TravelPal/hotels/index.php'
+                ],
+                'restaurants' => [
+                    'icon' => 'fa-utensils',
+                    'title' => 'Restaurants', 'desc' => 'Local Delicacies', 
+                    'label' => 'Top Rated Spots', 'val' => '4.8★', 'trend' => 88,
+                    'link' => '/TravelPal/restaurant/index.php'
+                ]
+            ];
 
-<!-- 2. 东南亚轮播卡片 (带地点和国家标注) -->
-<section id="scrollingView">
-    <h2>Explore Southeast Asia<br><span>Thailand · Vietnam · Indonesia · Malaysia</span></h2>
-    
-    <div class="images" id="image-slider">
-        <!-- 1. Thailand -->
-        <div class="image-card">
-            <img src="/TravelPal/images/thailand.jpg" alt="Thailand">
-            <div class="image-info">
-                <span class="place-name">Grand Palace</span>
-                <span class="country-tag">Thailand</span>
-            </div>
+            // 1. 渲染前三个业务卡片
+            foreach ($smartData as $key => $data): ?>
+            <!-- 统一设置：圆角 12px, 阴影更柔和, 高度 200px 增加呼吸感 -->
+            <a href="<?php echo $data['link']; ?>" style="text-decoration: none; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                        <i class="fa-solid <?php echo $data['icon']; ?>"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 2px 0; line-height: 1.2;"><?php echo $data['title']; ?></h3>
+                        <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3;"><?php echo $data['desc']; ?></p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;"><?php echo $data['label']; ?></span>
+                    <div style="font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1;"><?php echo $data['val']; ?></div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid #f3f4f6;">
+                    <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(<?php echo $data['trend']; ?> * 1%), #e5e7eb 0); display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #4b5563;">Trending: <?php echo $data['trend']; ?>%</span>
+                </div>
+            </a>
+            <?php endforeach; ?>
+
+            <!-- 2. 第四个会员卡片 (尺寸、圆角与前面的完全一致) -->
+            <a href="/TravelPal/auth/login.php" style="text-decoration: none; background: #047857; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; box-shadow: 0 6px 16px rgba(4,120,87,0.25); transition: transform 0.2s ease;">
+                
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 44px; height: 44px; background: #ffffff; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; line-height: 1.2;">Member Benefits</h3>
+                        <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3;">Unlock exclusive rewards</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <span style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em;">Register Free & Save Up To</span>
+                    <div style="font-size: 28px; font-weight: 900; color: #C6FF34; margin-top: 4px; line-height: 1;">15% OFF</div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2);">
+                    <span style="font-size: 12px; font-weight: 700; color: #ffffff;">Sign In / Join Now</span>
+                    <i class="fa-solid fa-arrow-right" style="color: #ffffff; font-size: 14px;"></i>
+                </div>
+            </a>
+            
         </div>
 
-        <!-- 2. Thailand 2 -->
-        <div class="image-card">
-            <img src="/TravelPal/images/thailand2.jpg" alt="Thailand">
-            <div class="image-info">
-                <span class="place-name">Phi Phi Islands</span>
-                <span class="country-tag">Thailand</span>
+    <!-- 2. 四个左右交替的自动轮播模块 -->
+    <div class="home-zigzag-container">
+        <!-- Flights -->
+        <section class="zigzag-row-flat">
+            <div class="zigzag-content">
+                <span class="zigzag-tag">Explore The Skies</span>
+                <h2>Flights to Top Destinations</h2>
+                <p>Compare and book cheap flights across Malaysia. Find the best airlines and lowest fares for your next getaway.</p>
+                <a href="/TravelPal/flights/index.php" class="zigzag-btn">Search Flights</a>
             </div>
-        </div>
+            <div class="zigzag-slider" data-interval="5000">
+                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" class="slide active">
+                <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&q=80" class="slide">
+            </div>
+        </section>
 
-        <!-- 3. Vietnam -->
-        <div class="image-card">
-            <img src="/TravelPal/images/vietnam.jpg" alt="Vietnam">
-            <div class="image-info">
-                <span class="place-name">Ha Long Bay</span>
-                <span class="country-tag">Vietnam</span>
+        <!-- Hotels -->
+        <section class="zigzag-row-flat">
+            <div class="zigzag-slider" data-interval="5000">
+                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" class="slide active">
+                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80" class="slide">
             </div>
-        </div>
+            <div class="zigzag-content">
+                <span class="zigzag-tag">Comfortable Stays</span>
+                <h2>Hotels & Holiday Rentals</h2>
+                <p>From luxury 5-star beachfront resorts in Penang to cozy boutique stays in KL, discover thousands of accommodations with real-time prices.</p>
+                <a href="/TravelPal/hotels/index.php" class="zigzag-btn">Explore Hotels</a>
+            </div>
+        </section>
 
-        <!-- 4. Vietnam 2 -->
-        <div class="image-card">
-            <img src="/TravelPal/images/vietnam2.jpg" alt="Vietnam">
-            <div class="image-info">
-                <span class="place-name">Hoi An Ancient Town</span>
-                <span class="country-tag">Vietnam</span>
+        <!-- Restaurants -->
+        <section class="zigzag-row-flat">
+            <div class="zigzag-content">
+                <span class="zigzag-tag">Culinary Journeys</span>
+                <h2>Restaurants & Local Food</h2>
+                <p>Savor the best local delicacies and fine dining. Discover top-rated eateries, street food guides, and cozy cafes recommended by locals.</p>
+                <a href="/TravelPal/restaurants/index.php" class="zigzag-btn">Find Restaurants</a>
             </div>
-        </div>
+            <div class="zigzag-slider" data-interval="5000">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="slide active">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" class="slide">
+            </div>
+        </section>
 
-        <!-- 5. Indonesia -->
-        <div class="image-card">
-            <img src="/TravelPal/images/indonesia.jpg" alt="Indonesia">
-            <div class="image-info">
-                <span class="place-name">Prambanan Temple</span>
-                <span class="country-tag">Indonesia</span>
+        <!-- Attractions -->
+        <section class="zigzag-row-flat">
+            <div class="zigzag-slider" data-interval="5000">
+                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80" class="slide active">
+                <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800&q=80" class="slide">
             </div>
-        </div>
-
-        <!-- 6. Indonesia 2 -->
-        <div class="image-card">
-            <img src="/TravelPal/images/indonesia2.jpg" alt="Indonesia">
-            <div class="image-info">
-                <span class="place-name">Mount Bromo</span>
-                <span class="country-tag">Indonesia</span>
+            <div class="zigzag-content">
+                <span class="zigzag-tag">Unforgettable Experiences</span>
+                <h2>Attractions & Activities</h2>
+                <p>Immerse yourself in culture, nature, and adventure. Book tickets to iconic landmarks, theme parks, and hidden nature trails across Malaysia.</p>
+                <a href="/TravelPal/attractions/index.php" class="zigzag-btn">Discover Attractions</a>
             </div>
-        </div>
-
-        <!-- 7. Malaysia -->
-        <div class="image-card">
-            <img src="/TravelPal/images/malaysia.jpg" alt="Malaysia">
-            <div class="image-info">
-                <span class="place-name">Batu Caves</span>
-                <span class="country-tag">Malaysia</span>
-            </div>
-        </div>
-
-        <!-- 8. Malaysia 2 -->
-        <div class="image-card">
-            <img src="/TravelPal/images/malaysia2.jpg" alt="Malaysia">
-            <div class="image-info">
-                <span class="place-name">Mulu National Park</span>
-                <span class="country-tag">Malaysia</span>
-            </div>
-        </div>
+        </section>
     </div>
-</section>
-
-<!-- 3. 搜索栏组件 -->
-<section class="search-container">
-    <div class="search">
-        <input type="text" id="searchBar" placeholder="Search Malaysia, Vietnam, Thailand, Indonesia places to go, hotels...">
-        <button type="button" onclick="navigateSearch()" id="searching" title="Search"></button>
-    </div>
-    <div class="error-message" id="searchError"></div>
-</section>
-
-<!-- 4. 四个国家卡片区域 -->
-<section class="viewMore">
-    <dialog id="travelPopup">
-        <h3 id="popupTitle">Explore Country</h3>
-        <div class="popup-links">
-            <a id="flightLink">Flights</a>
-            <a id="hotelLink">Hotels</a>
-            <a id="restaurantLink">Restaurants</a>
-            <a id="attractionLink">Attractions</a>
-        </div>
-        <button type="button" onclick="closeTravelPopup()">Close</button>
-    </dialog>
-    
-    <div class="view-card">
-        <h3>Thailand</h3>
-        <img class="place-image" src="/TravelPal/images/thailand3.jpg" id="nightMarket" alt="Night market">
-        <pre>· Waterfall  · Night Market</pre>
-        <button type="button" onclick="openTravelPopup('Thailand')">View more</button>
-    </div>
-    
-    <div class="view-card">
-        <h3>Vietnam</h3>
-        <img class="place-image" src="/TravelPal/images/vietnam3.jpg" id="ancientTowns" alt="Ancient towns">
-        <pre>· Coffee  · Ancient Towns</pre>
-        <button type="button" onclick="openTravelPopup('Vietnam')">View more</button>
-    </div>
-    
-    <div class="view-card">
-        <h3>Indonesia</h3>
-        <img class="place-image" src="/TravelPal/images/indonesia3.jpg" id="mountBromo" alt="Mount Bromo">
-        <pre>· Sunrise  · Mount Bromo</pre>
-        <button type="button" onclick="openTravelPopup('Indonesia')">View more</button>
-    </div>
-    
-    <div class="view-card">
-        <h3>Malaysia</h3>
-        <img class="place-image" src="/TravelPal/images/malaysia3.jpg" id="jonkerStreet" alt="Jonker street">
-        <pre>· Heritage  · Jonker Street</pre>
-        <button type="button" onclick="openTravelPopup('Malaysia')">View more</button>
-    </div>
-</section>
-
-<!-- 5. Top Picks 推荐区块 -->
-<section class="top-picks-section">
-    <h2 class="section-title">Top Picks</h2>
-    <div class="top-picks-wrapper">
-        <div id="topPicks">
-            <!-- 1 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/thailand.jpg" alt="Thailand Spot">
-                <p>Bangkok Grand Palace</p>
-                <div class="rating">⭐ 4.8</div>
-            </div>
-            <!-- 2 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/vietnam.jpg" alt="Vietnam Spot">
-                <p>Ha Long Bay Cruise</p>
-                <div class="rating">⭐ 4.9</div>
-            </div>
-            <!-- 3 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/indonesia.jpg" alt="Indonesia Spot">
-                <p>Bali Nusa Penida</p>
-                <div class="rating">⭐ 4.7</div>
-            </div>
-            <!-- 4 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/malaysia.jpg" alt="Malaysia Spot">
-                <p>Petronas Twin Towers</p>
-                <div class="rating">⭐ 4.8</div>
-            </div>
-            <!-- 5 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/thailand2.jpg" alt="Phuket">
-                <p>Phuket Phi Phi Islands</p>
-                <div class="rating">⭐ 4.9</div>
-            </div>
-            <!-- 6 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/vietnam2.jpg" alt="Hanoi">
-                <p>Hanoi Ancient Street</p>
-                <div class="rating">⭐ 4.6</div>
-            </div>
-            <!-- 7 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/indonesia2.jpg" alt="Bromo">
-                <p>Mount Bromo Sunrise</p>
-                <div class="rating">⭐ 4.8</div>
-            </div>
-            <!-- 8 -->
-            <div class="pick-card">
-                <img class="pick-image" src="/TravelPal/images/malaysia2.jpg" alt="Langkawi">
-                <p>Langkawi Sky Bridge</p>
-                <div class="rating">⭐ 4.7</div>
-            </div>
-        </div>
-        <button type="button" class="next-arrow" onclick="scrollTopPicks()" title="Next">➔</button>
-    </div>
-</section>
-
-<!-- 6. Features 核心功能与优势 -->
-<section class="features-section">
-    <h2 class="section-title" style="background:none; box-shadow:none;">Why TravelPal?</h2>
-    <p class="section-subtitle">Discover how TravelPal makes travel planning effortless.</p>
-    
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon">🗺️</div>
-            <h3>Smart Itinerary</h3>
-            <p>Custom trip recommendations tailored to your style and timeline.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🌴</div>
-            <h3>Top SEA Spots</h3>
-            <p>Full coverage of Malaysia, Vietnam, Thailand, and Indonesia.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">⭐</div>
-            <h3>Verified Reviews</h3>
-            <p>Real traveler ratings to help you skip traps and find hidden gems.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">🏨</div>
-            <h3>All-in-One Booking</h3>
-            <p>Manage attractions, hotels, and tours seamlessly in one place.</p>
-        </div>
-    </div>
-</section>
-
-<!-- 7. 数据信任条 (Stats) -->
-<section class="stats-section">
-    <div class="stats-container">
-        <div class="stat-item">
-            <h2>10k+</h2>
-            <p>Happy Travelers</p>
-        </div>
-        <div class="stat-item">
-            <h2>4</h2>
-            <p>SEA Countries Covered</p>
-        </div>
-        <div class="stat-item">
-            <h2>500+</h2>
-            <p>Curated Destinations</p>
-        </div>
-        <div class="stat-item">
-            <h2>4.9/5</h2>
-            <p>User Satisfaction</p>
-        </div>
-    </div>
-</section>
-
-<!-- 8. 底部引导 CTA -->
-<div class="cta-container">
-    <div class="cta-card">
-        <h2>Ready to Explore the Unexplored?</h2>
-        <p>Sign in or create a free account today to unlock personalized recommendations, top attraction lists, and smart travel planning.</p>
-        <div class="cta-btn-group">
-            <a href="/TravelPal/auth/login.php" class="btn-primary-cta">Sign In Now</a>
-            <a href="/TravelPal/auth/register.php" class="btn-secondary-cta">Create Account</a>
-        </div>
-    </div>
-</div>
+</main>
 
 <script>
-    // 1. 顶部轮播图自动播放 (针对新的 .image-card 容器结构平滑滚动)
-    const slider = document.getElementById("image-slider");
-    if (slider) {
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".zigzag-slider").forEach(slider => {
+        const slides = slider.querySelectorAll(".slide");
+        let idx = 0;
         setInterval(() => {
-            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5) {
-                slider.scrollTo({ left: 0, behavior: "smooth" });
-            } else {
-                slider.scrollBy({ left: 250, behavior: "smooth" });
-            }
-        }, 3000);
-    }
-
-    // 2. Top Picks 向右滚动按钮
-    function scrollTopPicks() {
-        const topPicks = document.getElementById("topPicks");
-        if (topPicks) {
-            if (topPicks.scrollLeft + topPicks.clientWidth >= topPicks.scrollWidth - 5) {
-                topPicks.scrollTo({ left: 0, behavior: "smooth" });
-            } else {
-                topPicks.scrollBy({ left: 280, behavior: "smooth" });
-            }
-        }
-    }
-
-    // 3. 搜索逻辑
-    function navigateSearch() {
-        const result = document.getElementById("searchBar").value.trim();
-        const error = document.getElementById("searchError");
-        error.textContent = "";
-        
-        const pages = {
-            thailand: "Thailand",
-            vietnam: "Vietnam",
-            indonesia: "Indonesia",
-            malaysia: "Malaysia"
-        };
-        
-        if (result === "") {
-            error.textContent = "Search cannot be blank.";
-        } else if (pages[result.toLowerCase()]) {
-            window.location.href = "/TravelPal/Attractions/" + pages[result.toLowerCase()];
-        } else {
-            error.textContent = "Country not found.";
-        }
-    }
-
-    // 4. Modal 弹窗逻辑
-    function openTravelPopup(country) {
-        document.getElementById("popupTitle").textContent = "Explore " + country;
-        document.getElementById("flightLink").href = "/TravelPal/Flights/" + country;
-        document.getElementById("hotelLink").href = "/TravelPal/Hotels/" + country;
-        document.getElementById("restaurantLink").href = "/TravelPal/Restaurants/" + country;
-        document.getElementById("attractionLink").href = "/TravelPal/Attractions/" + country;
-        document.getElementById("travelPopup").showModal();
-    }
-
-    function closeTravelPopup() {
-        document.getElementById("travelPopup").close();
-    }
+            slides[idx].classList.remove("active");
+            idx = (idx + 1) % slides.length;
+            slides[idx].classList.add("active");
+        }, parseInt(slider.getAttribute("data-interval")));
+    });
+});
 </script>
 
 <?php include 'footer.php'; ?>

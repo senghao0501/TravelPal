@@ -1,26 +1,61 @@
 <?php
 session_start();
-if (!isset($_SESSION['travelpal_accounts'])) {
-    $_SESSION['travelpal_accounts'] = [
-        'demo@travelpal.my' => ['name' => 'Aina Rahman', 'password' => password_hash('TravelPal123!', PASSWORD_DEFAULT)],
-    ];
-}
+require_once __DIR__ . '/auth_db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['username'] ?? '');
     $email = strtolower(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
-    if (mb_strlen($name) < 2) $error = 'Please enter your full name.';
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = 'Please enter a valid email address.';
-    elseif (isset($_SESSION['travelpal_accounts'][$email])) $error = 'This email address is already registered.';
-    elseif (strlen($password) < 8) $error = 'Your password must contain at least 8 characters.';
-    elseif ($password !== $confirm) $error = 'Your passwords do not match.';
-    else {
-        $_SESSION['travelpal_accounts'][$email] = ['name' => $name, 'password' => password_hash($password, PASSWORD_DEFAULT)];
-        header('Location: login.php?registered=1'); exit;
+
+    if (mb_strlen($name) < 2) {
+        $error = 'Please enter your full name.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = 'Please enter a valid email address.';
+    } elseif (strlen($password) < 8) {
+        $error = 'Your password must contain at least 8 characters.';
+    } elseif ($password !== $confirm) {
+        $error = 'Your passwords do not match.';
+    } else {
+        $check = $auth_db->prepare('SELECT id FROM accounts WHERE email = ? LIMIT 1');
+
+        if (!$check) {
+            $error = 'Unable to check the account right now.';
+        } else {
+            $check->bind_param('s', $email);
+            $check->execute();
+            $result = $check->get_result();
+            $exists = $result->fetch_assoc();
+            $check->close();
+
+            if ($exists) {
+                $error = 'This email address is already registered.';
+            } else {
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+                $insert = $auth_db->prepare(
+                    'INSERT INTO accounts (full_name, email, password_hash) VALUES (?, ?, ?)'
+                );
+
+                if (!$insert) {
+                    $error = 'Unable to create the account right now.';
+                } else {
+                    $insert->bind_param('sss', $name, $email, $passwordHash);
+
+                    if ($insert->execute()) {
+                        $insert->close();
+                        header('Location: login.php?registered=1');
+                        exit;
+                    }
+
+                    $insert->close();
+                    $error = 'Unable to create the account. Please try again.';
+                }
+            }
+        }
     }
 }
+
 include '../header.php';
 ?>
 <link rel="stylesheet" href="../css/modules/auth.css?v=5">
@@ -44,13 +79,20 @@ include '../header.php';
                 <button type="submit" class="btn-primary" id="submitButton">Create account</button>
             </form>
             <p class="auth-switch">Already have an account? <a href="login.php">Sign in</a></p>
-            <p class="form-note">This version stores new accounts only for the current browser session. Database storage will be added later.</p>
+            <p class="form-note">New accounts are saved securely in the TravelPal database.</p>
         </div>
     </div>
 </section>
 <script>
-document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => { const input = document.getElementById(button.dataset.passwordToggle); const isHidden = input.type === 'password'; input.type = isHidden ? 'text' : 'password'; button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password'); button.classList.toggle('is-visible', isHidden); }));
+document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    button.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    button.classList.toggle('is-visible', isHidden);
+}));
 document.getElementById('registerForm').addEventListener('submit', () => { document.getElementById('submitButton').textContent = 'Creating account…'; });
-const slides = [...document.querySelectorAll('.slide')], dots = [...document.querySelectorAll('.slide-dots span')]; let active = 0; setInterval(() => { slides[active].classList.remove('active'); dots[active].classList.remove('active'); active = (active + 1) % slides.length; slides[active].classList.add('active'); dots[active].classList.add('active'); }, 5000);
+const slides = [...document.querySelectorAll('.slide')], dots = [...document.querySelectorAll('.slide-dots span')]; let active = 0;
+setInterval(() => { slides[active].classList.remove('active'); dots[active].classList.remove('active'); active = (active + 1) % slides.length; slides[active].classList.add('active'); dots[active].classList.add('active'); }, 5000);
 </script>
 </main></body></html>

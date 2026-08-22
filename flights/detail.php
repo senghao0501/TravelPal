@@ -324,6 +324,10 @@ function h_detail($value): string
 }
 
 include __DIR__ . '/../header.php';
+
+// Shared login reminder: on the detail page it opens only when Continue to Checkout is clicked.
+$loginPopupAutoShow = false;
+include __DIR__ . '/../login_popup.php';
 ?>
 
 <link rel="stylesheet" href="../css/modules/flights.css?v=2">
@@ -530,7 +534,7 @@ include __DIR__ . '/../header.php';
                     <div class="fare-total" id="fare-total">Total for <?php echo $passengers; ?> <?php echo $passengers === 1 ? 'passenger' : 'passengers'; ?>: RM <?php echo number_format($totalPrice, 2); ?></div>
                 </div>
 
-                <form action="checkout.php" method="GET" id="detail-checkout-form">
+                <form action="#" method="GET" id="detail-checkout-form">
                     <input type="hidden" name="flight_id" value="<?php echo h_detail($outbound['id'] ?? $flightId); ?>">
                     <input type="hidden" name="return_id" value="<?php echo h_detail($return['id'] ?? $returnId ?? ''); ?>">
                     <input type="hidden" name="trip_type" value="<?php echo h_detail($tripType); ?>">
@@ -579,7 +583,7 @@ include __DIR__ . '/../header.php';
                         <div class="cabin-api-status" id="cabin-api-status" aria-live="polite"></div>
                     </div>
 
-                    <button type="submit" class="btn-checkout">
+                    <button type="button" class="btn-checkout" id="detail-booking-button">
                         Continue to Checkout <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </form>
@@ -592,6 +596,21 @@ include __DIR__ . '/../header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const bookingButton = document.getElementById('detail-booking-button');
+
+    if (bookingButton) {
+        bookingButton.addEventListener('click', function (event) {
+            event.preventDefault();
+
+            if (!window.TravelPalLoginPopup || !window.TravelPalLoginPopup.isLoggedIn) {
+                window.TravelPalLoginPopup?.open();
+                return;
+            }
+
+            // Intentionally no navigation or booking action.
+        });
+    }
+
     const passengerSelect = document.getElementById('detail-passengers');
     const fareAmount = document.getElementById('fare-amount');
     const fareTotal = document.getElementById('fare-total');

@@ -145,6 +145,10 @@ function buildSearchUrl(array $overrides = []): string
 }
 
 include __DIR__ . '/../header.php';
+
+// Shared login reminder: show once when the Flight search page is opened.
+$loginPopupAutoShow = true;
+include __DIR__ . '/../login_popup.php';
 ?>
 
 <link rel="stylesheet" href="../css/modules/flights.css?v=2">

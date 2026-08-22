@@ -1,14 +1,14 @@
 /* ==========================================================================
-   TravelPal - Settings Page Styling
+   TravelPal - Settings Page Styling (Unified with Hotels & Flights UI)
    ========================================================================== */
 
-/* 主容器布局 */
+/* 1. 主容器布局：统一宽度与呼吸间距 */
 .settings-container {
-    max-width: 800px;
-    margin: 40px auto 80px auto;
-    padding: 0 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #111111;
+    max-width: 1180px !important;
+    margin: 45px auto 80px auto !important;
+    padding: 0 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .settings-header {
@@ -16,232 +16,292 @@
 }
 
 .settings-header h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin-bottom: 6px;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--text-dark, #111827);
+    letter-spacing: -0.02em;
 }
 
 .settings-subtitle {
-    color: #666666;
-    font-size: 0.95rem;
-}
-
-/* 未登录 (Guest) 引导卡片 */
-.guest-notice-card {
-    background: #111111;
-    color: #ffffff;
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    border-left: 6px solid #ccff00; /* 亮荧光绿线条 */
-}
-
-.guest-info {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.guest-icon {
-    font-size: 2rem;
-}
-
-.guest-info h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: #ffffff;
-}
-
-.guest-info p {
-    font-size: 0.88rem;
-    color: #cccccc;
+    color: var(--text-muted, #6b7280);
+    font-size: 14px;
     margin: 0;
 }
 
-.btn-guest-login {
-    background: #ccff00; /* 标志性荧光绿 */
-    color: #111111;
+/* 2. Booking.com 风格的 Help Center / 登录引导大卡片 */
+.help-center-card {
+    background: #ffffff !important;
+    border: 1px solid var(--border, #d9dee7) !important;
+    border-radius: var(--radius-md, 6px) !important;
+    padding: 32px !important;
+    margin-bottom: 24px !important;
+    box-shadow: var(--shadow-soft, 0 1px 3px rgba(16, 24, 40, 0.06)) !important;
+    box-sizing: border-box;
+}
+
+.help-header-text h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-dark, #111827);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+}
+
+.help-header-text p {
+    font-size: 14px;
+    color: var(--text-muted, #6b7280);
+    margin: 0 0 24px 0;
+}
+
+/* 客服选项两列网格布局 */
+.help-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light, #e8ecf1);
+}
+
+.help-option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.help-option-item .help-icon {
+    font-size: 18px;
+    color: var(--primary, #047857);
+    margin-top: 2px;
+    width: 24px;
+    text-align: center;
+}
+
+.help-option-item h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dark, #111827);
+    margin: 0 0 4px 0;
+}
+
+.help-option-item p {
+    font-size: 12px;
+    color: var(--text-muted, #6b7280);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 主 Sign In 按钮 */
+.btn-help-signin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: var(--primary, #047857);
+    color: #ffffff !important;
     text-decoration: none;
-    font-weight: 800;
-    font-size: 0.9rem;
-    padding: 10px 20px;
-    border-radius: 999px;
-    white-space: nowrap;
-    transition: transform 0.2s ease, background-color 0.2s ease;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 5px !important;
+    box-sizing: border-box;
+    transition: background 0.15s ease;
+    margin-bottom: 16px;
 }
 
-.btn-guest-login:hover {
-    transform: translateY(-2px);
-    background: #b8e600;
+.btn-help-signin:hover {
+    background: var(--primary-dark, #065f46);
 }
 
-/* 卡片容器基本样式 */
+/* 底部辅助链接 */
+.help-footer-link {
+    text-align: center;
+}
+
+.help-footer-link a {
+    color: var(--primary, #047857);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.help-footer-link a:hover {
+    text-decoration: underline;
+}
+
+/* 3. 标准设置卡片框架 */
 .settings-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-top: 4px solid #ccff00; /* 亮绿色顶部高亮线 */
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    background: #ffffff !important;
+    border: 1px solid var(--border, #d9dee7) !important;
+    border-radius: var(--radius-md, 6px) !important;
+    padding: 23px !important;
+    margin-bottom: 14px !important;
+    box-shadow: var(--shadow-soft, 0 1px 3px rgba(16, 24, 40, 0.06)) !important;
+    box-sizing: border-box;
 }
 
 .card-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border-light, #e8ecf1);
+    padding-bottom: 15px;
 }
 
 .card-title h2 {
-    font-size: 1.25rem;
+    font-size: 17px;
     font-weight: 700;
     margin: 0;
+    color: var(--text-dark, #111827);
 }
 
 .card-badge {
     background: #f1f5f9;
     color: #475569;
-    font-size: 0.75rem;
+    font-size: 11px;
     font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 999px;
+    padding: 3px 8px;
+    border-radius: 3px;
 }
 
 .card-badge.user-badge {
-    background: #e6f9d5;
-    color: #2e6b00;
+    background: #ecfdf5;
+    color: #047857;
 }
 
-/* 表单输入框元素 */
+/* 4. 表单元素区 */
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-bottom: 18px;
+    gap: 5px;
+    margin-bottom: 16px;
 }
 
 .form-group label {
     font-weight: 700;
-    font-size: 0.9rem;
-    color: #1e293b;
+    font-size: 11px;
+    color: #4b5563;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .form-group select, 
 .form-group input[type="text"],
 .form-group input[type="password"],
 .form-group input[type="email"] {
-    padding: 12px 16px;
-    border-radius: 12px;
-    border: 1px solid #cbd5e1;
-    background: #f8fafc;
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 4px !important;
+    border: 1px solid #cfd5de;
+    background: #ffffff;
+    color: var(--text-dark, #111827);
     outline: none;
-    font-size: 0.95rem;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    font-size: 13px;
+    font-weight: 600;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
 }
 
 .form-group select:focus, 
 .form-group input:focus {
-    border-color: #a3e635;
-    background: #ffffff;
+    border-color: var(--primary, #047857);
+    box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.10);
 }
 
 .disabled-input {
-    background: #e2e8f0 !important;
-    color: #64748b;
+    background: #f1f5f9 !important;
+    color: #94a3b8;
     cursor: not-allowed;
 }
 
 .form-group small {
-    font-size: 0.8rem;
-    color: #64748b;
+    font-size: 11px;
+    color: var(--text-muted, #6b7280);
 }
 
 /* 复选框样式 */
 .form-group-checkbox {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
 .form-group-checkbox input {
-    width: 18px;
-    height: 18px;
-    accent-color: #111111;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary, #047857);
     cursor: pointer;
 }
 
 .form-group-checkbox label {
-    font-size: 0.92rem;
-    color: #334155;
+    font-size: 13px;
+    color: #374151;
     cursor: pointer;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
 }
 
-/* 底部操作按钮区域 */
+/* 5. 底部操作按钮区域 */
 .form-actions {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 12px;
-    margin-top: 12px;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 .btn-save-settings {
-    background: #111111;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary, #047857);
     color: #ffffff;
     border: none;
-    padding: 12px 32px;
-    border-radius: 999px;
-    font-size: 0.95rem;
+    padding: 11px 20px;
+    border-radius: 5px !important;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background 0.15s ease;
 }
 
 .btn-save-settings:hover {
-    background: #ccff00;
-    color: #111111;
-    box-shadow: 0 4px 12px rgba(204, 255, 0, 0.4);
+    background: var(--primary-dark, #065f46);
 }
 
 .btn-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
     background: #fee2e2;
-    color: #991b1b;
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-size: 0.95rem;
+    color: #b42318;
+    padding: 11px 20px;
+    border-radius: 5px !important;
+    font-size: 13px;
     font-weight: 700;
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
 }
 
 .btn-logout:hover {
-    background: #fca5a5;
+    background: #fecaca;
 }
 
-/* 响应式适配 (手机端) */
-@media (max-width: 600px) {
-    .guest-notice-card {
-        flex-direction: column;
-        align-items: flex-start;
+/* 响应式适配 */
+@media (max-width: 760px) {
+    .help-options-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
     }
-    
     .form-actions {
         flex-direction: column;
         width: 100%;
     }
-    
     .btn-save-settings, .btn-logout {
         width: 100%;
-        text-align: center;
     }
 }

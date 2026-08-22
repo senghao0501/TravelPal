@@ -1,27 +1,38 @@
 <?php
 session_start();
-
-/* Temporary session-only accounts. Replace this with database queries later. */
-if (!isset($_SESSION['travelpal_accounts'])) {
-    $_SESSION['travelpal_accounts'] = [
-        'demo@travelpal.my' => [
-            'name' => 'Aina Rahman',
-            'password' => password_hash('TravelPal123!', PASSWORD_DEFAULT),
-        ],
-    ];
-}
+require_once __DIR__ . '/auth_db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower(trim($_POST['email'] ?? ''));
     $password = $_POST['password'] ?? '';
-    $account = $_SESSION['travelpal_accounts'][$email] ?? null;
 
-    if ($account && password_verify($password, $account['password'])) {
-        $_SESSION['user_id'] = $email;
-        $_SESSION['user_name'] = $account['name'];
+    $account = null;
+
+    if ($email !== '') {
+        $stmt = $auth_db->prepare(
+            'SELECT id, full_name, email, password_hash FROM accounts WHERE email = ? LIMIT 1'
+        );
+
+        if ($stmt) {
+            $stmt->bind_param('s', $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $account = $result->fetch_assoc();
+            $stmt->close();
+        }
+    }
+
+    if ($account && password_verify($password, $account['password_hash'])) {
+        session_regenerate_id(true);
+
+        $_SESSION['user_id'] = (int) $account['id'];
+        $_SESSION['user_name'] = $account['full_name'];
+        $_SESSION['user_email'] = $account['email'];
+
         header('Location: /TravelPal/index.php?login=success');
         exit;
     }
+
     header('Location: login.php?error=1');
     exit;
 }

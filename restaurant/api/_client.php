@@ -46,6 +46,10 @@ function restaurant_api_post(string $path, array $body): array
     ]);
     $url = TRAVELPAL_API_BASE . $path . '?' . $query;
     $curl = curl_init($url);
+	
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+
     $encodedBody = json_encode($body, JSON_UNESCAPED_SLASHES);
 
     curl_setopt_array($curl, [

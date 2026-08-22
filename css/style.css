@@ -1,16 +1,19 @@
 /* ==========================================================================
-   TravelPal - Modern Light Header/Footer + Dark Overlay Hero Style
+   TravelPal - Unified Modern UI Styling
    ========================================================================== */
 
 :root {
     --lime: #C6FF34;
     --lime-hover: #b3ea28;
     --dark-bg: #0b0f12;
-    --card-bg: rgba(255, 255, 255, 0.88); /* 变回明亮的半透明白玻璃卡片 */
-    --card-border: rgba(0, 0, 0, 0.08); 
-    --text-main: #111827;  /* 全局主要文字：深黑/近黑色 */
-    --text-muted: #4b5563; /* 辅文字：深灰色 */
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb;
+    --text-main: #111827;
+    --text-muted: #4b5563;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --radius-md: 6px;
+    --primary: #047857;
+    --primary-dark: #065f46;
 }
 
 * {
@@ -20,650 +23,377 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-
-/* ----------------------------------------------------
-   2. Header / Navbar (纯白背景 + 深色文字 + 75px 大 Logo)
-   ---------------------------------------------------- */
+/* --- Header / Navbar --- */
 .navbar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff; /* 纯白背景 */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* 淡淡的阴影 */
+    position: sticky; top: 0; z-index: 100;
+    background: #ffffff;
     border-bottom: 1px solid #e5e7eb;
-    height: 100px; /* 容纳大 Logo */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+    height: 100px;
+    display: flex; align-items: center; justify-content: center;
 }
-
 .navbar-container {
-    width: 100%;
-    max-width: 1200px;
-    padding: 0 2rem;
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: space-between !important; 
-    flex-wrap: nowrap !important;
+    width: 100%; max-width: 1180px; padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.logo img { height: 75px; width: auto; }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links a { text-decoration: none; color: #111827; font-weight: 600; font-size: 0.95rem; }
+.btn-login { background: var(--lime); color: #111827; padding: 8px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; }
+
+/* --- 1. Static 4-Grid Showcase (不可点击方格) --- */
+.home-grid-section { max-width: 1180px; margin: 40px auto; padding: 0 15px; }
+.grid-section-header { margin-bottom: 20px; }
+.grid-section-header h2 { font-size: 24px; font-weight: 700; color: #111827; }
+
+.home-interest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.interest-card-static {
+    position: relative; height: 220px; border-radius: var(--radius-md);
+    overflow: hidden; background: #e2e8f0; border: 1px solid var(--card-border);
+}
+.interest-card-static img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.interest-overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 18px; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+    color: #ffffff; pointer-events: none;
+}
+.interest-overlay h3 { font-size: 16px; font-weight: 700; }
+.interest-overlay p { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+/* --- 2. Zigzag (左右交替) 模块 --- */
+.home-zigzag-container { max-width: 1180px; margin: 60px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 40px; }
+.zigzag-row {
+    display: flex; align-items: center; gap: 40px;
+    background: #ffffff; border: 1px solid var(--card-border);
+    border-radius: var(--radius-md); padding: 40px;
+}
+.zigzag-row.reverse { flex-direction: row-reverse; }
+.zigzag-content { flex: 1; }
+.zigzag-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; display: block; }
+.zigzag-content h2 { font-size: 28px; margin-bottom: 12px; }
+.zigzag-content p { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; }
+.zigzag-btn {
+    background: var(--primary); color: #ffffff; text-decoration: none;
+    font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: var(--radius-md);
+}
+.zigzag-image { flex: 1; height: 320px; border-radius: var(--radius-md); overflow: hidden; }
+.zigzag-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* --- 3. Footer --- */
+#travelPalFooter { background: #ffffff; border-top: 1px solid #e5e7eb; padding: 40px 20px; }
+.footerSection { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; }
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+    .home-interest-grid { grid-template-columns: repeat(2, 1fr); }
+    .zigzag-row, .zigzag-row.reverse { flex-direction: column; padding: 24px; }
+    .zigzag-image { width: 100%; height: 220px; }
 }
 
-.logo {
+/* --- 1. Static 4-Grid Showcase --- */
+.home-grid-section { max-width: 1180px; margin: 40px auto 30px auto; padding: 0 15px; box-sizing: border-box; }
+.grid-section-header { margin-bottom: 20px; }
+.home-interest-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.interest-card-static { position: relative; height: 220px; border-radius: var(--radius-md, 6px); overflow: hidden; background: #e2e8f0; }
+.interest-card-static img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.interest-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%); color: #ffffff; pointer-events: none; }
+
+/* --- 2. Zigzag 模块核心样式 --- */
+.home-zigzag-container { max-width: 1180px; margin: 40px auto 80px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 40px; }
+.zigzag-row { display: flex; align-items: center; gap: 40px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.zigzag-row.reverse { flex-direction: row-reverse; }
+.zigzag-content { flex: 1; }
+.zigzag-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--primary, #047857); margin-bottom: 8px; display: block; }
+.zigzag-content h2 { font-size: 28px; margin-bottom: 12px; }
+.zigzag-content p { font-size: 15px; color: #6b7280; margin-bottom: 24px; line-height: 1.6; }
+.zigzag-btn { background: var(--primary, #047857); color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 12px 24px; border-radius: 6px; transition: background 0.15s; }
+.zigzag-btn:hover { background: var(--primary-dark, #065f46); }
+.zigzag-image { flex: 1; height: 320px; border-radius: 6px; overflow: hidden; }
+.zigzag-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* 响应式 */
+@media (max-width: 900px) {
+    .home-interest-grid { grid-template-columns: repeat(2, 1fr); }
+    .zigzag-row, .zigzag-row.reverse { flex-direction: column; padding: 24px; text-align: center; }
+    .zigzag-content { align-items: center; }
+    .zigzag-image { width: 100%; height: 220px; }
+}
+/* 强制反转，加上 !important 确保它不会被其他 row 样式覆盖 */
+.zigzag-row.reverse {
+    flex-direction: row-reverse !important;
+}
+
+/* ==========================================================================
+   无边框、四图网格交替布局 (Flat Zigzag with 4-Grid Images)
+   ========================================================================== */
+
+.home-zigzag-container {
+    max-width: 1180px;
+    margin: 40px auto 80px auto;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 70px; /* 行与行之间的间距 */
+    box-sizing: border-box;
+}
+
+/* 核心：无边框、无背景、纯平面布局 */
+.zigzag-row-flat {
     display: flex;
     align-items: center;
-    text-decoration: none;
-    flex-shrink: 0;
+    gap: 60px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
-/* 75px 大 Logo */
-.logo img {
-    height: 75px;
-    width: auto;
-    display: block;
-    object-fit: contain;
-}
-
-.nav-links {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 1.5rem;
-    flex-shrink: 0;
-}
-
-/* 导航栏文字变为黑色 */
-.nav-links a {
-    text-decoration: none;
-    color: #111827; 
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: color 0.2s ease;
-    white-space: nowrap;
-}
-
-.nav-links a:hover {
-    color: #000000;
-    font-weight: 700;
-}
-
-/* 登录按钮：保留醒目的绿色或深色 */
-.btn-login {
-    background: var(--lime) !important;
-    color: #111827 !important;
-    padding: 8px 22px !important;
-    border-radius: 999px;
-    font-weight: 700 !important;
-    transition: all 0.2s ease;
-}
-
-.btn-login:hover {
-    background: var(--lime-hover) !important;
-    transform: translateY(-1px);
-}
-
-
-/* ----------------------------------------------------
-   3. Scrolling Banner (修复文字溢出与定位问题)
-   ---------------------------------------------------- */
-#scrollingView {
-    max-width: 1100px;
-    margin: 30px auto 25px;
-    padding: 35px 30px 30px;
-    text-align: center;
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--card-border);
-}
-
-#scrollingView h2 {
-    font-size: 1.8rem;
-    font-weight: 800;
-    color: #111827;
-    margin-bottom: 25px;
-    line-height: 1.3;
-}
-
-#scrollingView h2 span {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-top: 6px;
-}
-
-/* 轮播滚动容器 */
-.images {
+/* 文字区块 */
+.zigzag-content {
+    flex: 1;
     display: flex;
-    gap: 18px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding-bottom: 12px;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.images::-webkit-scrollbar {
-    display: none;
+.zigzag-tag {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary, #047857);
+    margin-bottom: 8px;
 }
 
-/* 每一个独立的图片卡片 - 必须设置 position: relative! */
-.image-card {
-    position: relative !important; /* 👈 关键！强制让文字和遮罩锁在当前卡片内部 */
-    width: 230px;
-    height: 160px;
-    border-radius: 16px;
-    overflow: hidden; /* 👈 保证遮罩不超出卡片的圆角 */
-    flex-shrink: 0;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.25s ease;
+.zigzag-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark, #111827);
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
-.image-card:hover {
-    transform: translateY(-4px);
+.zigzag-content p {
+    font-size: 15px;
+    color: var(--text-muted, #6b7280);
+    margin: 0 0 24px 0;
+    line-height: 1.6;
 }
 
-.image-card img {
+.zigzag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary, #047857);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: var(--radius-md, 6px);
+    transition: background 0.15s ease;
+}
+
+.zigzag-btn:hover {
+    background: var(--primary-dark, #065f46);
+}
+
+/* 4 张图片的小网格 */
+.zigzag-image-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    height: 340px;
+    box-sizing: border-box;
+}
+
+.zigzag-image-grid img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: var(--radius-md, 6px);
     display: block;
+    box-shadow: var(--shadow-soft, 0 2px 8px rgba(16, 24, 40, 0.08));
 }
 
-/* 局部卡片的暗色遮罩和文字 - 锁在左下角 */
-.image-card .image-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 25px 12px 10px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
+/* 响应式适配：手机端自动改为上下堆叠 */
+@media (max-width: 900px) {
+    .zigzag-row-flat {
+        flex-direction: column !important;
+        gap: 24px;
+        text-align: center;
+    }
+    .zigzag-content {
+        align-items: center;
+        width: 100%;
+    }
+    .zigzag-image-grid {
+        width: 100%;
+        height: 260px;
+    }
+}
+/* ==========================================================================
+   无边框、单图 5 秒自动渐变轮播布局 (Flat Zigzag with Auto Slider)
+   ========================================================================== */
+
+.home-zigzag-container {
+    max-width: 1180px;
+    margin: 40px auto 80px auto;
+    padding: 0 15px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    z-index: 2;
+    gap: 70px;
+    box-sizing: border-box;
 }
 
-.image-card .image-info .place-name {
-    color: #ffffff;
-    font-size: 0.85rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-}
-
-.image-card .image-info .country-tag {
-    color: #a3e635; /* 亮绿色，如果项目有 var(--lime) 也可以改回 */
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 3px;
-}
-/* ----------------------------------------------------
-   5. Search Section (白色药丸搜索框)
-   ---------------------------------------------------- */
-.search-container {
-    max-width: 650px;
-    margin: 25px auto 45px;
-    padding: 0 20px;
-}
-
-.search {
+.zigzag-row-flat {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    border-radius: 999px;
-    padding: 5px 8px 5px 24px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    gap: 60px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
-#searchBar {
+/* 文字区块 */
+.zigzag-content {
     flex: 1;
-    height: 44px;
-    background: transparent;
-    border: none;
-    font-size: 0.95rem;
-    color: #111827;
-    outline: none;
-}
-
-#searchBar::placeholder {
-    color: #6b7280;
-}
-
-#searching {
-    width: 44px;
-    height: 44px;
-    background: #111827;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-#searching::after {
-    content: "🔍";
-    font-size: 16px;
-}
-
-#searching:hover {
-    background: var(--lime);
-    transform: scale(1.05);
-}
-
-.error-message {
-    color: #ef4444;
-    font-size: 0.85rem;
-    margin-top: 10px;
-    text-align: center;
-    font-weight: 600;
-}
-
-/* ----------------------------------------------------
-   6. View More Cards (四国明亮白卡片)
-   ---------------------------------------------------- */
-.viewMore {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    max-width: 1200px;
-    margin: 0 auto 50px;
-    padding: 0 20px;
-}
-
-.view-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 20px;
-    padding: 20px;
-    width: 250px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease;
-}
-
-.view-card:hover {
-    transform: translateY(-6px);
-}
-
-.view-card h3 {
-    font-size: 1.3rem;
-    color: #111827;
-    margin-bottom: 12px;
-}
-
-.view-card pre {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin: 10px 0;
-    white-space: pre-wrap;
-}
-
-.place-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 14px;
-}
-
-.view-card button {
-    background: #111827;
-    color: #ffffff;
-    border: none;
-    padding: 8px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    margin-top: 8px;
-    font-weight: 700;
-    transition: all 0.2s ease;
-}
-
-.view-card button:hover {
-    background: var(--lime);
-    color: #111827;
-}
-
-/* Popup Modal */
-#travelPopup {
-    margin: auto;
-    padding: 30px;
-    width: min(380px, calc(100% - 32px));
-    border-radius: 20px;
-    background: #ffffff;
-    color: #111827;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
-    text-align: center;
-}
-
-#travelPopup::backdrop {
-    background: rgba(0, 0, 0, 0.6);
-}
-
-.popup-links {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin: 20px 0;
-}
-
-.popup-links a {
-    background: #f3f4f6;
-    color: #111827;
-    padding: 12px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.popup-links a:hover {
-    background: var(--lime);
-}
-
-#travelPopup button {
-    background: #e5e7eb;
-    color: #111827;
-    border: none;
-    padding: 8px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-/* ----------------------------------------------------
-   7. Top Picks Section
-   ---------------------------------------------------- */
-.section-title {
-    width: fit-content;
-    margin: 50px auto 25px;
-    padding: 6px 24px;
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: 800;
-    text-align: center;
-    border-bottom: 3px solid var(--lime);
-}
-
-.top-picks-wrapper {
-    position: relative;
-    max-width: 1100px;
-    margin: auto;
-    padding: 0 10px;
-}
-
-#topPicks {
-    display: flex;
-    justify-content: flex-start;
     align-items: flex-start;
-    gap: 20px;
-    padding: 10px 5px 25px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
 }
 
-#topPicks::-webkit-scrollbar {
-    display: none;
+.zigzag-tag {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary, #047857);
+    margin-bottom: 8px;
 }
 
-.pick-card {
-    flex: 0 0 250px;
-    width: 250px;
-    padding: 14px;
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease;
+.zigzag-content h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark, #111827);
+    margin: 0 0 12px 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
 }
 
-.pick-card:hover {
-    transform: translateY(-5px);
+.zigzag-content p {
+    font-size: 15px;
+    color: var(--text-muted, #6b7280);
+    margin: 0 0 24px 0;
+    line-height: 1.6;
 }
 
-.pick-image {
+.zigzag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary, #047857);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: var(--radius-md, 6px);
+    transition: background 0.15s ease;
+}
+
+.zigzag-btn:hover {
+    background: var(--primary-dark, #065f46);
+}
+
+/* 轮播图容器 (无边框、固定高度) */
+.zigzag-slider {
+    flex: 1;
+    position: relative;
+    height: 340px;
+    border-radius: var(--radius-md, 6px);
+    overflow: hidden;
+    background: #e2e8f0;
+    box-shadow: var(--shadow-soft, 0 2px 12px rgba(16, 24, 40, 0.08));
+}
+
+/* 轮播图片默认隐藏，通过 opacity 实现平滑渐变切换 */
+.zigzag-slider .slide {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: 150px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 12px;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
     display: block;
 }
 
-.pick-card p {
-    margin-top: 12px;
-    margin-bottom: 6px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: #111827;
+/* 激活状态的图片显示 */
+.zigzag-slider .slide.active {
+    opacity: 1;
 }
 
-.rating {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 5px;
-    margin-top: 8px;
-    color: #d97706; /* 深黄星级颜色 */
-    font-weight: 800;
-    font-size: 0.88rem;
+/* 响应式适配 */
+@media (max-width: 900px) {
+    .zigzag-row-flat {
+        flex-direction: column !important;
+        gap: 24px;
+        text-align: center;
+    }
+    .zigzag-content {
+        align-items: center;
+        width: 100%;
+    }
+    .zigzag-slider {
+        width: 100%;
+        height: 260px;
+    }
+}
+/* ==========================================================================
+   TravelPal - Global Layout & Footer Styles (Added)
+   ========================================================================== */
+
+/* 全局基础规范 */
+:root {
+    --primary: #047857;
+    --primary-dark: #065f46;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --border: #d9dee7;
+    --border-light: #e8ecf1;
+    --shadow-soft: 0 1px 3px rgba(16, 24, 40, 0.06);
+    --radius-md: 6px;
 }
 
-.next-arrow {
-    position: absolute;
-    right: -15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: 50%;
-    background: #111827;
-    color: #ffffff;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.next-arrow:hover {
-    background: var(--lime);
-    color: #111827;
-    transform: translateY(-50%) scale(1.1);
-}
-
-/* ----------------------------------------------------
-   8. Features Section
-   ---------------------------------------------------- */
-.features-section {
-    max-width: 1100px;
-    margin: 60px auto;
-    padding: 0 20px;
-    text-align: center;
-}
-
-.section-subtitle {
-    color: #e5e7eb;
-    margin-bottom: 35px;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-.feature-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    padding: 24px;
-    border-radius: 18px;
-    border: 1px solid var(--card-border);
-    text-align: left;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-4px);
-}
-
-.feature-icon {
-    font-size: 2rem;
-    margin-bottom: 12px;
-}
-
-.feature-card h3 {
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-    color: #111827;
-}
-
-.feature-card p {
-    color: var(--text-muted);
-    font-size: 0.88rem;
-}
-
-/* ----------------------------------------------------
-   9. Stats Section
-   ---------------------------------------------------- */
-.stats-section {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    padding: 40px 20px;
-    margin: 60px 0;
-}
-
-.stats-container {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 20px;
-    text-align: center;
-}
-
-.stat-item h2 {
-    font-size: 2.5rem;
-    font-weight: 900;
-    color: #111827;
-}
-
-.stat-item p {
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-/* ----------------------------------------------------
-   10. Bottom CTA
-   ---------------------------------------------------- */
-.cta-container {
-    max-width: 1000px;
-    margin: 60px auto;
-    padding: 0 20px;
-}
-
-.cta-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    color: #111827;
-    padding: 50px 30px;
-    border-radius: 24px;
-    border: 1px solid var(--card-border);
-    text-align: center;
-    box-shadow: var(--shadow);
-}
-
-.cta-card h2 {
-    font-size: 2rem;
-    color: #111827;
-    margin-bottom: 12px;
-}
-
-.cta-card p {
-    color: var(--text-muted);
-    margin-bottom: 30px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.cta-btn-group {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-
-.btn-primary-cta, .btn-secondary-cta {
-    padding: 12px 28px;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.2s ease;
-}
-
-.btn-primary-cta {
-    background: #111827;
-    color: #ffffff;
-}
-
-.btn-primary-cta:hover {
-    background: var(--lime);
-    color: #111827;
-}
-
-.btn-secondary-cta {
-    border: 1px solid #111827;
-    color: #111827;
-}
-
-.btn-secondary-cta:hover {
-    background: #111827;
-    color: #ffffff;
-}
-
-/* ----------------------------------------------------
-   11. Footer Section (纯白背景 + 深色文字)
-   ---------------------------------------------------- */
+/* 页脚 (Footer) 纯白背景与三栏排版样式 */
 #travelPalFooter {
-    background: #ffffff; /* 纯白底色 */
-    color: #111827;
-    padding-top: 50px;
-    border-top: 1px solid #e5e7eb;
+    background: #ffffff !important;
+    color: #111827 !important;
+    padding-top: 50px !important;
+    border-top: 1px solid #e5e7eb !important;
+    margin-top: 60px !important;
+    box-sizing: border-box;
 }
 
 .footerSection {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    padding-bottom: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
+    max-width: 1180px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    padding-bottom: 40px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    flex-wrap: wrap !important;
+    gap: 30px !important;
 }
 
 .footer-card {
-    width: 30%;
+    flex: 1;
+    min-width: 200px;
 }
 
 .footerTitle {
@@ -674,107 +404,65 @@
 }
 
 .footer-card ul {
-    list-style: none;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 .footer-card li {
-    margin-bottom: 10px;
+    margin-bottom: 10px !important;
 }
 
 .footer-card a {
-    color: var(--text-muted);
-    text-decoration: none;
+    color: var(--text-muted, #6b7280) !important;
+    text-decoration: none !important;
     transition: color 0.2s ease;
+    font-size: 0.9rem;
 }
 
 .footer-card a:hover {
-    color: #111827;
+    color: #111827 !important;
     font-weight: 600;
 }
 
 .ending {
-    border-top: 1px solid #e5e7eb;
-    padding: 25px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 12px;
-    color: var(--text-muted);
-    font-size: 0.85rem;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 25px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 12px !important;
+    color: var(--text-muted, #6b7280) !important;
+    font-size: 0.85rem !important;
 }
 
 .ending .logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .ending .logo img {
-    height: 40px;
-    width: auto;
-    display: block;
-    object-fit: contain;
+    height: 40px !important;
+    width: auto !important;
+    display: block !important;
+    object-fit: contain !important;
 }
 
 .ending span {
-    line-height: 1.6;
+    line-height: 1.6 !important;
 }
 
-/* ----------------------------------------------------
-   12. Responsive (移动端调整)
-   ---------------------------------------------------- */
+/* 页脚移动端适配 */
 @media (max-width: 768px) {
-    .navbar-container {
-        padding: 0 1rem;
+    .footerSection {
+        flex-direction: column !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
     }
-
-    .logo img {
-        height: 35px;
+    .footer-card {
+        width: 100% !important;
     }
-
-    .nav-links {
-        gap: 0.6rem;
-    }
-
-    .nav-links a {
-        font-size: 0.8rem;
-    }
-
-    .btn-login {
-        padding: 0.3rem 0.8rem !important;
-        font-size: 0.8rem;
-    }
-}
-
-/* 图片底部的渐变遮罩和文字展示 - 靠左下角 */
-.image-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 30px 14px 12px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* 👈 靠左 */
-    text-align: left;        /* 👈 文本靠左 */
-}
-
-.image-info .place-name {
-    color: #ffffff;
-    font-size: 0.9rem;
-    font-weight: 700;
-    line-height: 1.2;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.image-info .country-tag {
-    color: var(--lime);
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 3px;
 }

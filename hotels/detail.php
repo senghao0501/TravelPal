@@ -209,9 +209,12 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 
 <link rel="stylesheet" href="../css/modules/hotels.css?v=6">
 
-<section class="search-hero-wrapper" style="padding: 40px 0;">
-    <!-- 🚨 重新加回顶部文字区块 🚨 -->
-    <div class="hero-content" style="margin-bottom: 20px;">
+<!-- 🚨 移除了所有可能阻挡高度的内联样式，确保类名正确 🚨 -->
+<section class="search-hero-wrapper">
+    <div class="hero-content">
+        <!-- 🚨 加回小标题 (Kicker) 🚨 -->
+        <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
+        
         <h1>Find Your Perfect Stay in Malaysia</h1>
         <p>Compare real-time prices and availability across top destinations.</p>
     </div>
@@ -289,11 +292,16 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
             <p class="detail-subtitle" style="margin-top: 6px;"><?php echo htmlspecialchars($hotel['city']); ?>, <?php echo htmlspecialchars($hotel['state']); ?>, Malaysia</p>
         </div>
         <div style="display: flex; flex-direction: column; align-items: flex-end;">
-            <button class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
-                <span>Save to Favorites</span>
-            </button>
-            <div id="favLoginMsg">Please login first ！</div>
-        </div>
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        <button type="button" class="btn-fav-detail" onclick="TravelPalLoginPopup.open(event)">
+            <span>Save to Favorites</span>
+        </button>
+    <?php else: ?>
+        <button type="button" class="btn-fav-detail" id="btnFavDetail" onclick="toggleDetailFav(this)">
+            <span>Save to Favorites</span>
+        </button>
+    <?php endif; ?>
+</div>
     </div>
 
     <!-- 真实的 API 高清组图 -->
@@ -452,11 +460,15 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
                         <input type="date" name="check_out" value="<?php echo htmlspecialchars($check_out); ?>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px;">
                     </div>
 
-                    <div id="loginMsg">⚠️ Please login first</div>
-
-                    <button type="submit" class="btn-book-now">
-                        Book Now
-                    </button>
+                    <?php if (!isset($_SESSION['user_id'])): ?>
+    <button type="button" class="btn-book-now" onclick="TravelPalLoginPopup.open(event)">
+        Book Now
+    </button>
+<?php else: ?>
+    <button type="submit" class="btn-book-now">
+        Book Now
+    </button>
+<?php endif; ?>
                 </form>
             </div>
         </div>
@@ -466,23 +478,18 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 <script>
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
+// 预订逻辑的拦截（虽然按钮已经换了，保险起见保留表单拦截）
 function handleBooking(event) {
     if (!isLoggedIn) {
         event.preventDefault();
-        const msg = document.getElementById('loginMsg');
-        msg.style.display = 'block';
+        TravelPalLoginPopup.open(event);
         return false;
     }
     return true;
 }
 
+// 现在 toggleDetailFav 只在已登录时才会被调用
 function toggleDetailFav(btn) {
-    if (!isLoggedIn) {
-        const msg = document.getElementById('favLoginMsg');
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 3000);
-        return;
-    }
     btn.classList.toggle('active');
     const label = btn.querySelector('span');
     if(btn.classList.contains('active')) {
@@ -528,3 +535,10 @@ function closeGuestDropdown(e) {
     if (guestDropdown) guestDropdown.classList.remove('show');
 }
 </script>
+
+<!-- =========================================================
+     引入强制登录弹窗 (未登录用户点击核心按钮时触发)
+     ========================================================= -->
+<?php include 'login_popup.php'; ?>
+
+<?php include __DIR__ . '/../footer.php'; ?>

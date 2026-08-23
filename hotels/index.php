@@ -8,6 +8,9 @@ include '../header.php';
 
 <section class="hero-section">
     <div class="hero-content">
+        <!-- 加上这一行作为小标题 (Kicker) -->
+        <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
+        
         <h1>Find Your Perfect Stay in Malaysia</h1>
         <p>Compare real-time prices and availability across top destinations.</p>
     </div>
@@ -392,5 +395,12 @@ include '../header.php';
 
 
 
+
+<?php 
+// 1. 开启自动弹窗
+$loginPopupAutoShow = true; 
+// 2. 引入同一目录下的弹窗文件
+include 'login_popup.php'; 
+?>
 
 <?php include __DIR__ . '/../footer.php'; ?>

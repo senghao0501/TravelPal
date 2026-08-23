@@ -57,8 +57,12 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 
 <link rel="stylesheet" href="../css/modules/hotels.css?v=8">
 
+<!-- 🚨 移除了所有可能阻挡高度的内联样式，确保类名正确 🚨 -->
 <section class="search-hero-wrapper">
     <div class="hero-content">
+        <!-- 🚨 加回小标题 (Kicker) 🚨 -->
+        <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
+        
         <h1>Find Your Perfect Stay in Malaysia</h1>
         <p>Compare real-time prices and availability across top destinations.</p>
     </div>
@@ -184,9 +188,12 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 <div class="hotel-card">
                     <div class="card-img-box">
                         <div class="fav-wrapper">
-                            <button type="button" class="btn-fav" onclick="toggleFavorite(event, this, <?php echo $hotel['id']; ?>)">♡</button>
-                            <div class="fav-tooltip">Please login first!</div>
-                        </div>
+    <?php if (!isset($_SESSION['user_id'])): ?>
+        <button type="button" class="btn-fav" onclick="TravelPalLoginPopup.open(event)">♡</button>
+    <?php else: ?>
+        <button type="button" class="btn-fav" onclick="toggleFavorite(event, this, <?php echo $hotel['id']; ?>)">♡</button>
+    <?php endif; ?>
+</div>
                         <a href="<?php echo $detail_url; ?>" style="display:block; width:100%; height:100%;">
                             <img src="<?php echo htmlspecialchars($hotel['img_main']); ?>" referrerpolicy="no-referrer" alt="<?php echo htmlspecialchars($hotel['name']); ?>">
                         </a>
@@ -229,17 +236,12 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 <script>
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
+// 现在 toggleFavorite 只在已登录时才会被调用
 function toggleFavorite(event, btn, hotelId) {
     event.stopPropagation();
     event.preventDefault();
-    const wrapper = btn.closest('.fav-wrapper');
-    if (!isLoggedIn) {
-        if (btn.tooltipTimer) clearTimeout(btn.tooltipTimer);
-        wrapper.classList.add('show-tooltip');
-        btn.tooltipTimer = setTimeout(() => wrapper.classList.remove('show-tooltip'), 2000);
-        return false;
-    }
     btn.classList.toggle('active');
+    // 这里未来可以加上你的 AJAX 请求代码，保存到数据库
 }
 
 let guestCounts = { adults: <?php echo $adults; ?>, children: <?php echo $children; ?>, rooms: <?php echo $rooms; ?> };
@@ -286,3 +288,10 @@ function applySort() {
     window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
 </script>
+
+<!-- =========================================================
+     引入强制登录弹窗 (不需要一进页面就弹，所以不设 AutoShow)
+     ========================================================= -->
+<?php include 'login_popup.php'; ?>
+
+<?php include __DIR__ . '/../footer.php'; ?>

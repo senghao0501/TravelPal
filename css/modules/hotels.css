@@ -70,16 +70,20 @@ body {
    HERO / SEARCH AREA 
    ========================================================= */
 
+/* =========================================================
+   HERO / SEARCH AREA 
+   ========================================================= */
+
 .hero-section,
 .search-hero-wrapper {
     position: relative;
-    padding: 60px 0 65px;
+    padding: 90px 0 90px !important; /* 🚨 大幅增加上下留白，强制撑开高度！ */
     background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
     color: #ffffff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
     display: flex;
     flex-direction: column;
-    align-items: center; /* 确保内部容器居中 */
+    align-items: center; 
 }
 
 .hero-content {
@@ -1500,4 +1504,31 @@ body .search-hero-wrapper .search-container form.filter-bar {
 
 .hotel-btn-outline:hover {
     background: #ecfdf5; /* 悬停时变成淡淡的浅绿 */
+}
+
+/* ==========================================================================
+   🚨 修复酒店列表卡片高低不平 (强制锁定完美高度) 🚨
+   ========================================================================== */
+
+.hotel-card {
+    height: 230px !important; /* 强制所有卡片高度必须一模一样！ */
+}
+
+.card-body {
+    overflow: hidden !important; /* 如果描述文字太长，自动隐藏多余部分，绝不撑破卡片 */
+}
+
+/* 手机端适配：手机上卡片是上下排列的，高度需要恢复自由伸缩 */
+@media (max-width: 900px) {
+    .hotel-card {
+        height: auto !important; 
+    }
+}
+
+/* ==========================================================================
+   🚨 修复结果页面底部与 Footer 粘连的问题 🚨
+   ========================================================================== */
+
+.results-container {
+    margin-bottom: 80px !important; /* 给底部增加 80px 的留白 */
 }

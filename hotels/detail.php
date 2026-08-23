@@ -163,6 +163,7 @@ $check_out= $_GET['check_out'] ?? date('Y-m-d', strtotime('+1 day'));
 $adults   = (int)($_GET['adults'] ?? 2);
 $children = (int)($_GET['children'] ?? 0);
 $rooms    = (int)($_GET['rooms'] ?? 1);
+$hotelNights = max(1, (int) ceil((strtotime($check_out) - strtotime($check_in)) / 86400));
 
 $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Children" : "") . ", $rooms Room";
 
@@ -449,8 +450,14 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 
                 <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 18px 0;">
 
-                <form action="checkout.php" method="GET" onsubmit="return handleBooking(event)">
-                    <input type="hidden" name="hotel_id" value="<?php echo $hotel['id']; ?>">
+                <form action="/TravelPal/trips/add_to_cart.php" method="POST" onsubmit="return handleBooking(event)">
+                    <input type="hidden" name="item_type" value="hotel">
+                    <input type="hidden" name="item_key" value="hotel-<?php echo htmlspecialchars($hotel['id']); ?>-<?php echo htmlspecialchars($check_in); ?>-<?php echo htmlspecialchars($check_out); ?>">
+                    <input type="hidden" name="title" value="<?php echo htmlspecialchars($hotel['name']); ?>">
+                    <input type="hidden" name="subtitle" value="<?php echo htmlspecialchars($hotel['city'] . ', ' . $hotel['state'] . ' · ' . date('d M Y', strtotime($check_in))); ?>">
+                    <input type="hidden" name="unit_price" value="<?php echo (float)$hotel['price']; ?>">
+                    <input type="hidden" name="quantity" value="<?php echo $hotelNights; ?>">
+                    <input type="hidden" name="booking_data" value="<?php echo htmlspecialchars(json_encode(['check_in' => $check_in, 'check_out' => $check_out, 'guests' => max(1, $adults + $children), 'rooms' => $rooms]), ENT_QUOTES, 'UTF-8'); ?>">
                     <div style="margin-bottom: 12px;">
                         <label style="font-size: 0.8rem; font-weight: 600; color: #475569;">Check-in Date</label>
                         <input type="date" name="check_in" value="<?php echo htmlspecialchars($check_in); ?>" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; margin-top: 4px;">
@@ -462,11 +469,11 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 
                     <?php if (!isset($_SESSION['user_id'])): ?>
     <button type="button" class="btn-book-now" onclick="TravelPalLoginPopup.open(event)">
-        Book Now
+        Add to My Trips
     </button>
 <?php else: ?>
     <button type="submit" class="btn-book-now">
-        Book Now
+        Add to My Trips
     </button>
 <?php endif; ?>
                 </form>
@@ -490,13 +497,18 @@ function handleBooking(event) {
 
 // 现在 toggleDetailFav 只在已登录时才会被调用
 function toggleDetailFav(btn) {
-    btn.classList.toggle('active');
-    const label = btn.querySelector('span');
-    if(btn.classList.contains('active')) {
-        label.innerText = 'Saved to Favorites';
-    } else {
-        label.innerText = 'Save to Favorites';
-    }
+    fetch('/TravelPal/trips/favorites_action.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+        action: btn.classList.contains('active') ? 'remove' : 'save', item_type: 'hotel', item_key: 'hotel-<?php echo htmlspecialchars($hotel['id']); ?>',
+        title: <?php echo json_encode($hotel['name']); ?>,
+        subtitle: <?php echo json_encode($hotel['city'] . ', ' . $hotel['state']); ?>,
+        image_url: <?php echo json_encode($hotel['img_main']); ?>,
+        unit_price: <?php echo json_encode((float)$hotel['price']); ?>,
+        metadata: {guests: <?php echo max(1, $adults + $children); ?>, nights: <?php echo $hotelNights; ?>}
+    })}).then(r => r.json()).then(data => {
+        if (!data.ok) return;
+        btn.classList.toggle('active', data.saved);
+        btn.querySelector('span').innerText = data.saved ? 'Saved to Favorites' : 'Save to Favorites';
+    });
 }
 
 let guestCounts = { adults: <?php echo $adults; ?>, children: <?php echo $children; ?>, rooms: <?php echo $rooms; ?> };

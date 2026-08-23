@@ -2506,6 +2506,8 @@ a {
     }
 }
 
+.flight-favorite-button{margin-top:14px;border:1px solid #d6dce5;background:#fff;color:#314158;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer}.flight-favorite-button i{color:#e43e5b;margin-right:5px}.flight-favorite-button.active{background:#fff0f3;border-color:#ef9cac;color:#c72b49}
+
 
 /* =========================================================
    MEMBER STAYCATION BANNER

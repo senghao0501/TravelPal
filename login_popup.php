@@ -8,6 +8,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// The header now loads this shared popup for every page.  Detail pages that
+// include it again should not emit duplicate IDs or duplicate event handlers.
+if (!empty($GLOBALS['travelpal_login_popup_rendered'])) {
+    return;
+}
+$GLOBALS['travelpal_login_popup_rendered'] = true;
+
 $loginPopupAutoShow = $loginPopupAutoShow ?? false;
 $loginPopupLoggedIn = !empty($_SESSION['user_id']);
 ?>

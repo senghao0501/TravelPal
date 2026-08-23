@@ -191,7 +191,7 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
     <?php if (!isset($_SESSION['user_id'])): ?>
         <button type="button" class="btn-fav" onclick="TravelPalLoginPopup.open(event)">♡</button>
     <?php else: ?>
-        <button type="button" class="btn-fav" onclick="toggleFavorite(event, this, <?php echo $hotel['id']; ?>)">♡</button>
+        <button type="button" class="btn-fav" onclick='toggleFavorite(event, this, <?php echo json_encode(["id" => $hotel["id"], "name" => $hotel["name"], "city" => $hotel["city"], "state" => $hotel["state"], "image" => $hotel["img_main"], "price" => (float)$hotel["price"]], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG); ?>)'>♡</button>
     <?php endif; ?>
 </div>
                         <a href="<?php echo $detail_url; ?>" style="display:block; width:100%; height:100%;">
@@ -237,11 +237,11 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
 // 现在 toggleFavorite 只在已登录时才会被调用
-function toggleFavorite(event, btn, hotelId) {
+function toggleFavorite(event, btn, hotel) {
     event.stopPropagation();
     event.preventDefault();
-    btn.classList.toggle('active');
-    // 这里未来可以加上你的 AJAX 请求代码，保存到数据库
+    fetch('/TravelPal/trips/favorites_action.php', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:btn.classList.contains('active')?'remove':'save',item_type:'hotel',item_key:'hotel-'+hotel.id,title:hotel.name,subtitle:hotel.city+', '+hotel.state,image_url:hotel.image,unit_price:hotel.price})})
+    .then(r=>r.json()).then(data=>{if(data.ok){btn.classList.toggle('active',data.saved);btn.textContent=data.saved?'♥':'♡';}});
 }
 
 let guestCounts = { adults: <?php echo $adults; ?>, children: <?php echo $children; ?>, rooms: <?php echo $rooms; ?> };

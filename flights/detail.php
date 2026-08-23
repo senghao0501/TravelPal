@@ -342,6 +342,9 @@ include __DIR__ . '/../login_popup.php';
             <i class="fa-solid fa-arrow-right-long"></i>
             <strong><?php echo h_detail($outbound['to_state'] ?? 'Destination'); ?></strong>
         </div>
+        <button type="button" class="flight-favorite-button" id="flightFavoriteButton">
+            <i class="fa-regular fa-heart"></i> <span>Save to Favorites</span>
+        </button>
     </div>
 
     <div class="detail-grid">
@@ -534,7 +537,14 @@ include __DIR__ . '/../login_popup.php';
                     <div class="fare-total" id="fare-total">Total for <?php echo $passengers; ?> <?php echo $passengers === 1 ? 'passenger' : 'passengers'; ?>: RM <?php echo number_format($totalPrice, 2); ?></div>
                 </div>
 
-                <form action="#" method="GET" id="detail-checkout-form">
+                <form action="/TravelPal/trips/add_to_cart.php" method="POST" id="detail-checkout-form">
+                    <input type="hidden" name="item_type" value="flight">
+                    <input type="hidden" name="item_key" id="trip-item-key" value="">
+                    <input type="hidden" name="title" value="<?php echo h_detail(($outbound['airline'] ?? 'Airline') . ' ' . ($outbound['flight_no'] ?? '')); ?>">
+                    <input type="hidden" name="subtitle" value="<?php echo h_detail(($outbound['from_code'] ?? '') . ' → ' . ($outbound['to_code'] ?? '') . ' · ' . date('d M Y', strtotime($departDate))); ?>">
+                    <input type="hidden" name="unit_price" id="trip-unit-price" value="<?php echo h_detail($perPassengerTotal); ?>">
+                    <input type="hidden" name="quantity" id="trip-quantity" value="<?php echo $passengers; ?>">
+                    <input type="hidden" name="booking_data" id="trip-booking-data" value="">
                     <input type="hidden" name="flight_id" value="<?php echo h_detail($outbound['id'] ?? $flightId); ?>">
                     <input type="hidden" name="return_id" value="<?php echo h_detail($return['id'] ?? $returnId ?? ''); ?>">
                     <input type="hidden" name="trip_type" value="<?php echo h_detail($tripType); ?>">
@@ -584,11 +594,11 @@ include __DIR__ . '/../login_popup.php';
                     </div>
 
                     <button type="button" class="btn-checkout" id="detail-booking-button">
-                        Continue to Checkout <i class="fa-solid fa-chevron-right"></i>
+                        Add to My Trips <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </form>
 
-                <p class="checkout-note">The checkout page should recalculate the total from the selected flight IDs and passenger count rather than trusting a URL total.</p>
+                <p class="checkout-note">Saved flights appear in My Trips, where you can select bookings and complete the demo payment.</p>
             </div>
         </aside>
     </div>
@@ -597,6 +607,7 @@ include __DIR__ . '/../login_popup.php';
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const bookingButton = document.getElementById('detail-booking-button');
+    const bookingForm = document.getElementById('detail-checkout-form');
 
     if (bookingButton) {
         bookingButton.addEventListener('click', function (event) {
@@ -607,7 +618,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Intentionally no navigation or booking action.
+            bookingForm.requestSubmit();
         });
     }
 
@@ -619,6 +630,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const cabinInput = document.getElementById('detail-cabin-class-input');
     const cabinStatus = document.getElementById('cabin-api-status');
     const cabinOptions = document.querySelectorAll('input[name="cabin_class_ui"]');
+    const tripUnitPrice = document.getElementById('trip-unit-price');
+    const tripQuantity = document.getElementById('trip-quantity');
+    const tripKey = document.getElementById('trip-item-key');
+    const tripData = document.getElementById('trip-booking-data');
 
     const defaultOutbound = <?php echo json_encode($outboundPrice); ?>;
     const defaultReturn = <?php echo json_encode($returnPrice); ?>;
@@ -656,6 +671,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<span>Outbound</span><strong>RM ' + currentOutbound.toFixed(2) + '</strong>' +
                 returnMarkup;
         }
+        if (tripUnitPrice) tripUnitPrice.value = perPassenger.toFixed(2);
+        if (tripQuantity) tripQuantity.value = count;
+        if (tripKey) tripKey.value = ['flight', flightId || '', returnId || '', departDate, cabinInput.value].join('-');
+        if (tripData) tripData.value = JSON.stringify({
+            departure_date: departDate, return_date: tripType === 'round_trip' ? returnDate : '',
+            cabin_class: cabinInput.value, guests: count, trip_type: tripType
+        });
     }
 
     function setLoading(isLoading) {
@@ -752,6 +774,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     renderFare();
+
+    const favoriteButton = document.getElementById('flightFavoriteButton');
+    if (favoriteButton) favoriteButton.addEventListener('click', function () {
+        if (!window.TravelPalLoginPopup || !window.TravelPalLoginPopup.isLoggedIn) { window.TravelPalLoginPopup?.open(); return; }
+        fetch('/TravelPal/trips/favorites_action.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+            action:favoriteButton.classList.contains('active') ? 'remove' : 'save', item_type:'flight', item_key:['flight', flightId || '', returnId || '', departDate].join('-'),
+            title: <?php echo json_encode(($outbound['airline'] ?? 'Airline') . ' ' . ($outbound['flight_no'] ?? '')); ?>,
+            subtitle: <?php echo json_encode(($outbound['from_code'] ?? '') . ' → ' . ($outbound['to_code'] ?? '') . ' · ' . date('d M Y', strtotime($departDate))); ?>,
+            unit_price: currentOutbound + (tripType === 'round_trip' ? currentReturn : 0),
+            metadata:{guests:Number(passengerSelect.value)||1, departure_date:departDate}
+        })}).then(r=>r.json()).then(data=>{if(data.ok){favoriteButton.classList.toggle('active',data.saved);favoriteButton.querySelector('i').className=data.saved?'fa-solid fa-heart':'fa-regular fa-heart';favoriteButton.querySelector('span').textContent=data.saved?'Saved to Favorites':'Save to Favorites';}});
+    });
 });
 </script>
 

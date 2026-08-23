@@ -19,6 +19,10 @@ function isRestaurantSaved(id) {
 }
 
 function toggleRestaurantFavorite(item) {
+    if (!window.TravelPalLoginPopup || !window.TravelPalLoginPopup.isLoggedIn) {
+        window.TravelPalLoginPopup?.open();
+        return false;
+    }
     const items = readRestaurantFavorites();
     const index = items.findIndex(saved => String(saved.id) === String(item.id));
     if (index >= 0) {
@@ -27,6 +31,16 @@ function toggleRestaurantFavorite(item) {
         items.unshift(item);
     }
     writeRestaurantFavorites(items);
+    const saved = index < 0;
+    fetch('/TravelPal/trips/favorites_action.php', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            action: saved ? 'save' : 'remove', item_type: 'restaurant', item_key: 'restaurant-' + item.id,
+            title: item.name || 'Restaurant', subtitle: [item.city, item.state].filter(Boolean).join(', '),
+            image_url: item.image || '', unit_price: Number(item.estimatedPrice || item.price || 45) * Math.max(1, Number(item.party || 2)),
+            metadata: {guests: Math.max(1, Number(item.party || 2))}
+        })
+    }).catch(() => {});
     return index < 0;
 }
 

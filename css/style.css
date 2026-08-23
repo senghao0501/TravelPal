@@ -1611,3 +1611,23 @@ body.travelpal-login-modal-open {
 .home-interest-grid {
     margin-top: 28px !important; 
 }
+
+.travelpal-favorite-fab {
+    position: fixed;
+    right: 26px;
+    bottom: 26px;
+    z-index: 90;
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #d7dee7;
+    box-shadow: 0 8px 22px rgba(15, 35, 60, .2);
+    color: #e43e5b;
+    font-size: 20px;
+    text-decoration: none;
+    transition: transform .2s ease, background .2s ease;
+}
+.travelpal-favorite-fab:hover { transform: translateY(-3px); background: #fff2f4; }

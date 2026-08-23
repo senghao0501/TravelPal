@@ -2,6 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$travelPalLoggedIn = !empty($_SESSION['user_id']);
+$travelPalScript = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$showFavoriteFab = in_array($travelPalScript, [
+    '/TravelPal/index.php', '/TravelPal/flights/index.php', '/TravelPal/hotels/index.php',
+    '/TravelPal/restaurant/index.php', '/TravelPal/attractions/index.php'
+], true);
 ?>
 <!-- header.php -->
 <!DOCTYPE html>
@@ -28,7 +34,12 @@ if (session_status() === PHP_SESSION_NONE) {
             <a href="/TravelPal/hotels/index.php">Hotels</a>
             <a href="/TravelPal/restaurant/index.php">Restaurants</a>
             <a href="/TravelPal/attractions/index.php">Attractions</a>
-            <a href="#">My Trips</a>
+            <?php if ($travelPalLoggedIn): ?>
+                <a href="/TravelPal/trips/index.php">My Trips</a>
+                <a href="/TravelPal/trips/index.php#transactions">Transactions</a>
+            <?php else: ?>
+                <a href="#" onclick="event.preventDefault(); window.TravelPalLoginPopup && window.TravelPalLoginPopup.open();">My Trips</a>
+            <?php endif; ?>
             <a href="/TravelPal/settings/index.php">Settings</a>
             <a href="/TravelPal/auth/login.php" class="btn-login">Sign in</a>
 
@@ -41,5 +52,13 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </div>
 </nav>
+
+<?php include __DIR__ . '/login_popup.php'; ?>
+
+<?php if ($showFavoriteFab): ?>
+    <a class="travelpal-favorite-fab" href="<?php echo $travelPalLoggedIn ? '/TravelPal/trips/favorites.php' : '#'; ?>" <?php echo $travelPalLoggedIn ? '' : 'onclick="event.preventDefault(); window.TravelPalLoginPopup && window.TravelPalLoginPopup.open();"'; ?> aria-label="Open favorites and trip timetable" title="Favorites & timetable">
+        <i class="fa-solid fa-heart"></i>
+    </a>
+<?php endif; ?>
 
 <main>

@@ -1608,3 +1608,6 @@ body.travelpal-login-modal-open {
         flex-direction: column !important;
     }
 }
+.home-interest-grid {
+    margin-top: 28px !important; 
+}

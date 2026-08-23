@@ -12,10 +12,11 @@ include 'header.php';
 <main>
     <!-- 1. 四个带有【智能实时数据】的分类方格 -->
     <section class="home-grid-section">
-        <div class="grid-section-header">
-            <h2>Explore TravelPal by Category</h2>
-            <p>Your complete guide to traveling across Malaysia</p>
-        </div>
+        <!-- 🚨 用和方格一模一样的宽度 (1180px)、居中 (margin: 0 auto)、和内边距 (padding: 0 20px) 把文字包起来 🚨 -->
+<div style="width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; text-align: left;">
+    <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">Explore TravelPal by Category</h2>
+    <p style="margin: 0; color: #4b5563; font-size: 15px;">Your complete guide to traveling across Malaysia</p>
+</div>
         
        <div class="home-interest-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
             <?php 

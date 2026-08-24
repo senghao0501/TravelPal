@@ -1,6 +1,6 @@
 <?php
 
-/* ==================== Supported Malaysian destinations ==================== */
+
 
 $attraction_regions = [
     'johor' => [
@@ -53,10 +53,7 @@ $attraction_regions = [
     ]
 ];
 
-/*
- * Local fallback data: two items per state.
- * These are used by Must-Visit and only when the API has no usable results.
- */
+
 $featured_attractions_by_region = [
     'johor' => [
         [

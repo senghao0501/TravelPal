@@ -31,7 +31,7 @@ ON DUPLICATE KEY UPDATE
 CREATE TABLE IF NOT EXISTS trip_favorites (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
-    item_type ENUM('flight','hotel','restaurant') NOT NULL,
+    item_type ENUM('flight','hotel','restaurant','attraction') NOT NULL,
     item_key VARCHAR(160) NOT NULL,
     title VARCHAR(200) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS trip_favorites (
 CREATE TABLE IF NOT EXISTS trip_cart_items (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
-    item_type ENUM('flight','hotel') NOT NULL,
+    item_type ENUM('flight','hotel','attraction') NOT NULL,
     item_key VARCHAR(160) NOT NULL,
     title VARCHAR(200) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS trip_orders (
 CREATE TABLE IF NOT EXISTS trip_order_items (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     order_id INT UNSIGNED NOT NULL,
-    item_type ENUM('flight','hotel') NOT NULL,
+    item_type ENUM('flight','hotel','attraction') NOT NULL,
     title VARCHAR(200) NOT NULL,
     subtitle VARCHAR(255) NOT NULL DEFAULT '',
     unit_price DECIMAL(10,2) NOT NULL,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS trip_order_items (
 CREATE TABLE IF NOT EXISTS trip_timetable_items (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
-    item_type ENUM('flight','hotel','restaurant') NOT NULL,
+    item_type ENUM('flight','hotel','restaurant','attraction') NOT NULL,
     item_key VARCHAR(160) NOT NULL DEFAULT '',
     title VARCHAR(200) NOT NULL,
     unit_price DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -100,3 +100,15 @@ CREATE TABLE IF NOT EXISTS trip_timetable_items (
     PRIMARY KEY (id),
     CONSTRAINT fk_timetable_account FOREIGN KEY (user_id) REFERENCES accounts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE trip_cart_items
+    MODIFY COLUMN item_type ENUM('flight','hotel','attraction') NOT NULL;
+
+ALTER TABLE trip_order_items
+    MODIFY COLUMN item_type ENUM('flight','hotel','attraction') NOT NULL;
+
+ALTER TABLE trip_favorites
+    MODIFY COLUMN item_type ENUM('flight','hotel','restaurant','attraction') NOT NULL;
+
+ALTER TABLE trip_timetable_items
+    MODIFY COLUMN item_type ENUM('flight','hotel','restaurant','attraction') NOT NULL;

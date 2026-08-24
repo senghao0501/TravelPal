@@ -3,8 +3,8 @@
 require_once 'attractions_data.php';
 require_once 'api_functions.php';
 
-/* Must-Visit prefers cached API items and uses local items as the fallback. */
 $mustVisitAttractions = getMustVisitAttractions($attraction_regions, 2);
+$savedAttractionKeys = attractionFavoriteKeysForCurrentUser();
 
 $destinationDescriptions = [
     'johor' => 'Theme parks, islands and royal heritage',
@@ -425,7 +425,21 @@ include '../header.php';
                 <?php foreach ($mustVisitAttractions as $attraction): ?>
                     <?php
                     $detailUrl = attractionDetailUrl($attraction);
-                    $favoriteId = (string) $attraction['id'];
+                    $favoriteKey = attractionFavoriteKey($attraction);
+                    $isFavorite = isset($savedAttractionKeys[$favoriteKey]);
+                    $favoriteData = json_encode([
+                        'item_key' => $favoriteKey,
+                        'title' => (string) ($attraction['name'] ?? 'Attraction'),
+                        'subtitle' => (string) ($attraction['location'] ?? 'Malaysia'),
+                        'image_url' => (string) ($attraction['image'] ?? ''),
+                        'unit_price' => attractionPriceAmount(
+                            (string) ($attraction['price'] ?? 'Check price')
+                        ),
+                        'metadata' => [
+                            'duration_hours' => 2,
+                            'tickets' => 2,
+                        ],
+                    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
                     ?>
 
                     <article
@@ -449,11 +463,12 @@ include '../header.php';
 
                             <button
                                 type="button"
-                                class="heart-btn"
-                                data-id="<?= attractionEscape($favoriteId) ?>"
+                                class="heart-btn<?= $isFavorite ? ' saved' : '' ?>"
+                                data-favorite="<?= attractionEscape($favoriteData) ?>"
                                 aria-label="Save <?= attractionEscape($attraction['name']) ?>"
+                                aria-pressed="<?= $isFavorite ? 'true' : 'false' ?>"
                             >
-                                <i class="fa-regular fa-heart"></i>
+                                <i class="<?= $isFavorite ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
                             </button>
                         </div>
 
@@ -564,6 +579,7 @@ include '../header.php';
 
 <?php include '../footer.php'; ?>
 
+<script src="favorites.js?v=20260824-1"></script>
 <script>
 const carousel = document.getElementById('mustVisitCarousel');
 const previousButton = document.getElementById('carouselPrevious');
@@ -645,25 +661,6 @@ carousel.addEventListener('keydown', function (event) {
     }
 });
 
-function readSavedAttractions() {
-    try {
-        const value = JSON.parse(
-            localStorage.getItem('travelPal_attractions')
-        );
-
-        return Array.isArray(value) ? value : [];
-    } catch (error) {
-        return [];
-    }
-}
-
-function updateHeart(button, isSaved) {
-    const icon = button.querySelector('i');
-    icon.className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-    icon.style.color = isSaved ? '#7c3aed' : '#68788c';
-    button.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
-}
-
 const ticketCounts = {
     adults: 2,
     children: 0
@@ -724,8 +721,6 @@ ticketDropdown.addEventListener('click', function (event) {
 document.addEventListener('click', closeTicketDropdown);
 
 document.addEventListener('DOMContentLoaded', function () {
-    let savedItems = readSavedAttractions();
-
     document.querySelectorAll('#mustVisitCarousel .property-card').forEach(
         function (card) {
             card.addEventListener('click', function () {
@@ -740,27 +735,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     );
 
-    document.querySelectorAll('.heart-btn').forEach(function (button) {
-        updateHeart(button, savedItems.includes(button.dataset.id));
-
-        button.addEventListener('click', function (event) {
-            event.stopPropagation();
-            savedItems = readSavedAttractions();
-            const id = button.dataset.id;
-
-            if (savedItems.includes(id)) {
-                savedItems = savedItems.filter(item => item !== id);
-                updateHeart(button, false);
-            } else {
-                savedItems.push(id);
-                updateHeart(button, true);
-            }
-
-            localStorage.setItem(
-                'travelPal_attractions',
-                JSON.stringify(savedItems)
-            );
-        });
+    window.TravelPalAttractionFavorites.bind('.heart-btn', function () {
+        return {
+            adults: ticketCounts.adults,
+            children: ticketCounts.children,
+            tickets: ticketCounts.adults + ticketCounts.children,
+            duration_hours: 2
+        };
     });
 
     const dateInput = document.getElementById('visit_date');

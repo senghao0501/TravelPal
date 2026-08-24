@@ -5,7 +5,7 @@ $userId = tp_user_id();
 $input = tp_post_json();
 $type = $input['item_type'] ?? '';
 $key = trim($input['item_key'] ?? '');
-if (!in_array($type, ['flight', 'hotel', 'restaurant'], true) || $key === '') {
+if (!in_array($type, ['flight', 'hotel', 'restaurant', 'attraction'], true) || $key === '') {
     tp_json_response(['ok' => false, 'message' => 'Invalid favorite.'], 422);
 }
 global $auth_db;

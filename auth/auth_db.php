@@ -10,7 +10,7 @@ $auth_db = new mysqli(
     'root',             // DB_USER
     '',                 // DB_PASS
     'flight_booking',   // DB_NAME
-    3308                // MySQL Port
+    3306                // WAMP MySQL Port
 );
 
 if ($auth_db->connect_errno) {

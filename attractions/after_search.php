@@ -127,11 +127,6 @@ if (!isset($categories[$selectedCategory])) {
     $selectedCategory = 'all';
 }
 
-/*
- * Booking.com API is called only for the selected state.
- * It returns up to 100 results across five API pages, then caches them.
- * If no API data is usable, this returns only this state's local fallback items.
- */
 $allAttractions = loadAttractionsForRegion($regionKey, $region, 100);
 
 if ($selectedCategory === 'all') {
@@ -144,6 +139,8 @@ if ($selectedCategory === 'all') {
             ($item['type'] ?? '') === $selectedCategoryName
     ));
 }
+
+$savedAttractionKeys = attractionFavoriteKeysForCurrentUser();
 
 $placeholderSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760">'
     . '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">'
@@ -287,7 +284,24 @@ include '../header.php';
                     $adults,
                     $children
                 );
-                $favoriteId = (string) ($attraction['id'] ?? '');
+                $favoriteKey = attractionFavoriteKey($attraction);
+                $isFavorite = isset($savedAttractionKeys[$favoriteKey]);
+                $favoriteData = json_encode([
+                    'item_key' => $favoriteKey,
+                    'title' => (string) ($attraction['name'] ?? 'Attraction'),
+                    'subtitle' => (string) ($attraction['location'] ?? $region['label']),
+                    'image_url' => (string) ($attraction['image'] ?? ''),
+                    'unit_price' => attractionPriceAmount(
+                        (string) ($attraction['price'] ?? 'Check price')
+                    ),
+                    'metadata' => [
+                        'visit_date' => $visitDate,
+                        'adults' => $adults,
+                        'children' => $children,
+                        'tickets' => $adults + $children,
+                        'duration_hours' => 2,
+                    ],
+                ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
                 $rating = $attraction['rating'] ?? 'N/A';
                 $reviewCount = (int) ($attraction['review_count'] ?? 0);
                 $hasRating = is_numeric($rating);
@@ -309,11 +323,12 @@ include '../header.php';
 
                         <button
                             type="button"
-                            class="heart-btn"
-                            data-id="<?= searchEscape($favoriteId) ?>"
+                            class="heart-btn<?= $isFavorite ? ' saved' : '' ?>"
+                            data-favorite="<?= searchEscape($favoriteData) ?>"
                             aria-label="Save attraction"
+                            aria-pressed="<?= $isFavorite ? 'true' : 'false' ?>"
                         >
-                            <i class="fa-regular fa-heart"></i>
+                            <i class="<?= $isFavorite ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
                         </button>
                     </div>
 
@@ -366,26 +381,9 @@ include '../header.php';
 
 <?php include '../footer.php'; ?>
 
+<script src="favorites.js?v=20260824-1"></script>
 <script>
-function readSavedAttractions() {
-    try {
-        const value = JSON.parse(localStorage.getItem('travelPal_attractions'));
-        return Array.isArray(value) ? value : [];
-    } catch (error) {
-        return [];
-    }
-}
-
-function updateHeart(button, isSaved) {
-    const icon = button.querySelector('i');
-    icon.className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-    icon.style.color = isSaved ? '#7c3aed' : '#68788c';
-    button.setAttribute('aria-pressed', isSaved ? 'true' : 'false');
-}
-
 document.addEventListener('DOMContentLoaded', function () {
-    let savedItems = readSavedAttractions();
-
     document.querySelectorAll('.property-card').forEach(function (card) {
         card.addEventListener('click', function () {
             window.location.href = card.dataset.url;
@@ -398,28 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelectorAll('.heart-btn').forEach(function (button) {
-        updateHeart(button, savedItems.includes(button.dataset.id));
-
-        button.addEventListener('click', function (event) {
-            event.stopPropagation();
-            savedItems = readSavedAttractions();
-            const id = button.dataset.id;
-
-            if (savedItems.includes(id)) {
-                savedItems = savedItems.filter(item => item !== id);
-                updateHeart(button, false);
-            } else {
-                savedItems.push(id);
-                updateHeart(button, true);
-            }
-
-            localStorage.setItem(
-                'travelPal_attractions',
-                JSON.stringify(savedItems)
-            );
-        });
-    });
+    window.TravelPalAttractionFavorites.bind('.heart-btn');
 });
 </script>
 

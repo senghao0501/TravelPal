@@ -3,14 +3,19 @@ require_once __DIR__ . '/../includes/trip_service.php';
 $userId = tp_require_user();
 
 $type = $_POST['item_type'] ?? '';
-if (!in_array($type, ['flight', 'hotel'], true)) {
+if (!in_array($type, ['flight', 'hotel', 'attraction'], true)) {
     header('Location: /TravelPal/trips/index.php?error=invalid_item'); exit;
 }
 $title = trim($_POST['title'] ?? 'Travel booking');
 $subtitle = trim($_POST['subtitle'] ?? '');
 $itemKey = trim($_POST['item_key'] ?? '');
 $price = max(0, (float)($_POST['unit_price'] ?? 0));
-$quantity = max(1, min($type === 'flight' ? 9 : 30, (int)($_POST['quantity'] ?? 1)));
+$quantityLimit = match ($type) {
+    'flight' => 9,
+    'attraction' => 20,
+    default => 30,
+};
+$quantity = max(1, min($quantityLimit, (int)($_POST['quantity'] ?? 1)));
 $booking = json_decode($_POST['booking_data'] ?? '{}', true) ?: [];
 if ($type === 'hotel' && !empty($_POST['check_in']) && !empty($_POST['check_out'])) {
     $checkIn = $_POST['check_in']; $checkOut = $_POST['check_out'];
@@ -19,7 +24,11 @@ if ($type === 'hotel' && !empty($_POST['check_in']) && !empty($_POST['check_out'
     $booking['check_in'] = $checkIn; $booking['check_out'] = $checkOut;
     $itemKey = preg_replace('/hotel-([^\-]+).*/', 'hotel-$1-' . $checkIn . '-' . $checkOut, $itemKey);
 }
-if ($itemKey === '' || $title === '' || $price <= 0) {
+if (
+    $itemKey === ''
+    || $title === ''
+    || ($type !== 'attraction' && $price <= 0)
+) {
     header('Location: /TravelPal/trips/index.php?error=invalid_item'); exit;
 }
 

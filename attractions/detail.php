@@ -83,11 +83,12 @@ $placeholderSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="
     . 'font-family="Arial" font-size="48" font-weight="700">TravelPal</text></svg>';
 
 $placeholderImage = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholderSvg);
+$savedAttractionKeys = attractionFavoriteKeysForCurrentUser();
 
 include '../header.php';
 ?>
 
-<link rel="stylesheet" href="../css/details/attractions_detail.css">
+<link rel="stylesheet" href="../css/details/attractions_detail.css?v=20260824-3">
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -140,11 +141,6 @@ include '../header.php';
     font-size: 14px;
 }
 
-.booking-action-link {
-    display: flex;
-    margin-top: 12px;
-    text-decoration: none;
-}
 </style>
 
 <?php if ($pageNotFound): ?>
@@ -173,6 +169,33 @@ include '../header.php';
     $price = (string) ($attraction['price'] ?? 'Check price');
     $isFree = stripos($price, 'free') !== false;
     $bookingUrl = trim((string) ($attraction['booking_url'] ?? ''));
+    $tripUnitPrice = attractionPriceAmount($price);
+    $favoriteKey = attractionFavoriteKey($attraction);
+    $isFavorite = isset($savedAttractionKeys[$favoriteKey]);
+    $tripSubtitle = $location . ' · ' . date('d M Y', strtotime($selectedVisitDate));
+    $favoriteData = json_encode([
+        'item_key' => $favoriteKey,
+        'title' => (string) ($attraction['name'] ?? 'Attraction'),
+        'subtitle' => $location,
+        'image_url' => (string) ($attraction['image'] ?? ''),
+        'unit_price' => $tripUnitPrice,
+        'metadata' => [
+            'visit_date' => $selectedVisitDate,
+            'adults' => $selectedAdults,
+            'children' => $selectedChildren,
+            'tickets' => $selectedAdults + $selectedChildren,
+            'duration_hours' => 2,
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
+    $tripBookingData = json_encode([
+        'visit_date' => $selectedVisitDate,
+        'adults' => $selectedAdults,
+        'children' => $selectedChildren,
+        'guests' => $selectedAdults + $selectedChildren,
+        'image_url' => (string) ($attraction['image'] ?? ''),
+        'booking_url' => $bookingUrl,
+        'price_label' => $price,
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
 
     if (!preg_match('#^https://#i', $bookingUrl)) {
         $bookingUrl = 'https://www.booking.com/attractions/searchresults.html?'
@@ -220,12 +243,15 @@ include '../header.php';
 
                 <button
                     type="button"
-                    class="detail-save-button"
+                    class="detail-save-button<?= $isFavorite ? ' saved' : '' ?>"
                     id="detailSaveButton"
-                    data-id="<?= detailEscape($favoriteId) ?>"
+                    data-favorite="<?= detailEscape($favoriteData) ?>"
+                    data-save-label="Save to Favorites"
+                    data-saved-label="Saved to Favorites"
+                    aria-pressed="<?= $isFavorite ? 'true' : 'false' ?>"
                 >
-                    <i class="fa-regular fa-heart"></i>
-                    <span>Save to Trip</span>
+                    <i class="<?= $isFavorite ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
+                    <span><?= $isFavorite ? 'Saved to Favorites' : 'Save to Favorites' ?></span>
                 </button>
             </div>
         </section>
@@ -489,15 +515,62 @@ include '../header.php';
                     </p>
                 <?php endif; ?>
 
-                <a
-                    class="detail-primary-button booking-action-link"
-                    href="<?= detailEscape($bookingUrl) ?>"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <form
+                    class="attraction-trip-form"
+                    id="attractionTripForm"
+                    method="POST"
+                    action="/TravelPal/trips/add_to_cart.php"
                 >
-                    <i class="fa-solid fa-ticket"></i>
-                    Buy tickets
-                </a>
+                    <input type="hidden" name="item_type" value="attraction">
+                    <input
+                        type="hidden"
+                        name="item_key"
+                        id="attractionTripKey"
+                        value="<?= detailEscape($favoriteKey) ?>-<?= detailEscape($selectedVisitDate) ?>"
+                    >
+                    <input
+                        type="hidden"
+                        name="title"
+                        value="<?= detailEscape($attraction['name']) ?>"
+                    >
+                    <input
+                        type="hidden"
+                        name="subtitle"
+                        id="attractionTripSubtitle"
+                        value="<?= detailEscape($tripSubtitle) ?>"
+                    >
+                    <input
+                        type="hidden"
+                        name="unit_price"
+                        value="<?= detailEscape(number_format($tripUnitPrice, 2, '.', '')) ?>"
+                    >
+                    <input
+                        type="hidden"
+                        name="quantity"
+                        id="attractionTripQuantity"
+                        value="<?= $selectedAdults + $selectedChildren ?>"
+                    >
+                    <input
+                        type="hidden"
+                        name="booking_data"
+                        id="attractionTripBookingData"
+                        value="<?= detailEscape($tripBookingData) ?>"
+                    >
+
+                    <button
+                        type="submit"
+                        class="detail-primary-button booking-action-link"
+                        id="attractionAddToTripButton"
+                    >
+                        <i class="fa-solid fa-suitcase-rolling"></i>
+                        <span>Add to My Trips</span>
+                    </button>
+
+                    <p class="trip-action-note">
+                        <i class="fa-solid fa-lock"></i>
+                        Sign in is required. Your selected date and tickets will be saved.
+                    </p>
+                </form>
             </aside>
         </div>
     </div>
@@ -507,67 +580,92 @@ include '../header.php';
 
 <?php include '../footer.php'; ?>
 
+<script src="favorites.js?v=20260824-1"></script>
 <script>
-function readDetailSavedItems() {
-    try {
-        const value = JSON.parse(
-            localStorage.getItem('travelPal_attractions')
-        );
-
-        return Array.isArray(value) ? value : [];
-    } catch (error) {
-        return [];
-    }
-}
-
 const saveButton = document.getElementById('detailSaveButton');
 
-function updateDetailSaveButton(isSaved) {
-    if (!saveButton) {
-        return;
+const detailDateInput = document.getElementById('detailVisitDate');
+const detailAdultsInput = document.getElementById('detailAdults');
+const detailChildrenInput = document.getElementById('detailChildren');
+const attractionTripForm = document.getElementById('attractionTripForm');
+const attractionTripKey = document.getElementById('attractionTripKey');
+const attractionTripSubtitle = document.getElementById('attractionTripSubtitle');
+const attractionTripQuantity = document.getElementById('attractionTripQuantity');
+const attractionTripBookingData = document.getElementById('attractionTripBookingData');
+const attractionFavoriteKey = <?= json_encode($favoriteKey ?? '') ?>;
+const attractionTripLocation = <?= json_encode($location ?? 'Malaysia') ?>;
+const attractionTripImage = <?= json_encode((string) ($attraction['image'] ?? '')) ?>;
+const attractionBookingUrl = <?= json_encode($bookingUrl ?? '') ?>;
+const attractionPriceLabel = <?= json_encode($price ?? 'Check price') ?>;
+
+function formatTripDate(dateValue) {
+    const parts = dateValue.split('-');
+
+    if (parts.length !== 3) {
+        return dateValue;
     }
 
-    const icon = saveButton.querySelector('i');
-    const label = saveButton.querySelector('span');
+    const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
 
-    if (isSaved) {
-        icon.className = 'fa-solid fa-heart';
-        label.textContent = 'Saved to Trip';
-        saveButton.classList.add('saved');
-        saveButton.setAttribute('aria-pressed', 'true');
-    } else {
-        icon.className = 'fa-regular fa-heart';
-        label.textContent = 'Save to Trip';
-        saveButton.classList.remove('saved');
-        saveButton.setAttribute('aria-pressed', 'false');
-    }
+    return new Intl.DateTimeFormat('en-MY', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }).format(date);
 }
 
-if (saveButton) {
-    const attractionId = saveButton.dataset.id;
-    let savedItems = readDetailSavedItems();
+window.TravelPalAttractionFavorites.bind('#detailSaveButton', function () {
+    const adults = Math.max(1, Number(detailAdultsInput?.value) || 1);
+    const children = Math.max(0, Number(detailChildrenInput?.value) || 0);
 
-    updateDetailSaveButton(savedItems.includes(attractionId));
+    return {
+        visit_date: detailDateInput?.value || '',
+        adults: adults,
+        children: children,
+        tickets: adults + children,
+        duration_hours: 2
+    };
+});
 
-    saveButton.addEventListener('click', function () {
-        savedItems = readDetailSavedItems();
+if (attractionTripForm) {
+    attractionTripForm.addEventListener('submit', function (event) {
+        if (!window.TravelPalLoginPopup || !window.TravelPalLoginPopup.isLoggedIn) {
+            event.preventDefault();
 
-        if (savedItems.includes(attractionId)) {
-            savedItems = savedItems.filter(item => item !== attractionId);
-            updateDetailSaveButton(false);
-        } else {
-            savedItems.push(attractionId);
-            updateDetailSaveButton(true);
+            const popupCopy = document.querySelector('.travelpal-login-content p');
+
+            if (popupCopy) {
+                popupCopy.textContent = 'Sign in or create a TravelPal account to add this attraction to My Trips.';
+            }
+
+            window.TravelPalLoginPopup?.open();
+            return;
         }
 
-        localStorage.setItem(
-            'travelPal_attractions',
-            JSON.stringify(savedItems)
-        );
+        if (!detailDateInput || !detailDateInput.reportValidity()) {
+            event.preventDefault();
+            return;
+        }
+
+        const visitDate = detailDateInput.value;
+        const adults = Math.max(1, Number(detailAdultsInput?.value) || 1);
+        const children = Math.max(0, Number(detailChildrenInput?.value) || 0);
+        const ticketCount = adults + children;
+
+        attractionTripKey.value = attractionFavoriteKey + '-' + visitDate;
+        attractionTripSubtitle.value = attractionTripLocation + ' · ' + formatTripDate(visitDate);
+        attractionTripQuantity.value = String(ticketCount);
+        attractionTripBookingData.value = JSON.stringify({
+            visit_date: visitDate,
+            adults: adults,
+            children: children,
+            guests: ticketCount,
+            image_url: attractionTripImage,
+            booking_url: attractionBookingUrl,
+            price_label: attractionPriceLabel
+        });
     });
 }
-
-const detailDateInput = document.getElementById('detailVisitDate');
 
 if (detailDateInput) {
     const today = new Date();
@@ -577,7 +675,10 @@ if (detailDateInput) {
     const localDate = year + '-' + month + '-' + day;
 
     detailDateInput.min = localDate;
-    detailDateInput.value = localDate;
+
+    if (!detailDateInput.value || detailDateInput.value < localDate) {
+        detailDateInput.value = localDate;
+    }
 }
 </script>
 

@@ -1,12 +1,5 @@
 <?php
 
-/*
- * TravelPal Attractions - Booking.com RapidAPI
- *
- * Put your key in attractions/config.local.php.
- * Do not commit config.local.php to GitHub.
- */
-
 $configFile = __DIR__ . '/config.local.php';
 
 if (is_file($configFile)) {
@@ -63,8 +56,6 @@ function attractionArrayValue(array $array, array $paths, $default = null)
 
     return $default;
 }
-
-/* ==================== Simple file cache ==================== */
 
 function attractionCacheDirectory(): string
 {
@@ -137,8 +128,6 @@ function attractionWriteCache(string $key, array $data, int $seconds): void
     }
 }
 
-/* ==================== RapidAPI request ==================== */
-
 function callAttractionAPI(
     string $endpoint,
     array $params = [],
@@ -183,7 +172,6 @@ function callAttractionAPI(
         ]
     ];
 
-    /* Download https://curl.se/ca/cacert.pem into this folder if WAMP needs it. */
     $caFile = __DIR__ . '/cacert.pem';
 
     if (is_file($caFile)) {
@@ -237,8 +225,6 @@ function callAttractionAPI(
     attractionWriteCache($cacheKey, $decoded, $cacheSeconds);
     return $decoded;
 }
-
-/* ==================== Booking.com endpoints ==================== */
 
 function searchAttractionLocation(
     string $query,
@@ -448,8 +434,6 @@ function extractAttractionLocationId(
     return $bestId;
 }
 
-/* ==================== Normalize and classify ==================== */
-
 function normalizeApiAttraction(array $product, array $region): ?array
 {
     $name = trim((string) attractionArrayValue(
@@ -595,11 +579,76 @@ function classifyApiAttraction(array $product, array $item): string
     return 'Heritage & Culture';
 }
 
-/*
- * Loads up to $limit API attractions for one selected state.
- * It does not force 50 results. If the API returns 18, 18 are shown.
- * Only when no API result is usable will it return that state's local items.
- */
+function attractionRegionQueries(string $regionKey, array $region): array
+{
+    $additionalQueries = [
+        'johor' => [
+            'Johor, Malaysia',
+            'Iskandar Puteri, Johor, Malaysia',
+            'Desaru, Johor, Malaysia',
+            'Mersing, Johor, Malaysia',
+            'Batu Pahat, Johor, Malaysia',
+        ],
+        'melaka' => [
+            'Melaka State, Malaysia',
+            'Ayer Keroh, Melaka, Malaysia',
+            'Alor Gajah, Melaka, Malaysia',
+            'Jasin, Melaka, Malaysia',
+        ],
+        'selangor' => [
+            'Shah Alam, Selangor, Malaysia',
+            'Petaling Jaya, Selangor, Malaysia',
+            'Sepang, Selangor, Malaysia',
+            'Klang, Selangor, Malaysia',
+            'Subang Jaya, Selangor, Malaysia',
+        ],
+        'perak' => [
+            'Perak, Malaysia',
+            'Taiping, Perak, Malaysia',
+            'Pangkor Island, Perak, Malaysia',
+            'Kuala Kangsar, Perak, Malaysia',
+            'Gopeng, Perak, Malaysia',
+        ],
+        'penang' => [
+            'George Town, Penang, Malaysia',
+            'Batu Ferringhi, Penang, Malaysia',
+            'Bukit Mertajam, Penang, Malaysia',
+            'Bayan Lepas, Penang, Malaysia',
+        ],
+        'pahang' => [
+            'Kuantan, Pahang, Malaysia',
+            'Genting Highlands, Pahang, Malaysia',
+            'Cameron Highlands, Pahang, Malaysia',
+            'Temerloh, Pahang, Malaysia',
+            'Cherating, Pahang, Malaysia',
+        ],
+        'sabah' => [
+            'Sabah, Malaysia',
+            'Sandakan, Sabah, Malaysia',
+            'Semporna, Sabah, Malaysia',
+            'Kundasang, Sabah, Malaysia',
+            'Lahad Datu, Sabah, Malaysia',
+        ],
+        'sarawak' => [
+            'Sarawak, Malaysia',
+            'Miri, Sarawak, Malaysia',
+            'Bintulu, Sarawak, Malaysia',
+            'Sibu, Sarawak, Malaysia',
+            'Mulu, Sarawak, Malaysia',
+        ],
+    ];
+    $queries = array_merge(
+        [(string) ($region['query'] ?? $region['label'] ?? $regionKey)],
+        $additionalQueries[$regionKey] ?? []
+    );
+    $queries = array_map(
+        static fn($query): string => trim((string) $query),
+        $queries
+    );
+
+    return array_values(array_unique(array_filter($queries)));
+}
+
 function loadAttractionsForRegion(
     string $regionKey,
     array $region,
@@ -607,120 +656,148 @@ function loadAttractionsForRegion(
 ): array {
     $limit = max(1, min(100, $limit));
     $region['key'] = $regionKey;
-    $resultCacheKey = 'region-results-v6:' . $regionKey . ':' . $limit;
+    $resultCacheKey = 'region-results-v7:' . $regionKey . ':' . $limit;
     $cached = attractionReadCache($resultCacheKey);
 
     if ($cached !== null) {
         return $cached;
     }
 
+    $fallbackResults = attractionReadCache($resultCacheKey, true)
+        ?? attractionReadCache(
+            'region-results-v6:' . $regionKey . ':' . $limit,
+            true
+        );
+
+    if (is_array($fallbackResults) && count($fallbackResults) >= $limit) {
+        $fallbackResults = array_slice($fallbackResults, 0, $limit);
+        attractionWriteCache($resultCacheKey, $fallbackResults, 1800);
+        return $fallbackResults;
+    }
+
     if (!isAttractionApiConfigured()) {
-        return getLocalAttractionsForRegion($regionKey);
-    }
-
-    $locationResponse = searchAttractionLocation((string) $region['query']);
-
-    if (isset($locationResponse['error'])) {
-        return attractionReadCache($resultCacheKey, true)
-            ?? getLocalAttractionsForRegion($regionKey);
-    }
-
-    $locationId = extractAttractionLocationId($locationResponse, $region);
-
-    if ($locationId === null) {
-        return attractionReadCache($resultCacheKey, true)
-            ?? getLocalAttractionsForRegion($regionKey);
+        return $fallbackResults ?? getLocalAttractionsForRegion($regionKey);
     }
 
     $results = [];
     $used = [];
-    /* Booking COM15 normally returns about 20 products per page. */
-    $maximumPages = min(5, max(1, (int) ceil($limit / 20)));
+    $usedLocationIds = [];
 
-    for ($page = 1; $page <= $maximumPages; $page++) {
-        $response = searchAttractions(
-            $locationId,
-            'trending',
-            $page,
-            'MYR',
-            'en-us'
-        );
+    foreach (attractionRegionQueries($regionKey, $region) as $query) {
+        $locationResponse = searchAttractionLocation($query);
 
-        if (isset($response['error'])) {
-            break;
+        if (isset($locationResponse['error'])) {
+            continue;
         }
 
-        $products = attractionArrayValue(
-            $response,
-            ['data.products', 'products', 'data.data.products'],
-            []
-        );
+        $queryRegion = $region;
+        $queryRegion['query'] = $query;
+        $queryRegion['city'] = trim(explode(',', $query)[0]);
+        $locationId = extractAttractionLocationId($locationResponse, $queryRegion);
 
-        if (!is_array($products) || $products === []) {
-            break;
+        if ($locationId === null || isset($usedLocationIds[$locationId])) {
+            continue;
         }
 
-        foreach ($products as $product) {
-            if (!is_array($product)) {
-                continue;
-            }
+        $usedLocationIds[$locationId] = true;
+        $remaining = $limit - count($results);
+        $maximumPages = min(5, max(1, (int) ceil($remaining / 20)));
+        $previousPageSignature = '';
 
-            $countryCode = strtolower((string) attractionArrayValue(
-                $product,
-                [
-                    'ufiDetails.url.country',
-                    'ufiDetails.countryCode',
-                    'countryCode',
-                    'country_code'
-                ],
-                ''
-            ));
-
-            if ($countryCode !== '' && $countryCode !== 'my') {
-                continue;
-            }
-
-            $item = normalizeApiAttraction($product, $region);
-
-            /* A slug is required so that detail.php can request full details. */
-            if ($item === null || $item['slug'] === '') {
-                continue;
-            }
-
-            $uniqueKey = $item['slug'];
-
-            if (isset($used[$uniqueKey])) {
-                continue;
-            }
-
-            $used[$uniqueKey] = true;
-            $item['type'] = classifyApiAttraction($product, $item);
-            $results[] = $item;
-
-            attractionWriteCache(
-                'search-attraction:' . sha1($item['slug']),
-                $item,
-                86400
+        for ($page = 1; $page <= $maximumPages; $page++) {
+            $response = searchAttractions(
+                $locationId,
+                'trending',
+                $page,
+                'MYR',
+                'en-us'
             );
 
-            if (count($results) >= $limit) {
-                break 2;
+            if (isset($response['error'])) {
+                break;
             }
-        }
 
-        usleep(250000);
+            $products = attractionArrayValue(
+                $response,
+                ['data.products', 'products', 'data.data.products'],
+                []
+            );
+
+            if (!is_array($products) || $products === []) {
+                break;
+            }
+
+            $pageSignature = sha1((string) json_encode($products));
+
+            if ($pageSignature === $previousPageSignature) {
+                break;
+            }
+
+            $previousPageSignature = $pageSignature;
+
+            foreach ($products as $product) {
+                if (!is_array($product)) {
+                    continue;
+                }
+
+                $countryCode = strtolower((string) attractionArrayValue(
+                    $product,
+                    [
+                        'ufiDetails.url.country',
+                        'ufiDetails.countryCode',
+                        'countryCode',
+                        'country_code'
+                    ],
+                    ''
+                ));
+
+                if ($countryCode !== '' && $countryCode !== 'my') {
+                    continue;
+                }
+
+                $item = normalizeApiAttraction($product, $region);
+
+                if ($item === null || $item['slug'] === '') {
+                    continue;
+                }
+
+                $uniqueKey = $item['slug'];
+
+                if (isset($used[$uniqueKey])) {
+                    continue;
+                }
+
+                $used[$uniqueKey] = true;
+                $item['type'] = classifyApiAttraction($product, $item);
+                $results[] = $item;
+
+                attractionWriteCache(
+                    'search-attraction:' . sha1($item['slug']),
+                    $item,
+                    86400
+                );
+
+                if (count($results) >= $limit) {
+                    break 3;
+                }
+            }
+
+            if (count($products) < 20) {
+                break;
+            }
+
+            usleep(250000);
+        }
     }
 
     if ($results === []) {
-        return attractionReadCache($resultCacheKey, true)
-            ?? getLocalAttractionsForRegion($regionKey);
+        return $fallbackResults ?? getLocalAttractionsForRegion($regionKey);
     }
 
     attractionWriteCache($resultCacheKey, $results, 1800);
     return $results;
 }
 
-/* Must-Visit uses cached API products first, then fills gaps locally. */
 function getMustVisitAttractions(array $regions, int $perRegion = 2): array
 {
     $results = [];
@@ -728,6 +805,10 @@ function getMustVisitAttractions(array $regions, int $perRegion = 2): array
 
     foreach ($regions as $regionKey => $region) {
         $cachedApiItems = attractionReadCache(
+            'region-results-v7:' . $regionKey . ':100',
+            true
+        );
+        $cachedApiItems = $cachedApiItems ?? attractionReadCache(
             'region-results-v6:' . $regionKey . ':100',
             true
         );
@@ -1221,4 +1302,60 @@ function normalizeApiAttractionAvailability(array $response): array
             ''
         ))
     ];
+}
+
+function attractionFavoriteKey(array $attraction): string
+{
+    $slug = trim((string) ($attraction['slug'] ?? ''));
+    $id = trim((string) ($attraction['id'] ?? ''));
+    $name = trim((string) ($attraction['name'] ?? 'Attraction'));
+    $location = trim((string) ($attraction['location'] ?? 'Malaysia'));
+
+    if ($slug !== '') {
+        $identity = 'slug:' . $slug;
+    } elseif ($id !== '') {
+        $identity = 'id:' . $id;
+    } else {
+        $identity = 'name:' . $name . '|location:' . $location;
+    }
+
+    return 'attraction-' . substr(hash('sha256', $identity), 0, 24);
+}
+
+function attractionPriceAmount(string $price): float
+{
+    if (stripos($price, 'free') !== false) {
+        return 0.0;
+    }
+
+    if (preg_match('/(?:MYR|RM)\s*([0-9][0-9,.]*)/i', $price, $matches)) {
+        return max(0.0, (float) str_replace(',', '', $matches[1]));
+    }
+
+    return 0.0;
+}
+
+function attractionFavoriteKeysForCurrentUser(): array
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $userId = (int) ($_SESSION['user_id'] ?? 0);
+
+    if ($userId <= 0) {
+        return [];
+    }
+
+    global $auth_db;
+    require_once __DIR__ . '/../includes/trip_service.php';
+    $keys = [];
+
+    foreach (tp_get_favorites($userId) as $favorite) {
+        if (($favorite['item_type'] ?? '') === 'attraction') {
+            $keys[(string) $favorite['item_key']] = true;
+        }
+    }
+
+    return $keys;
 }

@@ -166,11 +166,20 @@ body {
     transition: 0.2s ease;
 }
 
-.detail-save-button:hover,
+.detail-save-button:hover {
+    background: #f5f3ff;
+    color: var(--detail-purple-dark);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.12);
+}
+
 .detail-save-button.saved {
-    background: var(--detail-purple);
-    color: #fff;
-    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+    background: #fff;
+    color: var(--detail-purple-dark);
+    box-shadow: none;
+}
+
+.detail-save-button.saved i {
+    color: var(--detail-purple);
 }
 
 .detail-hero {
@@ -495,6 +504,36 @@ body {
 
 .booking-submit {
     width: 100%;
+}
+
+.attraction-trip-form {
+    padding: 0 22px 22px;
+}
+
+.booking-action-link {
+    width: 100%;
+    margin-top: 12px;
+    box-sizing: border-box;
+    font: inherit;
+}
+
+.booking-action-link i {
+    font-size: 15px;
+}
+
+.trip-action-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 11px 2px 0;
+    color: var(--detail-muted);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.trip-action-note i {
+    margin-top: 3px;
+    color: var(--detail-green-dark);
 }
 
 .booking-benefits {

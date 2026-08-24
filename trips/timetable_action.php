@@ -15,7 +15,7 @@ if ($action === 'save') {
         $del = $auth_db->prepare('DELETE FROM trip_timetable_items WHERE user_id = ?'); $del->bind_param('i', $userId); $del->execute(); $del->close();
         $add = $auth_db->prepare('INSERT INTO trip_timetable_items (user_id, item_type, item_key, title, unit_price, quantity, start_hour, end_hour) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
         foreach ($items as $item) {
-            $type = in_array($item['item_type'] ?? '', ['flight','hotel','restaurant'], true) ? $item['item_type'] : 'hotel';
+            $type = in_array($item['item_type'] ?? '', ['flight','hotel','restaurant','attraction'], true) ? $item['item_type'] : 'hotel';
             $key = substr((string)($item['item_key'] ?? ''), 0, 160); $title = substr((string)($item['title'] ?? ''), 0, 190);
             $price = max(0, (float)($item['unit_price'] ?? 0)); $qty = max(1, min(30, (int)($item['quantity'] ?? 1)));
             $start = max(0, min(23, (int)($item['start_hour'] ?? 0))); $end = max($start + 1, min(24, (int)($item['end_hour'] ?? ($start + 1))));

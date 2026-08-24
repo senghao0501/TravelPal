@@ -46,16 +46,29 @@ function resolveAttractionRegion(string $requestedKey, string $query, array $reg
     return ['selangor', $regions['selangor']];
 }
 
-function attractionResultDetailUrl(array $attraction): string
+function attractionResultDetailUrl(
+    array $attraction,
+    string $visitDate = '',
+    int $adults = 2,
+    int $children = 0
+): string
 {
+    $params = [
+        'visit_date' => $visitDate,
+        'adults' => $adults,
+        'children' => $children
+    ];
+
     if (
         ($attraction['source'] ?? '') === 'api'
         && !empty($attraction['slug'])
     ) {
-        return 'detail.php?slug=' . rawurlencode((string) $attraction['slug']);
+        $params['slug'] = (string) $attraction['slug'];
+    } else {
+        $params['id'] = (string) $attraction['id'];
     }
 
-    return 'detail.php?id=' . rawurlencode((string) $attraction['id']);
+    return 'detail.php?' . http_build_query($params);
 }
 
 function attractionCategoryUrl(
@@ -116,10 +129,10 @@ if (!isset($categories[$selectedCategory])) {
 
 /*
  * Booking.com API is called only for the selected state.
- * It returns up to 50 results, but the page never forces the count to 50.
+ * It returns up to 100 results across five API pages, then caches them.
  * If no API data is usable, this returns only this state's local fallback items.
  */
-$allAttractions = loadAttractionsForRegion($regionKey, $region, 50);
+$allAttractions = loadAttractionsForRegion($regionKey, $region, 100);
 
 if ($selectedCategory === 'all') {
     $attractions = $allAttractions;
@@ -268,7 +281,12 @@ include '../header.php';
         <div class="attraction-grid">
             <?php foreach ($attractions as $attraction): ?>
                 <?php
-                $detailUrl = attractionResultDetailUrl($attraction);
+                $detailUrl = attractionResultDetailUrl(
+                    $attraction,
+                    $visitDate,
+                    $adults,
+                    $children
+                );
                 $favoriteId = (string) ($attraction['id'] ?? '');
                 $rating = $attraction['rating'] ?? 'N/A';
                 $reviewCount = (int) ($attraction['review_count'] ?? 0);

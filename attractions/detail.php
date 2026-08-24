@@ -11,6 +11,17 @@ function detailEscape($value): string
 $localId = trim((string) ($_GET['id'] ?? ''));
 $slug = trim((string) ($_GET['slug'] ?? ''));
 $attraction = null;
+$reviews = [];
+$availability = [];
+$apiNotice = '';
+$availabilityRequested = ($_GET['check_availability'] ?? '') === '1';
+$selectedVisitDate = (string) ($_GET['visit_date'] ?? date('Y-m-d'));
+$selectedAdults = max(1, min(10, (int) ($_GET['adults'] ?? 2)));
+$selectedChildren = max(0, min(10, (int) ($_GET['children'] ?? 0)));
+
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedVisitDate)) {
+    $selectedVisitDate = date('Y-m-d');
+}
 
 if ($localId !== '') {
     $attraction = findLocalAttractionById($localId);
@@ -22,12 +33,43 @@ if ($slug !== '') {
 
     if (isset($apiResponse['error'])) {
         $attraction = $cachedAttraction;
+        $apiNotice = 'Live details are temporarily unavailable; cached information is shown.';
     } else {
         $attraction = normalizeApiAttractionDetails(
             $apiResponse,
             $slug,
             $cachedAttraction
         );
+        $reviews = normalizeApiAttractionReviews($apiResponse, 6);
+    }
+
+    if ($attraction !== null) {
+        $apiId = trim((string) ($attraction['api_id'] ?? ''));
+
+        if ($reviews === [] && $apiId !== '') {
+            $reviews = normalizeApiAttractionReviews(
+                getAttractionReviews($apiId, 1),
+                6
+            );
+        }
+
+        if ($availabilityRequested) {
+            $availability = normalizeApiAttractionAvailability(
+                getAttractionAvailability($slug, 'MYR', 'en-us')
+            );
+
+            if (!empty($availability['price'])) {
+                $attraction['price'] = $availability['price'];
+            }
+
+            if (!empty($availability['booking_url'])) {
+                $attraction['booking_url'] = $availability['booking_url'];
+            }
+
+            if (!empty($availability['hours'])) {
+                $attraction['hours'] = $availability['hours'];
+            }
+        }
     }
 }
 
@@ -50,6 +92,60 @@ include '../header.php';
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 >
+
+<style>
+.api-detail-notice {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.traveller-review-list {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.traveller-review-card {
+    padding: 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.traveller-review-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.traveller-review-heading span {
+    color: #7c3aed;
+    font-weight: 800;
+}
+
+.traveller-review-card p {
+    margin: 0 0 10px;
+    color: #475569;
+    line-height: 1.7;
+}
+
+.traveller-review-meta,
+.availability-result {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.booking-action-link {
+    display: flex;
+    margin-top: 12px;
+    text-decoration: none;
+}
+</style>
 
 <?php if ($pageNotFound): ?>
     <div class="attraction-error-page">
@@ -76,6 +172,12 @@ include '../header.php';
     $rating = $attraction['rating'] ?? 'N/A';
     $price = (string) ($attraction['price'] ?? 'Check price');
     $isFree = stripos($price, 'free') !== false;
+    $bookingUrl = trim((string) ($attraction['booking_url'] ?? ''));
+
+    if (!preg_match('#^https://#i', $bookingUrl)) {
+        $bookingUrl = 'https://www.booking.com/attractions/searchresults.html?'
+            . http_build_query(['query' => (string) $attraction['name']]);
+    }
     ?>
 
     <div class="attraction-detail-page">
@@ -84,6 +186,12 @@ include '../header.php';
             <i class="fa-solid fa-chevron-right"></i>
             <span><?= detailEscape($location) ?></span>
         </nav>
+
+        <?php if ($apiNotice !== ''): ?>
+            <p class="api-detail-notice">
+                <?= detailEscape($apiNotice) ?>
+            </p>
+        <?php endif; ?>
 
         <section class="detail-heading">
             <div>
@@ -254,6 +362,43 @@ include '../header.php';
                             </p>
                         </div>
                     </div>
+
+                    <?php if ($reviews !== []): ?>
+                        <div class="traveller-review-list">
+                            <?php foreach ($reviews as $review): ?>
+                                <article class="traveller-review-card">
+                                    <div class="traveller-review-heading">
+                                        <strong>
+                                            <?= detailEscape($review['title']) ?>
+                                        </strong>
+
+                                        <?php if (is_numeric($review['rating'])): ?>
+                                            <span>
+                                                <i class="fa-solid fa-star"></i>
+                                                <?= detailEscape($review['rating']) ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <?php if ($review['content'] !== ''): ?>
+                                        <p><?= detailEscape($review['content']) ?></p>
+                                    <?php endif; ?>
+
+                                    <div class="traveller-review-meta">
+                                        <?= detailEscape($review['author']) ?>
+
+                                        <?php if ($review['date'] !== ''): ?>
+                                            · <?= detailEscape($review['date']) ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <p class="traveller-review-meta">
+                            No written traveller comments are currently available.
+                        </p>
+                    <?php endif; ?>
                 </section>
             </div>
 
@@ -266,7 +411,14 @@ include '../header.php';
                     </strong>
                 </div>
 
-                <form class="booking-form" onsubmit="return false;">
+                <form class="booking-form" method="GET" action="detail.php">
+                    <?php if ($slug !== ''): ?>
+                        <input type="hidden" name="slug" value="<?= detailEscape($slug) ?>">
+                        <input type="hidden" name="check_availability" value="1">
+                    <?php else: ?>
+                        <input type="hidden" name="id" value="<?= detailEscape($localId) ?>">
+                    <?php endif; ?>
+
                     <label for="detailVisitDate">Visit date</label>
 
                     <div class="booking-input">
@@ -276,6 +428,8 @@ include '../header.php';
                             type="date"
                             id="detailVisitDate"
                             name="visit_date"
+                            value="<?= detailEscape($selectedVisitDate) ?>"
+                            min="<?= detailEscape(date('Y-m-d')) ?>"
                             required
                         >
                     </div>
@@ -289,7 +443,7 @@ include '../header.php';
                             <?php for ($adult = 1; $adult <= 10; $adult++): ?>
                                 <option
                                     value="<?= $adult ?>"
-                                    <?= $adult === 2 ? 'selected' : '' ?>
+                                    <?= $adult === $selectedAdults ? 'selected' : '' ?>
                                 >
                                     <?= $adult ?>
                                     <?= $adult === 1 ? 'Adult' : 'Adults' ?>
@@ -305,7 +459,10 @@ include '../header.php';
 
                         <select id="detailChildren" name="children">
                             <?php for ($child = 0; $child <= 10; $child++): ?>
-                                <option value="<?= $child ?>">
+                                <option
+                                    value="<?= $child ?>"
+                                    <?= $child === $selectedChildren ? 'selected' : '' ?>
+                                >
                                     <?= $child ?>
                                     <?= $child === 1 ? 'Child' : 'Children' ?>
                                 </option>
@@ -314,13 +471,33 @@ include '../header.php';
                     </div>
 
                     <button
-                        type="button"
+                        type="submit"
                         class="detail-primary-button booking-submit"
                     >
-                        <i class="fa-solid fa-ticket"></i>
-                        Buy tickets
+                        <i class="fa-regular fa-calendar-check"></i>
+                        Check live availability
                     </button>
                 </form>
+
+                <?php if ($availabilityRequested): ?>
+                    <p class="availability-result">
+                        <?= detailEscape(
+                            !empty($availability['summary'])
+                                ? $availability['summary']
+                                : 'Availability request completed. Continue to Booking.com for current times and ticket options.'
+                        ) ?>
+                    </p>
+                <?php endif; ?>
+
+                <a
+                    class="detail-primary-button booking-action-link"
+                    href="<?= detailEscape($bookingUrl) ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <i class="fa-solid fa-ticket"></i>
+                    Buy tickets
+                </a>
             </aside>
         </div>
     </div>

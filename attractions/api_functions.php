@@ -14,7 +14,10 @@ if (is_file($configFile)) {
 }
 
 if (!defined('RAPIDAPI_KEY')) {
-    define('RAPIDAPI_KEY', getenv('RAPIDAPI_KEY') ?: 'YOUR_RAPIDAPI_KEY');
+    define(
+        'RAPIDAPI_KEY',
+        getenv('TRAVELPAL_ATTRACTION_RAPIDAPI_KEY') ?: 'YOUR_RAPIDAPI_KEY'
+    );
 }
 
 if (!defined('RAPIDAPI_HOST')) {
@@ -167,8 +170,8 @@ function callAttractionAPI(
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_ENCODING => '',
-        CURLOPT_CONNECTTIMEOUT => 8,
-        CURLOPT_TIMEOUT => 25,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => 45,
         CURLOPT_MAXREDIRS => 3,
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_SSL_VERIFYHOST => 2,
@@ -207,19 +210,28 @@ function callAttractionAPI(
     }
 
     if ($httpCode === 429) {
-        return $stale ?? ['error' => true, 'code' => 'rate_limited'];
+        return $stale ?? [
+            'error' => true,
+            'code' => 'rate_limited',
+            'message' => (string) ($decoded['message'] ?? 'RapidAPI rate limit reached')
+        ];
     }
 
     if ($httpCode < 200 || $httpCode >= 300) {
         return $stale ?? [
             'error' => true,
             'code' => 'http_error',
-            'http_status' => $httpCode
+            'http_status' => $httpCode,
+            'message' => (string) ($decoded['message'] ?? 'RapidAPI request failed')
         ];
     }
 
     if (($decoded['status'] ?? true) === false) {
-        return $stale ?? ['error' => true, 'code' => 'api_error'];
+        return $stale ?? [
+            'error' => true,
+            'code' => 'api_error',
+            'message' => (string) ($decoded['message'] ?? 'RapidAPI returned an error')
+        ];
     }
 
     attractionWriteCache($cacheKey, $decoded, $cacheSeconds);
@@ -313,7 +325,43 @@ function getAttractionReviews(string $id, int $page = 1): array
     );
 }
 
-function extractAttractionLocationId(array $response): ?string
+function attractionLocationIdFromSuggestion(array $item): ?string
+{
+    $id = trim((string) attractionArrayValue(
+        $item,
+        ['id', 'locationId', 'dest_id'],
+        ''
+    ));
+
+    $ufi = attractionArrayValue($item, ['ufi', 'ufiDetails.ufi']);
+
+    if ($id !== '') {
+        $paddedId = strtr($id, '-_', '+/');
+        $paddedId .= str_repeat('=', (4 - strlen($paddedId) % 4) % 4);
+        $decodedId = base64_decode($paddedId, true);
+        $decodedJson = $decodedId === false
+            ? null
+            : json_decode($decodedId, true);
+
+        if (is_array($decodedJson) && isset($decodedJson['ufi'])) {
+            $ufi = $decodedJson['ufi'];
+        }
+    }
+
+    if ($ufi !== null && is_numeric($ufi)) {
+        return base64_encode((string) json_encode(
+            ['ufi' => (int) $ufi],
+            JSON_UNESCAPED_SLASHES
+        ));
+    }
+
+    return $id !== '' ? $id : null;
+}
+
+function extractAttractionLocationId(
+    array $response,
+    array $region = []
+): ?string
 {
     $direct = attractionArrayValue(
         $response,
@@ -331,6 +379,11 @@ function extractAttractionLocationId(array $response): ?string
         $response['products'] ?? []
     ];
 
+    $bestId = null;
+    $bestScore = PHP_INT_MIN;
+    $regionCity = strtolower(trim((string) ($region['city'] ?? '')));
+    $regionName = strtolower(trim((string) ($region['name'] ?? '')));
+
     foreach ($groups as $group) {
         if (!is_array($group)) {
             continue;
@@ -341,18 +394,58 @@ function extractAttractionLocationId(array $response): ?string
                 continue;
             }
 
-            $id = attractionArrayValue(
-                $item,
-                ['id', 'locationId', 'dest_id', 'ufi']
-            );
+            $id = attractionLocationIdFromSuggestion($item);
 
-            if ($id !== null) {
-                return (string) $id;
+            if ($id === null) {
+                continue;
+            }
+
+            $countryCode = strtolower((string) attractionArrayValue(
+                $item,
+                ['countryCode', 'country_code', 'ufiDetails.countryCode'],
+                ''
+            ));
+            $cityName = strtolower((string) attractionArrayValue(
+                $item,
+                ['cityName', 'city', 'name', 'ufiDetails.cityName'],
+                ''
+            ));
+            $title = strtolower((string) attractionArrayValue(
+                $item,
+                ['title', 'name'],
+                ''
+            ));
+            $type = strtolower((string) ($item['__typename'] ?? ''));
+            $score = 0;
+
+            if ($countryCode === 'my') {
+                $score += 100;
+            }
+
+            if ($regionCity !== '' && str_contains($cityName, $regionCity)) {
+                $score += 80;
+            }
+
+            if ($regionCity !== '' && str_contains($title, $regionCity)) {
+                $score += 30;
+            }
+
+            if ($regionName !== '' && str_contains($title, $regionName)) {
+                $score += 20;
+            }
+
+            if (str_contains($type, 'destination')) {
+                $score += 15;
+            }
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $bestId = $id;
             }
         }
     }
 
-    return null;
+    return $bestId;
 }
 
 /* ==================== Normalize and classify ==================== */
@@ -406,6 +499,7 @@ function normalizeApiAttraction(array $product, array $region): ?array
     $reviewCount = (int) attractionArrayValue(
         $product,
         [
+            'reviewsStats.combinedNumericStats.total',
             'reviewsStats.allReviewsCount',
             'reviewsStats.totalCount',
             'reviewCount'
@@ -425,6 +519,16 @@ function normalizeApiAttraction(array $product, array $region): ?array
     );
 
     $location = (string) ($region['label'] ?? $region['name'] ?? 'Malaysia');
+    $description = trim((string) attractionArrayValue(
+        $product,
+        ['shortDescription', 'description'],
+        'Discover this popular experience in ' . $location . '.'
+    ));
+    $apiCity = (string) attractionArrayValue(
+        $product,
+        ['ufiDetails.bCityName', 'ufiDetails.cityName', 'ufiDetails.name'],
+        ''
+    );
 
     return [
         'id' => 'api-' . sha1($slug ?: ($productId ?: $name)),
@@ -436,7 +540,7 @@ function normalizeApiAttraction(array $product, array $region): ?array
         'rating' => $rating,
         'review_count' => $reviewCount,
         'image' => $image,
-        'description' => 'Discover this popular experience in ' . $location . '.',
+        'description' => $description,
         'activities' => [
             'Explore the attraction at your own pace',
             'Discover the highlights of the destination',
@@ -449,6 +553,7 @@ function normalizeApiAttraction(array $product, array $region): ?array
         'state' => (string) ($region['name'] ?? $location),
         'city' => (string) ($region['city'] ?? ''),
         'location' => $location,
+        'api_location' => $apiCity,
         'query' => (string) ($region['query'] ?? $location),
         'source' => 'api'
     ];
@@ -498,11 +603,11 @@ function classifyApiAttraction(array $product, array $item): string
 function loadAttractionsForRegion(
     string $regionKey,
     array $region,
-    int $limit = 50
+    int $limit = 100
 ): array {
-    $limit = max(1, min(50, $limit));
+    $limit = max(1, min(100, $limit));
     $region['key'] = $regionKey;
-    $resultCacheKey = 'region-results-v3:' . $regionKey . ':' . $limit;
+    $resultCacheKey = 'region-results-v6:' . $regionKey . ':' . $limit;
     $cached = attractionReadCache($resultCacheKey);
 
     if ($cached !== null) {
@@ -520,7 +625,7 @@ function loadAttractionsForRegion(
             ?? getLocalAttractionsForRegion($regionKey);
     }
 
-    $locationId = extractAttractionLocationId($locationResponse);
+    $locationId = extractAttractionLocationId($locationResponse, $region);
 
     if ($locationId === null) {
         return attractionReadCache($resultCacheKey, true)
@@ -529,7 +634,8 @@ function loadAttractionsForRegion(
 
     $results = [];
     $used = [];
-    $maximumPages = 10;
+    /* Booking COM15 normally returns about 20 products per page. */
+    $maximumPages = min(5, max(1, (int) ceil($limit / 20)));
 
     for ($page = 1; $page <= $maximumPages; $page++) {
         $response = searchAttractions(
@@ -556,6 +662,21 @@ function loadAttractionsForRegion(
 
         foreach ($products as $product) {
             if (!is_array($product)) {
+                continue;
+            }
+
+            $countryCode = strtolower((string) attractionArrayValue(
+                $product,
+                [
+                    'ufiDetails.url.country',
+                    'ufiDetails.countryCode',
+                    'countryCode',
+                    'country_code'
+                ],
+                ''
+            ));
+
+            if ($countryCode !== '' && $countryCode !== 'my') {
                 continue;
             }
 
@@ -599,17 +720,32 @@ function loadAttractionsForRegion(
     return $results;
 }
 
-/* Must-Visit remains the original two local items per state. */
+/* Must-Visit uses cached API products first, then fills gaps locally. */
 function getMustVisitAttractions(array $regions, int $perRegion = 2): array
 {
     $results = [];
+    $perRegion = max(1, $perRegion);
 
     foreach ($regions as $regionKey => $region) {
-        $items = array_slice(
-            getLocalAttractionsForRegion((string) $regionKey),
-            0,
-            max(1, $perRegion)
+        $cachedApiItems = attractionReadCache(
+            'region-results-v6:' . $regionKey . ':100',
+            true
         );
+        $items = is_array($cachedApiItems)
+            ? array_slice($cachedApiItems, 0, $perRegion)
+            : [];
+
+        if (count($items) < $perRegion) {
+            $localItems = getLocalAttractionsForRegion((string) $regionKey);
+
+            foreach ($localItems as $localItem) {
+                $items[] = $localItem;
+
+                if (count($items) >= $perRegion) {
+                    break;
+                }
+            }
+        }
 
         $results = array_merge($results, $items);
     }
@@ -623,6 +759,43 @@ function findCachedApiAttractionBySlug(string $slug): ?array
         'search-attraction:' . sha1($slug),
         true
     );
+}
+
+function attractionTextList($value): array
+{
+    if (is_string($value)) {
+        $text = trim(strip_tags($value));
+        return $text !== '' ? [$text] : [];
+    }
+
+    if (!is_array($value)) {
+        return [];
+    }
+
+    $texts = [];
+    $preferredKeys = ['title', 'text', 'description', 'label', 'name', 'value'];
+    $usedPreferredKey = false;
+
+    foreach ($preferredKeys as $key) {
+        if (array_key_exists($key, $value)) {
+            $usedPreferredKey = true;
+            $texts = array_merge($texts, attractionTextList($value[$key]));
+        }
+    }
+
+    if (!$usedPreferredKey || array_is_list($value)) {
+        foreach ($value as $item) {
+            $texts = array_merge($texts, attractionTextList($item));
+        }
+    }
+
+    return array_values(array_unique(array_filter($texts)));
+}
+
+function attractionFirstText($value, string $default = ''): string
+{
+    $texts = attractionTextList($value);
+    return $texts[0] ?? $default;
 }
 
 function normalizeApiAttractionDetails(
@@ -667,19 +840,24 @@ function normalizeApiAttractionDetails(
 
     $base['id'] = 'api-' . sha1($slug);
     $base['slug'] = $slug;
+    $base['api_id'] = (string) attractionArrayValue(
+        $data,
+        ['id', 'productId'],
+        $base['api_id'] ?? ''
+    );
     $base['name'] = (string) attractionArrayValue(
         $data,
         ['title', 'name', 'productName'],
         $base['name']
     );
 
-    $description = attractionArrayValue(
+    $description = attractionFirstText(attractionArrayValue(
         $data,
         ['description', 'shortDescription', 'about'],
         $base['description']
-    );
+    ), $base['description']);
 
-    if (is_string($description)) {
+    if ($description !== '') {
         $base['description'] = $description;
     }
 
@@ -708,6 +886,7 @@ function normalizeApiAttractionDetails(
     $base['review_count'] = (int) attractionArrayValue(
         $data,
         [
+            'reviewsStats.combinedNumericStats.total',
             'reviewsStats.allReviewsCount',
             'reviewsStats.totalCount',
             'reviewCount'
@@ -730,6 +909,316 @@ function normalizeApiAttractionDetails(
         $base['price'] = $currency . ' ' . $amount;
     }
 
+    $highlights = attractionTextList(attractionArrayValue(
+        $data,
+        ['uniqueSellingPoints', 'highlights', 'whatsIncluded', 'inclusions'],
+        []
+    ));
+
+    if ($highlights === []) {
+        $additionalInfo = (string) attractionArrayValue(
+            $data,
+            ['additionalInfo'],
+            ''
+        );
+        $highlights = array_values(array_filter(array_map(
+            'trim',
+            preg_split('/(?:\r?\n){2,}/', $additionalInfo) ?: []
+        )));
+    }
+
+    if ($highlights !== []) {
+        $base['activities'] = array_slice($highlights, 0, 8);
+    }
+
+    $hours = attractionFirstText(attractionArrayValue(
+        $data,
+        [
+            'openingHours',
+            'operatingHours',
+            'operationalDetails.openingHours',
+            'availabilityInfo'
+        ],
+        ''
+    ));
+
+    if ($hours !== '') {
+        $base['hours'] = $hours;
+    }
+
+    $duration = attractionFirstText(attractionArrayValue(
+        $data,
+        ['duration', 'durationDescription', 'operationalDetails.duration'],
+        ''
+    ));
+
+    if ($duration !== '') {
+        $base['duration'] = $duration;
+    }
+
+    $apiLocation = attractionFirstText(attractionArrayValue(
+        $data,
+        [
+            'ufiDetails.bCityName',
+            'ufiDetails.cityName',
+            'location.name',
+            'cityName'
+        ],
+        ''
+    ));
+
+    if ($apiLocation !== '') {
+        $base['api_location'] = $apiLocation;
+    }
+
+    $base['booking_url'] = (string) attractionArrayValue(
+        $data,
+        [
+            'bookingUrl',
+            'deepLink',
+            'url',
+            'offers.0.bookingUrl',
+            'options.0.bookingUrl'
+        ],
+        $base['booking_url'] ?? ''
+    );
+
     $base['source'] = 'api';
     return $base;
+}
+
+function normalizeApiAttractionReviews(
+    array $response,
+    int $limit = 6
+): array {
+    if (isset($response['error'])) {
+        return [];
+    }
+
+    $data = $response['data'] ?? [];
+
+    if (is_array($data) && array_is_list($data)) {
+        $reviewItems = $data;
+    } else {
+        $reviewItems = attractionArrayValue(
+            $response,
+            [
+                'data.reviews.reviews',
+                'data.reviews',
+                'data.items',
+                'reviews.reviews',
+                'reviews',
+                'items'
+            ],
+            []
+        );
+    }
+
+    if (!is_array($reviewItems)) {
+        return [];
+    }
+
+    $reviews = [];
+
+    foreach ($reviewItems as $review) {
+        if (!is_array($review)) {
+            continue;
+        }
+
+        $title = attractionFirstText(attractionArrayValue(
+            $review,
+            ['title', 'headline', 'reviewTitle'],
+            ''
+        ));
+        $content = attractionFirstText(attractionArrayValue(
+            $review,
+            ['content', 'text', 'reviewText', 'comment', 'positive'],
+            ''
+        ));
+
+        if ($title === '' && $content === '') {
+            continue;
+        }
+
+        $dateValue = attractionArrayValue(
+            $review,
+            ['date', 'createdAt', 'reviewDate', 'submissionDate', 'epochMs'],
+            ''
+        );
+
+        if (is_numeric($dateValue)) {
+            $timestamp = (int) $dateValue;
+
+            if ($timestamp > 9999999999) {
+                $timestamp = (int) floor($timestamp / 1000);
+            }
+
+            $dateValue = $timestamp > 0 ? date('M j, Y', $timestamp) : '';
+        }
+
+        $reviews[] = [
+            'title' => $title !== '' ? $title : 'Traveller review',
+            'content' => $content,
+            'rating' => attractionArrayValue(
+                $review,
+                ['rating', 'score', 'reviewRating', 'numericRating'],
+                null
+            ),
+            'author' => attractionFirstText(attractionArrayValue(
+                $review,
+                [
+                    'reviewer.name',
+                    'user.name',
+                    'author.name',
+                    'reviewerName',
+                    'author'
+                ],
+                ''
+            ), 'Booking.com traveller'),
+            'date' => attractionFirstText($dateValue)
+        ];
+
+        if (count($reviews) >= max(1, $limit)) {
+            break;
+        }
+    }
+
+    return $reviews;
+}
+
+function normalizeApiAttractionAvailability(array $response): array
+{
+    if (isset($response['error'])) {
+        return [];
+    }
+
+    $data = $response['data'] ?? $response;
+
+    if (!is_array($data)) {
+        return [];
+    }
+
+    if (array_is_list($data)) {
+        $timeSlot = $data[0] ?? [];
+
+        if (!is_array($timeSlot)) {
+            return [];
+        }
+
+        $offers = $timeSlot['timeSlotOffers'] ?? [];
+        $lowestAmount = null;
+        $lowestCurrency = 'MYR';
+        $hours = '';
+
+        if (is_array($offers)) {
+            foreach ($offers as $offer) {
+                if (!is_array($offer)) {
+                    continue;
+                }
+
+                if ($hours === '') {
+                    $instructions = (string) ($offer['locationInstructions'] ?? '');
+
+                    if (preg_match(
+                        '/The opening hours.*?(?=Opening hours may change|How to get there|$)/si',
+                        $instructions,
+                        $matches
+                    )) {
+                        $hours = trim((string) preg_replace(
+                            '/\s+/',
+                            ' ',
+                            $matches[0]
+                        ));
+                    }
+                }
+
+                foreach (($offer['items'] ?? []) as $item) {
+                    if (!is_array($item) || ($item['type'] ?? '') !== 'adult') {
+                        continue;
+                    }
+
+                    $convertedPrice = $item['convertedPrice'] ?? $item['price'] ?? [];
+                    $itemAmount = $convertedPrice['chargeAmount'] ?? null;
+
+                    if (
+                        $itemAmount !== null
+                        && ($lowestAmount === null || (float) $itemAmount < $lowestAmount)
+                    ) {
+                        $lowestAmount = (float) $itemAmount;
+                        $lowestCurrency = (string) ($convertedPrice['currency'] ?? 'MYR');
+                    }
+                }
+            }
+        }
+
+        $start = (string) ($timeSlot['start'] ?? '');
+        $dateLabel = 'the selected date';
+
+        if ($start !== '') {
+            try {
+                $dateLabel = (new DateTimeImmutable($start))->format('M j, Y');
+            } catch (Throwable $exception) {
+                $dateLabel = substr($start, 0, 10);
+            }
+        }
+        $offerCount = is_array($offers) ? count($offers) : 0;
+        $price = $lowestAmount !== null
+            ? $lowestCurrency . ' ' . number_format($lowestAmount, 2, '.', '')
+            : null;
+        $summary = $offerCount > 0
+            ? $offerCount . ' ticket option' . ($offerCount === 1 ? '' : 's')
+                . ' available for ' . $dateLabel
+                . ($price !== null ? ', from ' . $price . '.' : '.')
+            : 'No ticket options were returned for ' . $dateLabel . '.';
+
+        return [
+            'price' => $price,
+            'booking_url' => '',
+            'summary' => $summary,
+            'hours' => $hours
+        ];
+    }
+
+    $amount = attractionArrayValue(
+        $data,
+        [
+            'representativePrice.chargeAmount',
+            'price.amount',
+            'offers.0.price.amount'
+        ]
+    );
+    $currency = (string) attractionArrayValue(
+        $data,
+        [
+            'representativePrice.currency',
+            'price.currency',
+            'offers.0.price.currency'
+        ],
+        'MYR'
+    );
+
+    return [
+        'price' => $amount !== null ? $currency . ' ' . $amount : null,
+        'booking_url' => (string) attractionArrayValue(
+            $data,
+            [
+                'bookingUrl',
+                'deepLink',
+                'url',
+                'offers.0.bookingUrl',
+                'options.0.bookingUrl'
+            ],
+            ''
+        ),
+        'summary' => attractionFirstText(attractionArrayValue(
+            $data,
+            ['availabilityInfo', 'message', 'summary'],
+            ''
+        )),
+        'hours' => attractionFirstText(attractionArrayValue(
+            $data,
+            ['openingHours', 'operatingHours', 'locationInstructions'],
+            ''
+        ))
+    ];
 }

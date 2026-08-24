@@ -3,7 +3,7 @@
 require_once 'attractions_data.php';
 require_once 'api_functions.php';
 
-/* Must-Visit stays local: two attractions from each of the eight states. */
+/* Must-Visit prefers cached API items and uses local items as the fallback. */
 $mustVisitAttractions = getMustVisitAttractions($attraction_regions, 2);
 
 $destinationDescriptions = [

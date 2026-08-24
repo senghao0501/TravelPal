@@ -64,16 +64,27 @@ button, input, select {
     font-family: inherit;
 }
 
-/* 取消强制居中，允许内容靠左排布 */
 .hero-content,
 .search-container,
 .main-content,
 .detail-page-container {
-    width: 100%;
+    width: min(1300px, calc(100% - 48px));
     max-width: 1300px;
-    margin-left: 5%; 
+    margin-left: auto;
     margin-right: auto;
-    padding-right: 20px;
+    box-sizing: border-box;
+}
+
+.search-container {
+    width: min(1180px, calc(100% - 48px));
+    max-width: 1180px;
+}
+
+.search-container > .hero-content {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 /* =========================================================
@@ -150,33 +161,41 @@ button, input, select {
    SEARCH BAR 
    ========================================================= */
 .filter-bar {
-    display: flex;
-    flex-wrap: nowrap; 
-    align-items: center; 
-    justify-content: flex-start;
-    gap: 10px;
-    padding: 10px 10px 10px 20px; 
+    display: grid;
+    grid-template-columns:
+        minmax(220px, 1.5fr)
+        minmax(170px, 1fr)
+        minmax(170px, 1fr)
+        190px;
+    align-items: stretch;
+    gap: 7px;
+    width: 100%;
+    max-width: 1180px;
+    padding: 7px;
+    box-sizing: border-box;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-    width: 100%;
-    max-width: 1100px; 
 }
 
 .input-group {
-    flex: 1 1 auto; 
-    min-width: 140px; 
+    min-width: 0;
+    min-height: 62px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    text-align: left;
+    gap: 10px;
     padding: 9px 12px;
+    box-sizing: border-box;
     background: #ffffff;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: 5px;
     position: relative;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    overflow: visible;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
 }
 
 .input-group:hover {
@@ -193,8 +212,7 @@ button, input, select {
 .input-group .icon {
     flex: 0 0 auto;
     color: #5f6b7a;
-    font-size: 18px; 
-    margin-right: 12px;
+    font-size: 16px;
 }
 
 .input-group:focus-within .icon {
@@ -210,13 +228,13 @@ button, input, select {
 }
 
 .input-wrapper label {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     color: #687386;
     font-size: 11px;
     line-height: 1;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.045em;
 }
 
 .input-wrapper select,
@@ -227,19 +245,25 @@ button, input, select {
     border: 0;
     outline: 0;
     background: transparent;
-    color: var(--text-dark);
-    font-size: 15px; 
+    color: #172033;
+    font-size: 14px;
     line-height: 1.35;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .guest-display-text {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.35;
     font-weight: 600;
-    color: var(--text-dark);
+    color: #172033;
     text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* =========================================================
@@ -327,7 +351,7 @@ button, input, select {
 }
 
 /* =========================================================
-   SEARCH BUTTON (深紫到绿色的明亮高级渐变)
+   SEARCH BUTTON
    ========================================================= */
 .btn-search {
     display: inline-flex;
@@ -335,24 +359,27 @@ button, input, select {
     justify-content: center;
     gap: 8px;
     border: 0;
-    /* 按钮渐变色稍微明亮一点，在暗背景上跳脱出来 */
-    background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--primary) 100%); 
+    width: 100%;
+    height: 100%;
+    min-height: 62px;
+    padding: 0 24px;
+    box-sizing: border-box;
+    background: var(--primary-dark);
     color: #ffffff;
     font-weight: 700;
-    font-size: 16px; 
-    border-radius: 8px;
-    margin-left: auto; 
-    padding: 0 45px; 
-    min-height: 64px; 
-    flex-shrink: 0; 
+    font-size: 14px;
+    border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
-    transition: box-shadow 0.3s ease, transform 0.15s ease, opacity 0.3s ease;
+    transition:
+        background 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.15s ease;
 }
 
 .btn-search:hover {
-    box-shadow: 0 6px 18px rgba(76, 29, 149, 0.4); 
-    opacity: 0.95;
+    background: var(--primary-darker);
+    box-shadow: 0 4px 10px rgba(4, 120, 87, 0.24);
 }
 
 .btn-search:active {
@@ -700,37 +727,3 @@ button, input, select {
 /* =========================================================
    RESPONSIVE DESIGN
    ========================================================= */
-@media (max-width: 1050px) {
-    .hero-content, .search-container, .main-content {
-        margin-left: 20px; 
-    }
-}
-
-@media (max-width: 992px) {
-    .filter-bar {
-        flex-wrap: wrap; 
-    }
-    .btn-search {
-        margin-left: auto; 
-    }
-}
-
-@media (max-width: 760px) {
-    .filter-bar {
-        flex-direction: column;
-        padding: 15px;
-    }
-    .input-group {
-        width: 100%;
-        min-height: 56px;
-    }
-    .btn-search {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 5px;
-        min-height: 56px;
-    }
-    .hero-content h1 {
-        font-size: 28px;
-    }
-}

@@ -5,48 +5,88 @@ if (session_status() === PHP_SESSION_NONE) {
 include 'header.php'; 
 ?>
 
-<!-- 这里已经改成了 time()，绝对不会再有缓存问题！ -->
+<!-- 强制时间戳刷新缓存 -->
 <link rel="stylesheet" href="style.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<main>
-    <!-- 1. 四个带有【智能实时数据】的分类方格 -->
-    <section class="home-grid-section">
-        <!-- 🚨 用和方格一模一样的宽度 (1180px)、居中 (margin: 0 auto)、和内边距 (padding: 0 20px) 把文字包起来 🚨 -->
-<div style="width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; text-align: left;">
-    <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">Explore TravelPal by Category</h2>
-    <p style="margin: 0; color: #4b5563; font-size: 15px;">Your complete guide to traveling across Malaysia</p>
-</div>
-        
-       <div class="home-interest-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
-            <?php 
-            // 业务卡片数据
-            $smartData = [
-                'flights' => [
-                    'icon' => 'fa-plane',
-                    'title' => 'Flights', 'desc' => 'Domestic & International', 
-                    'label' => 'Lowest Fares From', 'val' => 'RM 89', 'trend' => 92,
-                    'link' => '/TravelPal/flights/index.php'
-                ],
-                'hotels' => [
-                    'icon' => 'fa-hotel',
-                    'title' => 'Hotels', 'desc' => 'Resorts & City Stays', 
-                    'label' => 'Properties Available', 'val' => '120+', 'trend' => 85,
-                    'link' => '/TravelPal/hotels/index.php'
-                ],
-                'restaurants' => [
-                    'icon' => 'fa-utensils',
-                    'title' => 'Restaurants', 'desc' => 'Local Delicacies', 
-                    'label' => 'Top Rated Spots', 'val' => '4.8★', 'trend' => 88,
-                    'link' => '/TravelPal/restaurant/index.php'
-                ]
-            ];
+<!-- 🚨 暴力锁定样式 🚨 -->
+<style>
+/* 1. 四个上方卡片 */
+.tp-strict-card {
+    border-radius: 12px !important;
+    border: 1px solid #d1d5db !important; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden !important;
+}
+.tp-strict-member {
+    border-radius: 12px !important;
+    box-shadow: 0 6px 16px rgba(4,120,87,0.25) !important;
+    overflow: hidden !important;
+}
 
-            // 1. 渲染前三个业务卡片
-            foreach ($smartData as $key => $data): ?>
-            <!-- 统一设置：圆角 12px, 阴影更柔和, 高度 200px 增加呼吸感 -->
-            <a href="<?php echo $data['link']; ?>" style="text-decoration: none; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); transition: transform 0.2s ease, box-shadow 0.2s ease;">
-                
+/* 2. 轮播图片 (去掉了单独的边框，只保留圆角) */
+.tp-strict-slider {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    background: #e2e8f0;
+    position: relative;
+    height: 380px;
+    flex: 1;
+}
+.tp-strict-slider .slide {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease;
+}
+.tp-strict-slider .slide.active { opacity: 1; }
+
+/* 3. 🚨 核心修复：把文字和图片整个包起来的大边框 🚨 */
+.tp-zigzag-row {
+    display: flex; 
+    align-items: center; 
+    gap: 50px; 
+    margin-bottom: 40px;
+    padding: 40px; /* 给大卡片内部留出舒适的呼吸空间 */
+    background: #ffffff; /* 给大卡片纯白底色 */
+    border: 1px solid #d1d5db !important; /* 整个大模块的外围边框 */
+    border-radius: 12px !important; /* 统一 12px 圆角 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important; /* 淡淡的大阴影 */
+}
+/* 双数行自动反转 (图片在左，文字在右) */
+.tp-zigzag-row:nth-child(even) {
+    flex-direction: row-reverse;
+}
+/* 手机端全部变成上下排列，并且缩小一点内边距 */
+@media (max-width: 900px) {
+    .tp-zigzag-row, .tp-zigzag-row:nth-child(even) {
+        flex-direction: column; text-align: center; gap: 30px;
+        padding: 24px; 
+    }
+    .tp-strict-slider { width: 100%; height: 280px; }
+}
+</style>
+
+<main style="padding-top: 40px; padding-bottom: 80px;">
+    <!-- 核心结界：1180px 宽度的超级大盒子 -->
+    <div style="width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 20px; box-sizing: border-box;">
+
+        <!-- ==================== 1. 标题 ==================== -->
+        <div style="text-align: left; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">Explore TravelPal by Category</h2>
+            <p style="margin: 0; color: #4b5563; font-size: 15px;">Your complete guide to traveling across Malaysia</p>
+        </div>
+
+       <!-- ==================== 2. 四个分类方格 ==================== -->
+        <!-- 🚨 注意这一行 display: grid 绝对不能丢，它是控制 4 个并排的关键！ 🚨 -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 80px;">
+            <?php 
+            $smartData = [
+                ['icon' => 'fa-plane', 'title' => 'Flights', 'desc' => 'Domestic & International', 'label' => 'Lowest Fares From', 'val' => 'RM 89', 'trend' => 92, 'link' => '/TravelPal/flights/index.php'],
+                ['icon' => 'fa-hotel', 'title' => 'Hotels', 'desc' => 'Resorts & City Stays', 'label' => 'Properties Available', 'val' => '120+', 'trend' => 85, 'link' => '/TravelPal/hotels/index.php'],
+                ['icon' => 'fa-utensils', 'title' => 'Restaurants', 'desc' => 'Local Delicacies', 'label' => 'Top Rated Spots', 'val' => '4.8★', 'trend' => 88, 'link' => '/TravelPal/restaurant/index.php']
+            ];
+            foreach ($smartData as $data): ?>
+            
+            <!-- 带有高级薄荷绿渐变色的卡片 -->
+            <a class="tp-strict-card" href="<?php echo $data['link']; ?>" style="text-decoration: none; background: linear-gradient(135deg, #f8fbf9 0%, #dcfce7 100%); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px;">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <div style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
                         <i class="fa-solid <?php echo $data['icon']; ?>"></i>
@@ -56,14 +96,14 @@ include 'header.php';
                         <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3;"><?php echo $data['desc']; ?></p>
                     </div>
                 </div>
-
+                
                 <div style="margin-top: 20px;">
                     <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;"><?php echo $data['label']; ?></span>
                     <div style="font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1;"><?php echo $data['val']; ?></div>
                 </div>
-
-                <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid #f3f4f6;">
-                    <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(<?php echo $data['trend']; ?> * 1%), #e5e7eb 0); display: flex; align-items: center; justify-content: center;">
+                
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(4,120,87,0.1);">
+                    <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(<?php echo $data['trend']; ?> * 1%), rgba(4,120,87,0.2) 0); display: flex; align-items: center; justify-content: center;">
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div>
                     </div>
                     <span style="font-size: 12px; font-weight: 700; color: #4b5563;">Trending: <?php echo $data['trend']; ?>%</span>
@@ -71,9 +111,8 @@ include 'header.php';
             </a>
             <?php endforeach; ?>
 
-            <!-- 2. 第四个会员卡片 (尺寸、圆角与前面的完全一致) -->
-            <a href="/TravelPal/auth/login.php" style="text-decoration: none; background: #047857; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; box-shadow: 0 6px 16px rgba(4,120,87,0.25); transition: transform 0.2s ease;">
-                
+            <!-- 第 4 个：深绿色会员卡片 -->
+            <a class="tp-strict-member" href="/TravelPal/auth/login.php" style="text-decoration: none; background: #047857; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; transition: transform 0.2s ease;">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <div style="width: 44px; height: 44px; background: #ffffff; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
                         <i class="fa-solid fa-gift"></i>
@@ -83,78 +122,89 @@ include 'header.php';
                         <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3;">Unlock exclusive rewards</p>
                     </div>
                 </div>
-
                 <div style="margin-top: 20px;">
                     <span style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em;">Register Free & Save Up To</span>
                     <div style="font-size: 28px; font-weight: 900; color: #C6FF34; margin-top: 4px; line-height: 1;">15% OFF</div>
                 </div>
-
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2);">
                     <span style="font-size: 12px; font-weight: 700; color: #ffffff;">Sign In / Join Now</span>
                     <i class="fa-solid fa-arrow-right" style="color: #ffffff; font-size: 14px;"></i>
                 </div>
             </a>
+        </div>
+        <!-- ==================== 四个分类方格 结束 ==================== -->
+
+        <!-- ==================== 3. 左右交替图文 (整个外框包裹) ==================== -->
+        <div style="margin-bottom: 80px;">
             
+            <!-- (1) Flights -->
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Explore The Skies</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Flights to Top Destinations</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Compare and book cheap flights across Malaysia. Find the best airlines and lowest fares for your next getaway.</p>
+                    <a href="/TravelPal/flights/index.php" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px;">Search Flights</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&q=80" class="slide">
+                </div>
+            </div>
+
+            <!-- (2) Hotels -->
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Comfortable Stays</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Hotels & Holiday Rentals</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">From luxury 5-star beachfront resorts in Penang to cozy boutique stays in KL, discover thousands of accommodations with real-time prices.</p>
+                    <a href="/TravelPal/hotels/index.php" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px;">Explore Hotels</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80" class="slide">
+                </div>
+            </div>
+
+            <!-- (3) Restaurants -->
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Culinary Journeys</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Restaurants & Local Food</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Savor the best local delicacies and fine dining. Discover top-rated eateries, street food guides, and cozy cafes recommended by locals.</p>
+                    <a href="/TravelPal/restaurants/index.php" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px;">Find Restaurants</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" class="slide">
+                </div>
+            </div>
+            
+            <!-- (4) Attractions -->
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Unforgettable Experiences</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Attractions & Activities</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Immerse yourself in culture, nature, and adventure. Book tickets to iconic landmarks, theme parks, and hidden nature trails across Malaysia.</p>
+                    <a href="/TravelPal/attractions/index.php" style="display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px;">Discover Attractions</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800&q=80" class="slide">
+                </div>
+            </div>
         </div>
 
-    <!-- 2. 四个左右交替的自动轮播模块 -->
-    <div class="home-zigzag-container">
-        <!-- Flights -->
-        <section class="zigzag-row-flat">
-            <div class="zigzag-content">
-                <span class="zigzag-tag">Explore The Skies</span>
-                <h2>Flights to Top Destinations</h2>
-                <p>Compare and book cheap flights across Malaysia. Find the best airlines and lowest fares for your next getaway.</p>
-                <a href="/TravelPal/flights/index.php" class="zigzag-btn">Search Flights</a>
-            </div>
-            <div class="zigzag-slider" data-interval="5000">
-                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" class="slide active">
-                <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&q=80" class="slide">
-            </div>
-        </section>
-
-        <!-- Hotels -->
-        <section class="zigzag-row-flat">
-            <div class="zigzag-slider" data-interval="5000">
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" class="slide active">
-                <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80" class="slide">
-            </div>
-            <div class="zigzag-content">
-                <span class="zigzag-tag">Comfortable Stays</span>
-                <h2>Hotels & Holiday Rentals</h2>
-                <p>From luxury 5-star beachfront resorts in Penang to cozy boutique stays in KL, discover thousands of accommodations with real-time prices.</p>
-                <a href="/TravelPal/hotels/index.php" class="zigzag-btn">Explore Hotels</a>
-            </div>
-        </section>
-
-        <!-- Restaurants -->
-        <section class="zigzag-row-flat">
-            <div class="zigzag-content">
-                <span class="zigzag-tag">Culinary Journeys</span>
-                <h2>Restaurants & Local Food</h2>
-                <p>Savor the best local delicacies and fine dining. Discover top-rated eateries, street food guides, and cozy cafes recommended by locals.</p>
-                <a href="/TravelPal/restaurants/index.php" class="zigzag-btn">Find Restaurants</a>
-            </div>
-            <div class="zigzag-slider" data-interval="5000">
-                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="slide active">
-                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" class="slide">
-            </div>
-        </section>
-
-        <!-- Attractions -->
-        <section class="zigzag-row-flat">
-            <div class="zigzag-slider" data-interval="5000">
-                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80" class="slide active">
-                <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800&q=80" class="slide">
-            </div>
-            <div class="zigzag-content">
-                <span class="zigzag-tag">Unforgettable Experiences</span>
-                <h2>Attractions & Activities</h2>
-                <p>Immerse yourself in culture, nature, and adventure. Book tickets to iconic landmarks, theme parks, and hidden nature trails across Malaysia.</p>
-                <a href="/TravelPal/attractions/index.php" class="zigzag-btn">Discover Attractions</a>
-            </div>
-        </section>
-    </div>
+        <!-- ==================== 4. AI 宣传视频模块 ==================== -->
+<!-- 🚨 改为 aspect-ratio: 16 / 9; 完美适配你的视频比例 🚨 -->
+<div class="tp-strict-card" style="width: 100%; aspect-ratio: 16 / 9; background: #000; margin-bottom: 40px; border-radius: 12px !important; overflow: hidden !important;">
+    
+    <!-- 🚨 移除了 muted，加入了 controls 🚨 -->
+    <video width="100%" controls autoplay loop playsinline style="display: block; width: 100%; height: 100%; object-fit: cover;">
+        <source src="/TravelPal/assets/malaysia-promo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+</div>
 </main>
 
 <script>
@@ -171,4 +221,5 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+<?php include 'footer.php'; ?>
 <?php include 'footer.php'; ?>

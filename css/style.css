@@ -1631,3 +1631,42 @@ body.travelpal-login-modal-open {
     transition: transform .2s ease, background .2s ease;
 }
 .travelpal-favorite-fab:hover { transform: translateY(-3px); background: #fff2f4; }
+
+/* 1. 四个分类方格：加微边框、柔和阴影，并锁定 12px 圆角 */
+.home-interest-grid > a,
+.home-interest-grid .member-card {
+    border: 1px solid #e5e7eb !important; /* 淡淡的高级灰边框 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important; /* 极弱的呼吸阴影 */
+    border-radius: 12px !important;
+}
+/* 2. 下方交替图文模块：加边框并强制锁定 12px 圆角 */
+.zigzag-slider,
+.zigzag-slider .slide,
+.zigzag-img-box img {
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px !important; 
+    overflow: hidden !important; /* 切掉图片原本的直角 */
+}
+
+/* 1. 四个上方卡片 */
+.tp-strict-card {
+    border-radius: 12px !important;
+    border: 1px solid #d1d5db !important; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden !important;
+    transition: all 0.3s ease !important; /* 加上平滑动画 */
+}
+
+/* 🌟 新增：鼠标悬停时，边框变主题绿，带微弱绿色阴影 🌟 */
+.tp-strict-card:hover {
+    border-color: #047857 !important;
+    box-shadow: 0 8px 24px rgba(4, 120, 87, 0.12) !important;
+    transform: translateY(-4px);
+}
+
+.tp-strict-member {
+    border-radius: 12px !important;
+    box-shadow: 0 6px 16px rgba(4,120,87,0.25) !important;
+    overflow: hidden !important;
+}
+

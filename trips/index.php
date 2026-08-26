@@ -3,6 +3,13 @@ require_once __DIR__ . '/../includes/trip_service.php';
 $userId = tp_require_user();
 global $auth_db;
 
+// 🌟 新增核心功能：检查用户是否为“首次购买”（有没有历史订单记录）
+$orderCheck = $auth_db->prepare('SELECT COUNT(*) as count FROM trip_orders WHERE user_id = ?');
+$orderCheck->bind_param('i', $userId);
+$orderCheck->execute();
+$isFirstTime = $orderCheck->get_result()->fetch_assoc()['count'] == 0;
+$orderCheck->close();
+
 function update_cart_from_request(int $userId): void {
     global $auth_db;
     foreach (($_POST['quantity'] ?? []) as $id => $requestedQuantity) {
@@ -29,11 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: index.php?updated=1'); exit;
     }
     if ($action === 'update') { header('Location: index.php?updated=1'); exit; }
+    
     if ($action === 'pay') {
         $selected = array_values(array_filter(array_map('intval', $_POST['selected'] ?? [])));
         $items = tp_get_cart_items($userId, $selected);
         if (!$items) { header('Location: index.php?error=no_selection'); exit; }
-        $total = array_sum(array_column($items, 'line_total'));
+        
+        $subtotal = array_sum(array_column($items, 'line_total'));
+        
+        // 🌟 新增结算逻辑：如果是第一次买，总价直接打 85 折 (扣除 15%)
+        $total = $isFirstTime ? ($subtotal * 0.85) : $subtotal;
+
         $auth_db->begin_transaction();
         try {
             $reference = 'TP-' . date('Ymd') . '-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 6));
@@ -94,14 +107,72 @@ include __DIR__ . '/../header.php';
                 <input type="hidden" name="item_id" value="">
                 <?php if ($items): ?><button type="submit" name="action" value="update" class="update-cart">Update cart</button><?php endif; ?>
             </div>
-            <aside class="checkout-panel"><h2>Checkout summary</h2><div class="summary-row"><span>Selected bookings</span><strong id="selectedCount">0</strong></div><div class="summary-row total"><span>Total</span><strong>RM <span id="cartTotal">0.00</span></strong></div><p>Demo payment only. No real payment is collected.</p><button class="pay-btn" type="submit" name="action" value="pay" <?php echo !$items ? 'disabled' : ''; ?>><i class="fa-solid fa-lock"></i> Pay &amp; get receipt</button></aside>
+            
+            <aside class="checkout-panel">
+                <h2>Checkout summary</h2>
+                <div class="summary-row"><span>Selected bookings</span><strong id="selectedCount">0</strong></div>
+                
+                <!-- 🌟 新增：显示原价小计 -->
+                <div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal">RM 0.00</strong></div>
+                
+                <!-- 🌟 新增：如果符合首次购买条件，动态显示 15% 折扣 -->
+                <?php if ($isFirstTime): ?>
+                    <div class="summary-row" style="color: #047857; margin-top: 8px;">
+                        <span><i class="fa-solid fa-gift"></i> New Member (15% OFF)</span>
+                        <strong id="cartDiscount">- RM 0.00</strong>
+                    </div>
+                <?php endif; ?>
+                
+                <div class="summary-row total" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #d1d5db;">
+                    <span>Total</span><strong>RM <span id="cartTotal">0.00</span></strong>
+                </div>
+                
+                <p>Demo payment only. No real payment is collected.</p>
+                <button class="pay-btn" type="submit" name="action" value="pay" <?php echo !$items ? 'disabled' : ''; ?>><i class="fa-solid fa-lock"></i> Pay &amp; get receipt</button>
+            </aside>
         </form>
         <section class="transaction-history" id="transactions"><div><span>TRANSACTION HISTORY</span><h2>Past receipts</h2></div><?php if (!$orders): ?><p>No completed payments yet.</p><?php else: ?><div class="order-list"><?php foreach ($orders as $order): ?><a href="receipt.php?order_id=<?php echo $order['id']; ?>"><span><strong><?php echo tp_h($order['order_ref']); ?></strong><small><?php echo date('d M Y, H:i', strtotime($order['created_at'])); ?></small></span><span><?php echo tp_h($order['payment_status']); ?> · RM <?php echo number_format($order['total_amount'], 2); ?> <i class="fa-solid fa-chevron-right"></i></span></a><?php endforeach; ?></div><?php endif; ?></section>
     </div>
 </section>
+
+<!-- 🌟 JS 核心逻辑更新：自动计算并呈现 15% 折扣效果 -->
 <script>
+const isFirstTime = <?php echo $isFirstTime ? 'true' : 'false'; ?>;
 const checks=[...document.querySelectorAll('.cart-check')], all=document.getElementById('selectAll'), total=document.getElementById('cartTotal'), count=document.getElementById('selectedCount');
-function refreshCart(){let sum=0,n=0; checks.forEach(check=>{const item=check.closest('.cart-item'),q=Number(item.querySelector('.qty-input').value)||1,price=Number(item.dataset.price)||0; item.querySelector('.line-total').textContent=(price*q).toFixed(2);if(check.checked){sum+=price*q;n++;}});if(total)total.textContent=sum.toFixed(2);if(count)count.textContent=n; if(all)all.checked=n===checks.length&&n>0;}
-checks.forEach(check=>check.addEventListener('change',refreshCart)); document.querySelectorAll('.qty-input').forEach(input=>input.addEventListener('input',refreshCart)); if(all)all.addEventListener('change',()=>{checks.forEach(c=>c.checked=all.checked);refreshCart();}); refreshCart();
+const subtotalEl = document.getElementById('cartSubtotal');
+const discountEl = document.getElementById('cartDiscount');
+
+function refreshCart(){
+    let sum=0, n=0; 
+    checks.forEach(check=>{
+        const item=check.closest('.cart-item');
+        const q=Number(item.querySelector('.qty-input').value)||1;
+        const price=Number(item.dataset.price)||0; 
+        const linePrice = price * q;
+        item.querySelector('.line-total').textContent = linePrice.toFixed(2);
+        
+        if(check.checked){ sum += linePrice; n++; }
+    });
+    
+    let finalTotal = sum;
+    if (count) count.textContent = n;
+    if (subtotalEl) subtotalEl.textContent = 'RM ' + sum.toFixed(2);
+    
+    // 如果是首单，计算 15% 并从总价扣除
+    if (isFirstTime && sum > 0) {
+        let discountAmt = sum * 0.15;
+        finalTotal = sum - discountAmt;
+        if (discountEl) discountEl.textContent = '- RM ' + discountAmt.toFixed(2);
+    }
+    
+    if (total) total.textContent = finalTotal.toFixed(2); 
+    if (all) all.checked = (n === checks.length && n > 0);
+}
+
+checks.forEach(check=>check.addEventListener('change',refreshCart)); 
+document.querySelectorAll('.qty-input').forEach(input=>input.addEventListener('input',refreshCart)); 
+if(all) all.addEventListener('change',()=>{checks.forEach(c=>c.checked=all.checked); refreshCart();}); 
+refreshCart();
 </script>
+
 <?php include __DIR__ . '/../footer.php'; ?>

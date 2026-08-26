@@ -1,11 +1,10 @@
 /* =========================================================
    TravelPal Hotels Module Styles
-   100% MATCHED TO FLIGHTS OTA UI (Perfect Width & Alignment)
+   (Perfect Asymmetric Width: Search 1180px / Content 1300px)
    ========================================================= */
-/* 让 FontAwesome 的图标变成纤细的描边效果（视觉上靠近 Booking 风格） */
 .info-card i.fa-solid {
-    -webkit-text-stroke: 1px #00a650; /* 给实心图标边缘加描边 */
-    color: transparent !important;    /* 把内部填充变透明，只留外框 */
+    -webkit-text-stroke: 1px #00a650;
+    color: transparent !important;    
 }
 :root {
     --primary: #047857;
@@ -46,20 +45,35 @@ body {
     line-height: 1.5;
 }
 
-/* 🚨 核心：强制所有主要区块保持绝对一致的最大宽度与居中，确保左侧完全垂直对齐 🚨 */
+/* =========================================================
+   🚨 核心排版：非对称宽屏布局 🚨
+   ========================================================= */
+
+/* 1. 保护顶部搜索框和标题：坚守 1180px 聚拢视线 */
 .hero-content,
-.search-container,
-.main-content,
-.detail-page-container,
-.results-container {
+.search-container {
     width: 100% !important;
-    max-width: 1180px !important; /* 强制覆盖航班页面的宽度设定 */
+    max-width: 1180px !important;
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box !important;
 }
 
-/* 额外加固：确保搜索框本体绝对 100% 贴满容器 */
+/* 2. 彻底拉宽底部：主页展示区、结果页、详情页放大到 1300px */
+.main-content,
+.detail-page-container,
+.results-container,
+.detail-container {
+    width: 100% !important;
+    max-width: 1300px !important; 
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 24px !important; 
+    padding-right: 24px !important;
+    box-sizing: border-box !important;
+}
+
+/* 确保搜索框本体绝对贴满 1180px 容器 */
 .search-container form.filter-bar {
     width: 100% !important;
     max-width: 100% !important;
@@ -70,27 +84,16 @@ body {
    HERO / SEARCH AREA 
    ========================================================= */
 
-/* =========================================================
-   HERO / SEARCH AREA 
-   ========================================================= */
-
 .hero-section,
 .search-hero-wrapper {
     position: relative;
-    padding: 90px 0 90px !important; /* 🚨 大幅增加上下留白，强制撑开高度！ */
+    padding: 90px 0 90px !important; 
     background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
     color: #ffffff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
     display: flex;
     flex-direction: column;
     align-items: center; 
-}
-
-.hero-content {
-    margin-bottom: 24px;
-    text-align: left;
-    width: 100%;
-    max-width: 1180px;
 }
 
 .hero-kicker {
@@ -118,66 +121,21 @@ body {
     font-size: 16px;
 }
 
-.search-container {
-    text-align: left;
-    width: 100%;
-    max-width: 1180px;
-}
-
-.search-container form {
-    width: 100%;
-    margin: 0;
-}
-
 /* =========================================================
-   VIBE TAGS
-   ========================================================= */
-
-.vibe-tags {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    justify-content: flex-start;
-}
-
-.vibe-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    background: transparent;
-    padding: 0;
-    border: none;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-    text-decoration: none; 
-}
-
-.vibe-pill:hover,
-.vibe-pill.active {
-    opacity: 1;
-}
-
-/* =========================================================
-   FILTER BAR & SEARCH BOX (完美的 5 列栅格比例，完全铺满容器)
+   FILTER BAR & SEARCH BOX
    ========================================================= */
 
 .filter-bar {
     display: grid;
-    /* 🚨 精准分配：使得 5 个元素完全填满 1180px 的宽度 */
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) 200px;
     align-items: stretch;
     gap: 7px;
-    padding: 7px;
+    padding: 7px !important;
     background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-    width: 100%; /* 🚨 强制铺满父容器 (1180px) */
+    width: 100%; 
     box-sizing: border-box;
 }
 
@@ -248,23 +206,13 @@ body {
     line-height: 1.35;
     font-weight: 600;
     cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .guest-display-text {
     font-size: 14px;
     font-weight: 600;
     color: #172033;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
-
-/* =========================================================
-   SEARCH BUTTON
-   ========================================================= */
 
 .btn-search {
     display: inline-flex;
@@ -272,7 +220,6 @@ body {
     justify-content: center;
     gap: 8px;
     border: 0;
-    text-decoration: none;
     cursor: pointer;
     background: var(--primary);
     color: #ffffff;
@@ -282,9 +229,6 @@ body {
     padding: 0 24px;
     border-radius: 5px;
     font-size: 14px;
-    white-space: nowrap;
-    height: 100%;
-    box-sizing: border-box;
     width: 100%;
 }
 
@@ -324,23 +268,9 @@ body {
     margin-bottom: 12px;
 }
 
-.picker-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-dark);
-}
-
-.picker-subtitle {
-    font-size: 11px;
-    color: var(--text-muted);
-    display: block;
-}
-
-.counter-controls {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+.picker-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+.picker-subtitle { font-size: 11px; color: var(--text-muted); display: block; }
+.counter-controls { display: flex; align-items: center; gap: 10px; }
 
 .btn-counter {
     width: 28px;
@@ -358,19 +288,8 @@ body {
     transition: all 0.2s;
 }
 
-.btn-counter:hover {
-    background: var(--primary);
-    color: #ffffff;
-    border-color: var(--primary);
-}
-
-.counter-value {
-    font-size: 13px;
-    font-weight: 700;
-    min-width: 18px;
-    text-align: center;
-    color: var(--text-dark); /* 🚨 修复了白底白字隐形的问题 */
-}
+.btn-counter:hover { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+.counter-value { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; color: var(--text-dark); }
 
 .btn-picker-done {
     width: 100%;
@@ -384,11 +303,10 @@ body {
     cursor: pointer;
     margin-top: 6px;
 }
-
 .btn-picker-done:hover { background: var(--primary-dark); }
 
 /* =========================================================
-   MAIN CONTENT
+   MAIN CONTENT & CARDS
    ========================================================= */
 
 .main-content {
@@ -396,665 +314,146 @@ body {
     margin-bottom: 70px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 保证主要内容区的子元素能在父容器居中 */
+    align-items: center; 
 }
 
-/* 保证主要内容区的直接子元素占据 100% 的可用宽度，最大 1180px */
+/* 🌟🌟 核心修复：强制所有的内容区块 (Section) 占满父容器 100%！ 🌟🌟 */
 .main-content > section {
-    width: 100%;
-    max-width: 1180px;
-}
-
-.section-header {
-    margin-bottom: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.section-header h2 {
-    margin: 0;
-    color: var(--text-dark);
-    font-size: 24px;
-    line-height: 1.2;
-    font-weight: 700;
-    letter-spacing: -0.015em;
-}
-
-.section-header p {
-    margin: 5px 0 0;
-    color: var(--text-muted);
-    font-size: 13px;
-}
-
-/* =========================================================
-   ACCOUNT PROMPT CARD (SIGN IN BANNER) 
-   ========================================================= */
-/* 🚨 修复对齐：确保左右两端合理分布内容 */
-.account-prompt-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* 使得左边文字和右边按钮分开 */
-    gap: 18px;
-    padding: 22px 28px;
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-    border: 1px solid #bbf7d0;
-    border-radius: var(--radius-md);
-    margin-bottom: 48px;
-    box-shadow: var(--shadow-soft);
-    width: 100%; /* 确保它填满 max-width 容器 */
+    width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box;
 }
 
-.prompt-content-wrapper {
-    display: flex;
-    align-items: center; /* 图标和文字垂直居中 */
-    gap: 16px;
-    flex: 1;
-}
+.section-header { margin-bottom: 24px; display: flex; flex-direction: column; align-items: flex-start; }
+.section-header h2 { margin: 0; color: var(--text-dark); font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; }
+.section-header p { margin: 5px 0 0; color: var(--text-muted); font-size: 13px; }
 
-.prompt-icon {
-    width: 48px;
-    height: 48px;
-    flex: 0 0 48px;
-    background: var(--primary);
-    border-radius: 50%;
+/* ACCOUNT PROMPT CARD */
+.account-prompt-card {
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    padding: 22px 28px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 1px solid #bbf7d0; border-radius: var(--radius-md); margin-bottom: 48px;
+    box-shadow: var(--shadow-soft); width: 100%; box-sizing: border-box;
 }
-
-.prompt-text { 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+.prompt-content-wrapper { display: flex; align-items: center; gap: 16px; flex: 1; }
+.prompt-icon { width: 48px; height: 48px; flex: 0 0 48px; background: var(--primary); border-radius: 50%; }
+.prompt-text { display: flex; flex-direction: column; justify-content: center; }
 .prompt-text h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: var(--text-dark); }
 .prompt-text p { margin: 0; font-size: 13px; color: var(--text-muted); }
-
-.prompt-buttons { 
-    display: flex; 
-    align-items: center;
-    gap: 10px; 
-    flex-shrink: 0; /* 防止按钮被挤压 */
-}
-
-.btn-accent {
-    padding: 10px 20px;
-    background: var(--primary);
-    color: #ffffff;
-    border: 0;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: background 0.15s ease;
-    white-space: nowrap;
-}
-
+.prompt-buttons { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.btn-accent { padding: 10px 20px; background: var(--primary); color: #ffffff; border: 0; border-radius: 5px; font-size: 13px; font-weight: 700; text-decoration: none; transition: background 0.15s ease; white-space: nowrap; }
 .btn-accent:hover { background: var(--primary-dark); }
-
-.btn-outline {
-    padding: 10px 20px;
-    background: transparent;
-    color: var(--primary);
-    border: 1px solid var(--primary);
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-}
-
+.btn-outline { padding: 10px 20px; background: transparent; color: var(--primary); border: 1px solid var(--primary); border-radius: 5px; font-size: 13px; font-weight: 700; text-decoration: none; transition: all 0.15s ease; white-space: nowrap; }
 .btn-outline:hover { background: var(--primary-soft); }
 
-/* =========================================================
-   SORT BAR
-   ========================================================= */
-
-.sort-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 25px;
-    margin-bottom: 18px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-light);
-}
-
-.results-count {
-    color: var(--text-muted);
-    font-size: 13px;
-}
-
-.results-count strong { color: var(--text-dark); }
-
-.sort-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.sort-group label {
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.sort-group select,
-.filter-dropdown select {
-    min-width: 190px;
-    padding: 9px 11px;
-    background: #ffffff;
-    border: 1px solid #cfd5de;
-    border-radius: 5px;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 600;
-    outline: none;
-    cursor: pointer;
-}
-
+/* SORT BAR */
+.sort-bar { display: flex; align-items: center; justify-content: space-between; gap: 25px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-light); }
+.sort-group { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sort-group label { color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.sort-group select { min-width: 190px; padding: 9px 11px; background: #ffffff; border: 1px solid #cfd5de; border-radius: 5px; color: var(--text); font-size: 13px; font-weight: 600; outline: none; cursor: pointer; }
 .sort-group select:focus { border-color: var(--primary); }
 
-/* =========================================================
-   PROPERTY CARDS & HOTEL LIST
-   ========================================================= */
-
+/* PROPERTY CARDS */
 .property-types-section { margin-bottom: 48px; }
-
-.property-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-}
-
-.property-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md); 
-    padding: 24px 16px;
-    text-align: center;
-    text-decoration: none;
-    color: var(--text-dark);
-    transition: all 0.15s ease;
-    box-shadow: var(--shadow-soft);
-}
-
-.property-card:hover {
-    border-color: #b8c2cf;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-}
-
-.property-icon {
-    font-size: 24px;
-    color: var(--primary);
-    margin-bottom: 10px;
-}
-
+.property-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.property-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px 16px; text-align: center; text-decoration: none; color: var(--text-dark); transition: all 0.15s ease; box-shadow: var(--shadow-soft); }
+.property-card:hover { border-color: #b8c2cf; transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.property-icon { font-size: 24px; color: var(--primary); margin-bottom: 10px; }
 .property-card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; }
 .property-card p { margin: 0; font-size: 12px; color: var(--text-muted); }
 
-.hotel-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+/* HOTEL LIST */
+.hotel-list { display: flex; flex-direction: column; gap: 12px; }
+.hotel-card { display: flex; width: 100%; height: 230px !important; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-soft); transition: border-color 0.15s ease, box-shadow 0.15s ease; }
+.hotel-card:hover { border-color: #b8c2cf; box-shadow: var(--shadow-hover); }
+.card-img-box { width: 260px; flex: 0 0 260px; position: relative; overflow: hidden; background: #d9dee6; }
+.card-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-img-box a { display: block; width: 100%; height: 100%; }
+.card-body { flex: 1; min-width: 0; padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden !important; }
 
-.hotel-card {
-    display: flex;
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    box-shadow: var(--shadow-soft);
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.hotel-card:hover {
-    border-color: #b8c2cf;
-    box-shadow: var(--shadow-hover);
-}
-
-.card-img-box {
-    width: 220px;
-    flex: 0 0 220px;
-    position: relative;
-    overflow: hidden;
-    background: #d9dee6;
-}
-
-.card-img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.card-img-box a {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.card-body {
-    flex: 1;
-    min-width: 0;
-    padding: 22px 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.hotel-title-link {
-    color: var(--text-dark);
-    font-size: 15px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: color 0.15s ease;
-}
-
+.hotel-title-link { color: var(--text-dark); font-size: 16px; font-weight: 700; text-decoration: none; transition: color 0.15s ease; }
 .hotel-title-link:hover { color: var(--primary); }
+.badge-score { display: inline-flex; align-items: center; padding: 3px 8px; background: var(--primary); color: #ffffff; border-radius: 3px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.hotel-location { font-size: 12px; color: #64748b; margin-top: 6px; }
+.hotel-description { font-size: 13px; color: #475569; margin-top: 10px; line-height: 1.5; }
 
-.badge-score {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 8px;
-    background: var(--primary);
-    color: #ffffff;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.hotel-location { font-size: 11px; color: #64748b; margin-top: 6px; }
-.hotel-description { font-size: 12px; color: #475569; margin-top: 10px; line-height: 1.5; }
-
-.hotel-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-top: 20px;
-    padding-top: 12px;
-    border-top: 1px dashed #e2e8f0;
-}
-
-.free-cancellation { color: var(--success); font-size: 11px; font-weight: 600; }
-.hotel-price-label { color: var(--text-muted); font-size: 11px; }
-.hotel-price-amount { font-size: 24px; line-height: 1.1; font-weight: 750; letter-spacing: -0.025em; color: var(--text-dark); }
-.hotel-price-suffix { font-size: 11px; font-weight: 400; color: var(--text-muted); }
+.hotel-card-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15px; padding-top: 12px; border-top: 1px dashed #e2e8f0; }
+.free-cancellation { color: var(--success); font-size: 12px; font-weight: 600; }
+.hotel-price-label { color: var(--text-muted); font-size: 12px; }
+.hotel-price-amount { font-size: 26px; line-height: 1.1; font-weight: 750; letter-spacing: -0.025em; color: var(--text-dark); }
+.hotel-price-suffix { font-size: 12px; font-weight: 400; color: var(--text-muted); }
 .hotel-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 
-.btn-view-detail,
-.btn-book-now,
-.btn-checkout {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 11px 16px;
-    background: var(--primary);
-    color: #ffffff;
-    border: 0;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-}
+.btn-view-detail, .btn-book-now, .btn-checkout { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 16px; background: var(--primary); color: #ffffff; border: 0; border-radius: 5px; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease; }
+.btn-book-now, .btn-checkout { width: 100%; }
+.btn-view-detail:hover, .btn-book-now:hover, .btn-checkout:hover { background: var(--primary-dark); box-shadow: 0 4px 10px rgba(4, 120, 87, 0.22); }
 
-.btn-book-now,
-.btn-checkout { width: 100%; }
-
-.btn-view-detail:hover,
-.btn-book-now:hover,
-.btn-checkout:hover {
-    background: var(--primary-dark);
-    box-shadow: 0 4px 10px rgba(4, 120, 87, 0.22);
-}
-
-.fav-wrapper {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    z-index: 2;
-}
-
-.btn-fav {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(0, 0, 0, 0.35);
-    color: #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    transition: all 0.2s;
-    backdrop-filter: blur(4px);
-}
-
-.btn-fav:hover {
-    background: rgba(0, 0, 0, 0.55);
-    transform: scale(1.05);
-}
-
+/* FAV BUTTONS */
+.fav-wrapper { position: absolute; top: 12px; right: 12px; z-index: 2; }
+.btn-fav { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.35); color: #ffffff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.2s; backdrop-filter: blur(4px); }
+.btn-fav:hover { background: rgba(0, 0, 0, 0.55); transform: scale(1.05); }
 .btn-fav.active { background: #ef4444; border-color: #ef4444; }
-
-.fav-tooltip {
-    position: absolute;
-    top: 42px;
-    right: 0;
-    background: #1f2937;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: var(--radius-sm);
-    font-size: 11px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.25s ease;
-}
-
-.fav-wrapper.show-tooltip .fav-tooltip { opacity: 1; visibility: visible; }
+.btn-fav-detail { border-radius: var(--radius-md) !important; padding: 10px 18px !important; display: flex; align-items: center; gap: 8px; border: 1px solid #cfd5de; background: #ffffff; color: var(--text); font-size: 13px; font-weight: 650; cursor: pointer; transition: all 0.15s ease; }
+.btn-fav-detail:hover { border-color: var(--primary); color: var(--primary); }
+.btn-fav-detail.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
 
 /* =========================================================
-   DESTINATION GALLERY
+   GALLERY & THEMES 
    ========================================================= */
 
 .gallery-section { margin-bottom: 48px; }
-
-.gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-
-.gallery-card {
-    position: relative;
-    height: 210px;
-    overflow: hidden;
-    border-radius: 5px; 
-    background: #d9dee6;
-    text-decoration: none;
-}
-
-.gallery-card img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.35s ease;
-}
-
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.gallery-card { position: relative; height: 240px; overflow: hidden; border-radius: 5px; background: #d9dee6; text-decoration: none; }
+.gallery-card img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.35s ease; }
 .gallery-card:hover img { transform: scale(1.035); }
-
-.price-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    padding: 4px 10px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
-    color: #ffffff;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 700;
-    z-index: 1;
-}
-
-.gallery-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 17px;
-    color: #ffffff;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.08) 70%);
-}
+.price-badge { position: absolute; top: 12px; right: 12px; padding: 4px 10px; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); color: #ffffff; border-radius: 3px; font-size: 11px; font-weight: 700; z-index: 1; }
+.gallery-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 17px; color: #ffffff; background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.08) 70%); }
 .gallery-overlay h3 { margin: 0 0 3px; font-size: 17px; font-weight: 700; }
 .gallery-overlay p { margin: 0; color: rgba(255, 255, 255, 0.84); font-size: 11px; }
 
-/* =========================================================
-   FEATURES
-   ========================================================= */
-
-.features-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 48px;
-}
-
-.feature-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 13px;
-    padding: 19px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-}
-
-.feature-icon-wrapper {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-sm);
-    background: #f0f5fb;
-    color: var(--primary);
-    font-size: 15px;
-}
-
+.features-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 48px; }
+.feature-item { display: flex; align-items: flex-start; gap: 13px; padding: 19px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); }
+.feature-icon-wrapper { width: 38px; height: 38px; flex: 0 0 38px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); background: #f0f5fb; color: var(--primary); font-size: 15px; }
 .feature-info h4 { margin: 0 0 4px; color: var(--text-dark); font-size: 14px; font-weight: 700; }
 .feature-info p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 
-/* =========================================================
-   ROUTES / THEME TABS
-   ========================================================= */
-
-.routes-section {
-    padding: 25px;
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-    margin-bottom: 48px;
-}
-
-.category-tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #e2e6eb;
-    overflow-x: auto;
-}
-
-.tab-btn {
-    position: relative;
-    padding: 11px 17px;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    color: #697586;
-    font-size: 13px;
-    font-weight: 650;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
+.routes-section { padding: 25px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); margin-bottom: 48px; }
+.category-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #e2e6eb; overflow-x: auto; }
+.tab-btn { position: relative; padding: 11px 17px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #697586; font-size: 13px; font-weight: 650; cursor: pointer; white-space: nowrap; }
 .tab-btn:hover { color: var(--primary); }
 .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
 .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-
-.theme-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 13px;
-    background: #ffffff;
-    border: 1px solid #e0e5eb;
-    border-radius: 5px;
-    color: inherit;
-    text-decoration: none;
-    transition: border-color 0.15s ease, background 0.15s ease;
-}
-
+.theme-card { display: flex; align-items: center; gap: 12px; padding: 13px; background: #ffffff; border: 1px solid #e0e5eb; border-radius: 5px; color: inherit; text-decoration: none; transition: border-color 0.15s ease, background 0.15s ease; }
 .theme-card:hover { border-color: #a9bfd8; background: #fbfdff; }
-.theme-card i {
-    width: 34px;
-    height: 34px;
-    flex: 0 0 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-soft);
-    border-radius: var(--radius-sm);
-    color: var(--primary);
-    font-size: 13px;
-}
+.theme-card i { width: 34px; height: 34px; flex: 0 0 34px; display: flex; align-items: center; justify-content: center; background: var(--surface-soft); border-radius: var(--radius-sm); color: var(--primary); font-size: 13px; }
 .theme-card h4 { margin: 0 0 2px; color: var(--text-dark); font-size: 13px; font-weight: 700; }
 .theme-card p { margin: 0; color: var(--text-muted); font-size: 11px; }
 
 /* =========================================================
-   DETAIL PAGE
+   DETAIL PAGE & REVIEWS
    ========================================================= */
 
-.detail-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #dfe4ea;
-}
-
-.detail-title { margin: 0 0 7px; color: var(--text-dark); font-size: 28px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
+.detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid #dfe4ea; }
+.detail-title { margin: 0 0 7px; color: var(--text-dark); font-size: 32px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
 .detail-subtitle { color: #596579; font-size: 14px; margin: 0; }
+.detail-header-actions { display: flex; flex-direction: column; align-items: flex-end; }
+.detail-container, .results-container { margin-top: 40px !important; margin-bottom: 80px !important;}
 
-.detail-header-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.btn-fav-detail {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 18px;
-    border: 1px solid #cfd5de;
-    border-radius: 5px;
-    background: #ffffff;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 650;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.btn-fav-detail:hover { border-color: var(--primary); color: var(--primary); }
-.btn-fav-detail.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
-
-#favLoginMsg { color: #dc2626; font-weight: 600; font-size: 0.85rem; text-align: center; margin-top: 8px; display: none; }
-
-/* =========================================================
-   HOTEL DETAIL PHOTO GALLERY (Fixed & Perfectly Balanced)
-   ========================================================= */
-
-/* =========================================================
-   HOTEL DETAIL PHOTO GALLERY (Fixed & Perfectly Balanced)
-   ========================================================= */
-
-.photo-gallery {
-    display: grid;
-    /* 黄金比例：左边 65%，右边 35% */
-    grid-template-columns: 65% calc(35% - 12px);
-    gap: 12px;
-    margin-bottom: 30px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* 左侧主图：使用你的标准的微圆角 var(--radius-md) */
-.gallery-main {
-    width: 100%;
-    height: 420px; 
-    object-fit: cover; 
-    border-radius: var(--radius-md); /* 恢复成你统一的微圆角 */
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.3s ease;
-}
-
-.gallery-main:hover {
-    transform: scale(1.01);
-}
-
-/* 右侧副图网格 */
-.gallery-sub-grid {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    gap: 12px;
-    height: 420px; 
-}
-
-.sub-img-box {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius-md); /* 恢复成你统一的微圆角 */
-    box-shadow: var(--shadow-soft);
-    background: #e2e8f0;
-}
-
-.sub-img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    display: block;
-    transition: transform 0.3s ease;
-}
-
-.sub-img-box img:hover {
-    transform: scale(1.03);
-}
-
-/* 手机端响应式适配 */
-@media (max-width: 768px) {
-    .photo-gallery {
-        grid-template-columns: 1fr;
-    }
-    .gallery-main {
-        height: 250px;
-    }
-    .gallery-sub-grid {
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr;
-        height: 160px;
-    }
-}
+.photo-gallery { display: grid; grid-template-columns: 65% calc(35% - 12px); gap: 12px; margin-bottom: 30px; width: 100%; box-sizing: border-box; }
+.gallery-main { width: 100%; height: 420px; object-fit: cover; border-radius: var(--radius-md); box-shadow: var(--shadow-soft); transition: transform 0.3s ease; }
+.gallery-main:hover { transform: scale(1.01); }
+.gallery-sub-grid { display: grid; grid-template-rows: repeat(2, 1fr); gap: 12px; height: 420px; }
+.sub-img-box { position: relative; overflow: hidden; border-radius: var(--radius-md); box-shadow: var(--shadow-soft); background: #e2e8f0; }
+.sub-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+.sub-img-box img:hover { transform: scale(1.03); }
 
 .detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) 315px; gap: 24px; align-items: start; }
-
 .info-card { background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 23px; margin-bottom: 14px; box-shadow: var(--shadow-soft); }
-.info-card-title, .info-card h3 { display: flex; align-items: center; gap: 9px; margin: 0 0 18px; color: var(--text-dark); font-size: 17px; line-height: 1.25; font-weight: 700; }
-.info-card-text { color: #475569; line-height: 1.6; margin: 0; }
 
-.amenity-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border-top: 1px solid #e5e8ed; border-left: 1px solid #e5e8ed; }
-.amenity-item { display: flex; align-items: center; min-height: 49px; padding: 10px 13px; border-right: 1px solid #e5e8ed; border-bottom: 1px solid #e5e8ed; box-sizing: border-box; color: #4b5563; font-size: 12px; font-weight: 600; }
+.amenity-item { display: flex !important; align-items: center !important; gap: 12px !important; position: relative !important; }
+.amenity-item::before { content: "" !important; width: 6px !important; height: 6px !important; background-color: var(--primary) !important; border-radius: 50% !important; display: inline-block !important; flex-shrink: 0 !important; box-shadow: 0 0 0 3px var(--primary-soft) !important; }
 
 .rating-comments-card { padding: 23px; }
 .rating-section-header { margin-bottom: 19px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light); }
@@ -1103,117 +502,43 @@ body {
 .booking-form-input { width: 100%; padding: 11px 12px; border: 1px solid #cfd5de; border-radius: 4px; margin-bottom: 16px; font-family: inherit; font-size: 13px; font-weight: 600; box-sizing: border-box; background: #ffffff; color: var(--text-dark); outline: none; }
 .booking-form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0, 108, 228, 0.10); }
 
-//* =========================================================
-   RESULTS HEADER - For after_search.php
-   ========================================================= */
-
-.results-header-area { margin-bottom: 24px; }
-
-/* 加大了结果页和详情页的标题字体 */
-.results-header-area h2 { 
-    font-size: 34px; /* 加大到 34px 呈现高级感 */
-    color: #0f172a; 
-    font-weight: 700; 
-    margin: 0; 
-    letter-spacing: -0.02em;
-}
-
-.detail-title { 
-    margin: 0 0 7px; 
-    color: var(--text-dark); 
-    font-size: 32px; /* 同步加大详情页标题 */
-    line-height: 1.2; 
-    font-weight: 700; 
-    letter-spacing: -0.02em; 
-}
-
-/* 调浅了副标题的颜色，更有层次感 */
-.results-header-area p { 
-    font-size: 16px; 
-    color: #64748b; 
-    margin: 8px 0 0; 
-}
-
 /* =========================================================
-   RESULTS HEADER & API BADGE (Upgraded UI)
+   RESULTS HEADER & API BADGE 
    ========================================================= */
 
 .results-header-area { margin-bottom: 24px; }
+.results-header-area h2 { font-size: 34px; color: #0f172a; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
+.results-header-area p { font-size: 16px; color: #64748b; margin: 8px 0 0; }
 
-.results-title-group {
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    margin-bottom: 6px;
-    flex-wrap: wrap; /* 防止手机端标题太长挤压 */
-}
-
-/* 让标题变得更紧凑、更有力量感 */
-.results-title-group h2,
-.detail-title-group h1 {
-    margin: 0;
-    color: var(--text-dark);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-}
-
+.results-title-group { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
+.results-title-group h2, .detail-title-group h1 { margin: 0; color: var(--text-dark); font-weight: 800; letter-spacing: -0.02em; }
 .results-title-group h2 { font-size: 26px; }
 .detail-title-group h1 { font-size: 28px; line-height: 1.2; }
+.api-status-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1; white-space: nowrap; }
+.api-status-badge.live { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1); }
+.api-status-badge.cached { background: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; }
 
-.results-header-area p { 
-    font-size: 14px; 
-    color: var(--text-muted); 
-    margin: 0; 
-}
-
-/* --- 高级感的 API 状态标签 --- */
-.api-status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 12px;
-    border-radius: 20px; /* 圆角药丸形状 */
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    line-height: 1;
-    white-space: nowrap;
-}
-
-.api-status-badge.live {
-    background: #ecfdf5;
-    color: #047857;
-    border: 1px solid #a7f3d0;
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1);
-}
-
-.api-status-badge.cached {
-    background: #f3f4f6;
-    color: #4b5563;
-    border: 1px solid #d1d5db;
-}
-
-/* 呼吸灯动画效果 */
 @keyframes pulse-green {
     0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
     70% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
+.live-dot { display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%; margin-right: 6px; animation: pulse-green 2s infinite; }
 
-.live-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: #10b981;
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse-green 2s infinite; /* 触发跳动效果 */
-}
+/* MEMBER PROMPT BANNER */
+.hotel-promo-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin: 40px 0; padding: 24px 28px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 10px; box-shadow: 0 5px 16px rgba(4, 120, 87, 0.08); }
+.hotel-promo-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 58px; width: 58px; height: 58px; color: #ffffff; background: #047857; border-radius: 50%; font-size: 22px; }
+.hotel-promo-content { min-width: 250px; flex: 1; }
+.hotel-promo-content h2 { margin: 0 0 5px; color: #064e3b; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.hotel-promo-content p { margin: 0; color: #4b5563; font-size: 13px; line-height: 1.5; }
+.hotel-promo-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hotel-btn { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 0 19px; border-radius: 6px; font-size: 14px; font-weight: 700; text-decoration: none; transition: all 0.2s ease; }
+.hotel-btn-primary { border: 1px solid #047857; color: #ffffff; background: #047857; }
+.hotel-btn-primary:hover { background: #065f46; border-color: #065f46; }
+.hotel-btn-outline { border: 1px solid #047857; color: #047857; background: #ffffff; }
+.hotel-btn-outline:hover { background: #ecfdf5; }
 
-/* =========================================================
-   RESPONSIVE DESIGN 
-   ========================================================= */
-
+/* RESPONSIVE DESIGN */
 @media (max-width: 1050px) {
     .filter-bar { grid-template-columns: minmax(160px, 1fr) minmax(140px, 1fr) minmax(140px, 1fr) minmax(160px, 1fr); }
     .btn-search { grid-column: span 4; min-width: 0; }
@@ -1224,8 +549,8 @@ body {
     .hero-content h1 { font-size: 32px; }
     .filter-bar { grid-template-columns: 1fr 1fr; }
     .btn-search { grid-column: span 2; }
-    .hotel-card { flex-direction: column; }
-    .card-img-box { width: 100%; flex-basis: auto; height: 220px; }
+    .hotel-card { flex-direction: column; height: auto !important; }
+    .card-img-box { width: 100%; flex-basis: auto; height: 240px; }
     .card-body { padding: 17px 22px; }
     .features-section { grid-template-columns: 1fr; }
     .theme-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1239,7 +564,7 @@ body {
 }
 
 @media (max-width: 760px) {
-    .hero-section { padding: 40px 0 38px; }
+    .hero-section { padding: 40px 0 38px !important; }
     .hero-content h1 { font-size: 28px; }
     .hero-content p { font-size: 14px; }
     .filter-bar { display: flex; flex-direction: column; }
@@ -1263,13 +588,13 @@ body {
 }
 
 @media (max-width: 560px) {
-    .hero-section { padding: 32px 0 30px; }
+    .hero-section { padding: 32px 0 30px !important; }
     .hero-content h1 { font-size: 25px; }
-    .filter-bar { padding: 6px; }
+    .filter-bar { padding: 6px !important; }
     .input-group { min-height: 58px; }
     .section-header { flex-direction: column; align-items: flex-start; }
     .card-body { padding: 17px; }
-    .card-img-box { height: 180px; }
+    .card-img-box { height: 200px; }
     .gallery-grid { grid-template-columns: 1fr; }
     .gallery-card { height: 200px; }
     .property-grid { grid-template-columns: 1fr; }
@@ -1278,257 +603,68 @@ body {
     .detail-title { font-size: 21px; }
     .photo-gallery .gallery-main { height: 200px; }
     .photo-gallery .gallery-sub-grid { height: 150px; }
-    .review-header { flex-direction: column; align-items: flex-start; gap: 4px; }
     .btn-fav-detail { width: 100%; justify-content: center; }
 }
 
 button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid rgba(4, 120, 87, 0.45); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+
 /* =========================================================
-   🚨 终极强行对齐修复 (打破全局 Flight CSS 的限制) 🚨
+   🚨 终极锁定：保护顶部文字和搜索框的完美左对齐 🚨
    ========================================================= */
-/* 1. 强制外层容器撑满 1180px 并完美左对齐 */
-body .hero-section .hero-content,
-body .hero-section .search-container,
-body .search-hero-wrapper .hero-content,
-body .search-hero-wrapper .search-container {
+.hero-content,
+.search-container {
     width: 100% !important;
-    max-width: 1180px !important; 
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    max-width: 1180px !important; /* 坚守 1180px 的聚拢感，绝不拉宽 */
     margin-left: auto !important;
     margin-right: auto !important;
+    padding-left: 15px !important; /* 左右保留一点安全距离，防止手机端贴边 */
+    padding-right: 15px !important;
     box-sizing: border-box !important;
 }
 
-/* 2. 确保白色搜索框 100% 填满，并恢复它内部的留白（把按钮往内挤） */
-body .hero-section .search-container form.filter-bar,
-body .search-hero-wrapper .search-container form.filter-bar {
+/* 强制文字靠左，与搜索框左边缘像尺子一样对齐 */
+.hero-content {
+    text-align: left !important;
+}
+
+/* 确保白色的搜索框本体 100% 填满上面的 1180px 容器 */
+.search-container form.filter-bar {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 7px !important; /* 🚨 恢复完美的内部边距，拯救被挤压的按钮 */
     margin: 0 !important;
-    box-sizing: border-box !important;
 }
 /* =========================================================
-   统一详情页宽度与两侧留白 (与首页、结果页 100% 一致)
+   🚀 终极宽屏：将列表页和详情页的内容区拉伸至 1440px 🚀
    ========================================================= */
+.main-content,
+.results-container,
 .detail-container {
     width: 100% !important;
-    max-width: 1180px !important;
+    max-width: 1440px !important; /* 从原本的 1300px 升级到 1440px */
     margin-left: auto !important;
     margin-right: auto !important;
+    padding-left: 32px !important; /* 两边留一点点呼吸感 */
+    padding-right: 32px !important;
     box-sizing: border-box !important;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-/}
-/* =========================================================
-   🚨 终极图标强制渲染器 (无视 PHP 覆盖，全页面自动生效) 🚨
-   ========================================================= */
-
-/* 1. 让设施项变成横向 flex，腾出图标的位置 */
-.amenity-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
-    position: relative !important;
 }
 
-/* 2. 利用伪元素 ::before 自动在每个设施前塞入默认勾选图标 */
-.amenity-item::before {
-    font-family: "Font Awesome 6 Free" !important;
-    font-weight: 900 !important;
-    color: var(--primary) !important;
-    font-size: 14px !important;
-    width: 20px !important;
-    text-align: center !important;
-    flex-shrink: 0 !important;
-    content: "\f058" !important; /* 默认精致勾选圈 (fa-circle-check) */
+/* 确保详情页里面的 高清照片组 (photo-gallery) 和 文字排版 (detail-layout) 完美跟上 1440px 的宽度 */
+.detail-container .photo-gallery,
+.detail-container .detail-layout,
+.results-container .hotel-list,
+.results-container .sort-bar,
+.results-container .results-header-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
 }
 
-/* 3. 智能精准匹配：根据文字内容切换为专属图案 */
-.amenity-item:is(:where(:contains("Wifi"), :contains("wifi"), :contains("Internet")))::before { content: "\f1eb" !important; /* Wi-Fi */ }
-.amenity-item:is(:where(:contains("Pool"), :contains("pool"), :contains("Swimming")))::before { content: "\f5c5" !important; /* 游泳池 */ }
-.amenity-item:is(:where(:contains("Restaurant"), :contains("Dining"), :contains("breakfast")))::before { content: "\f2e7" !important; /* 餐厅 */ }
-.amenity-item:is(:where(:contains("Parking")))::before { content: "\f540" !important; /* 停车场 */ }
-.amenity-item:is(:where(:contains("Air condition"), :contains("AC")))::before { content: "\f2dc" !important; /* 空调雪花 */ }
-.amenity-item:is(:where(:contains("Fitness"), :contains("gym")))::before { content: "\f44b" !important; /* 健身哑铃 */ }
-.amenity-item:is(:where(:contains("Spa"), :contains("Sauna")))::before { content: "\f544" !important; /* Spa */ }
-.amenity-item:is(:where(:contains("Bar")))::before { content: "\f0fc" !important; /* 酒吧 */ }
-.amenity-item:is(:where(:contains("desk"), :contains("front")))::before { content: "\f595" !important; /* 前台铃铛 */ }
-.amenity-item:is(:where(:contains("Lift"), :contains("Elevator")))::before { content: "\f66d" !important; /* 电梯 */ }
-.amenity-item:is(:where(:contains("smoke")))::before { content: "\fcf4" !important; /* 禁烟 */ }
-.amenity-item:is(:where(:contains("Room service")))::before { content: "\f0f8" !important; /* 客房服务 */ }
-
-/* =========================================================
-   🚨 现代高级纯 CSS 设施图标 (无外部依赖、100% 不会变方格) 🚨
-   ========================================================= */
-
-.amenity-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
-    position: relative !important;
+/* 稍微调高一下详情页主图的高度，适配变宽后的比例，让照片更大气 */
+.photo-gallery .gallery-main,
+.photo-gallery .gallery-sub-grid {
+    height: 520px !important; /* 原本是 420px，配合宽屏拉高 */
 }
-
-/* 统一用一个极简、专业的微型绿色圆点作为前缀，克制且高级 */
-.amenity-item::before {
-    content: "" !important;
-    width: 6px !important;
-    height: 6px !important;
-    background-color: var(--primary) !important;
-    border-radius: 50% !important;
-    display: inline-block !important;
-    flex-shrink: 0 !important;
-    box-shadow: 0 0 0 3px var(--primary-soft) !important; /* 外围带有一层淡淡的柔和绿圈，质感拉满 */
-}
-
-/* =========================================================
-   🚨 详情页头部间距与收藏按钮圆角统一修复 🚨
-   ========================================================= */
-
-/* 1. 给详情页的最外层容器增加顶部落差（呼吸感），让标题不再黏着上面的大绿块 */
-.detail-container {
-    margin-top: 40px !important; /* 拉开与上方搜索栏的距离 */
-}
-
-/* 2. 让 Save to Favorites 按钮严格遵循你的标准微圆角系统 (var(--radius-md)) */
-.btn-fav-detail {
-    border-radius: var(--radius-md) !important;
-    padding: 10px 18px !important;
-}
-
-/* =========================================================
-   🚨 统一全局页面顶部呼吸感与间距修复 🚨
-   ========================================================= */
-
-/* 1. 让详情页和搜索结果页的最外层容器拉开与上方搜索栏的距离 */
-.detail-container,
-.results-container {
-    margin-top: 40px !important; 
-}
-
-/* 2. 让 Save to Favorites 按钮严格遵循你的标准微圆角系统 (var(--radius-md)) */
-.btn-fav-detail {
-    border-radius: var(--radius-md) !important;
-    padding: 10px 18px !important;
-}
-/* =========================================================
-   HOTELS - MEMBER PROMPT BANNER (Exclusive Green Theme)
-   ========================================================= */
-
-.hotel-promo-banner {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin: 40px 0;
-    padding: 24px 28px;
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-    border: 1px solid #bbf7d0;
-    border-radius: 10px;
-    box-shadow: 0 5px 16px rgba(4, 120, 87, 0.08);
-}
-
-.hotel-promo-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 58px;
-    width: 58px;
-    height: 58px;
-    color: #ffffff;
-    background: #047857; /* 主题绿 */
-    border-radius: 50%;
-    font-size: 22px;
-}
-
-.hotel-promo-content {
-    min-width: 250px;
-    flex: 1;
-}
-
-.hotel-promo-content h2 {
-    margin: 0 0 5px;
-    color: #064e3b;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.25;
-}
-
-.hotel-promo-content p {
-    margin: 0;
-    color: #4b5563;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-.hotel-promo-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.hotel-btn {
-    display: inline-flex;
-    min-height: 42px;
-    align-items: center;
-    justify-content: center;
-    padding: 0 19px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-/* Sign In 按钮：实心绿 */
-.hotel-btn-primary {
-    border: 1px solid #047857;
-    color: #ffffff;
-    background: #047857;
-}
-
-.hotel-btn-primary:hover {
-    background: #065f46; /* 悬停时颜色加深 */
-    border-color: #065f46;
-}
-
-/* Register 按钮：白底绿框 */
-.hotel-btn-outline {
-    border: 1px solid #047857;
-    color: #047857;
-    background: #ffffff;
-}
-
-.hotel-btn-outline:hover {
-    background: #ecfdf5; /* 悬停时变成淡淡的浅绿 */
-}
-
-/* ==========================================================================
-   🚨 修复酒店列表卡片高低不平 (强制锁定完美高度) 🚨
-   ========================================================================== */
-
-.hotel-card {
-    height: 230px !important; /* 强制所有卡片高度必须一模一样！ */
-}
-
-.card-body {
-    overflow: hidden !important; /* 如果描述文字太长，自动隐藏多余部分，绝不撑破卡片 */
-}
-
-/* 手机端适配：手机上卡片是上下排列的，高度需要恢复自由伸缩 */
-@media (max-width: 900px) {
-    .hotel-card {
-        height: auto !important; 
-    }
-}
-
-/* ==========================================================================
-   🚨 修复结果页面底部与 Footer 粘连的问题 🚨
-   ========================================================================== */
-
-.results-container {
-    margin-bottom: 80px !important; /* 给底部增加 80px 的留白 */
+.photo-gallery .sub-img-box {
+    height: 100%;
 }

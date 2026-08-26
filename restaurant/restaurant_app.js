@@ -1,5 +1,30 @@
 const RESTAURANT_FAVORITES_KEY = 'travelpal_restaurant_favorites_v1';
 
+function prepareRestaurantNavigation() {
+    const restaurantLink = Array.from(document.querySelectorAll('.nav-links a')).find(link => {
+        try {
+            return new URL(link.href, window.location.href).pathname.toLowerCase() === '/travelpal/restaurant/index.php';
+        } catch (error) {
+            return false;
+        }
+    });
+    if (restaurantLink && window.location.pathname.toLowerCase().includes('/restaurant/')) {
+        restaurantLink.classList.add('tp-nav-current');
+        restaurantLink.setAttribute('aria-current', 'page');
+    }
+
+    const popupText = document.querySelector('#travelpalLoginReminder .travelpal-login-content p');
+    if (popupText) {
+        popupText.textContent = 'Sign in or create a TravelPal account to save restaurants and continue with your travel plans.';
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', prepareRestaurantNavigation, {once: true});
+} else {
+    prepareRestaurantNavigation();
+}
+
 function readRestaurantFavorites() {
     try {
         const value = JSON.parse(localStorage.getItem(RESTAURANT_FAVORITES_KEY) || '[]');
@@ -62,7 +87,7 @@ function restaurantCardMarkup(item, citySlug = '') {
     const detailUrl = `detail.php?id=${encodeURIComponent(item.id)}&city=${encodeURIComponent(citySlug || item.citySlug || '')}&party=${party}`;
     return `<article class="rp-card" data-name="${escapeRestaurantHtml(item.name.toLowerCase())}" data-summary="${escapeRestaurantHtml((item.summary || '').toLowerCase())}" data-rating="${Number(item.rating || 0)}">
         <a class="rp-card__photo" href="${detailUrl}">${image}${item.badge ? `<span class="rp-card__badge">${escapeRestaurantHtml(item.badge)}</span>` : ''}</a>
-        <button class="rp-favorite ${saved ? 'is-saved' : ''}" type="button" data-favorite-id="${escapeRestaurantHtml(item.id)}" aria-label="${saved ? 'Remove from' : 'Add to'} favorites"><i class="${saved ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button>
+        <button class="rp-favorite ${saved ? 'is-saved' : ''}" type="button" data-favorite-id="${escapeRestaurantHtml(item.id)}" aria-label="${saved ? 'Remove from' : 'Add to'} favorites" aria-pressed="${saved ? 'true' : 'false'}"><i class="${saved ? 'fa-solid' : 'fa-regular'} fa-heart"></i></button>
         <div class="rp-card__body">
             <div class="rp-card__place"><i class="fa-solid fa-location-dot"></i> ${escapeRestaurantHtml(item.city)}${item.state ? `, ${escapeRestaurantHtml(item.state)}` : ''}</div>
             <h2><a href="${detailUrl}">${escapeRestaurantHtml(item.name)}</a></h2>

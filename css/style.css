@@ -84,6 +84,26 @@
     font-weight: 700;
 }
 
+/* Match the Restaurants current-page effect on every main navigation link. */
+.nav-links > a.tp-nav-current:not(.btn-login) {
+    position: relative;
+    padding: 9px 11px;
+    border-radius: 7px;
+    background: rgba(4, 120, 87, 0.08);
+    color: #065f46;
+}
+
+.nav-links > a.tp-nav-current:not(.btn-login)::after {
+    content: "";
+    position: absolute;
+    right: 11px;
+    bottom: 4px;
+    left: 11px;
+    height: 2px;
+    border-radius: 999px;
+    background: #047857;
+}
+
 .btn-login {
     background: var(--lime) !important;
     color: #111827 !important;

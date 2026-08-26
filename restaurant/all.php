@@ -7,7 +7,7 @@ if (!isset($cities[$requestedCity])) {
 $partySize = max(1, min(8, (int)($_GET['party'] ?? 2)));
 include '../header.php';
 ?>
-<link rel="stylesheet" href="restaurants.css?v=1">
+<link rel="stylesheet" href="restaurants.css?v=4">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <div class="rp-page" id="restaurantResultsPage" data-city="<?php echo htmlspecialchars($requestedCity); ?>" data-party="<?php echo $partySize; ?>">
@@ -27,13 +27,13 @@ include '../header.php';
             <div class="rp-field"><label for="restaurantSort">Sort</label><select id="restaurantSort"><option value="popular">Most popular</option><option value="rating">Highest rating</option><option value="name">Name A–Z</option></select></div>
         </form>
 
-        <div class="rp-results-summary"><p id="resultsCount">Loading restaurants…</p><a class="rp-link" href="favorites.php"><i class="fa-regular fa-heart"></i> My favorites</a></div>
+        <div class="rp-results-summary"><p id="resultsCount">Loading restaurants…</p></div>
         <div class="rp-state" id="resultsState"><div class="rp-spinner"></div><h2>Finding restaurants</h2><p>Loading live listings for your selected city.</p></div>
         <div class="rp-card-grid" id="restaurantGrid" hidden></div>
     </div>
 </div>
 
-<script src="restaurant_app.js?v=1"></script>
+<script src="restaurant_app.js?v=2"></script>
 <script>
 const cityData = <?php echo json_encode($cities, JSON_UNESCAPED_SLASHES); ?>;
 const grid = document.getElementById('restaurantGrid');

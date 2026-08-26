@@ -17,6 +17,24 @@
     color: var(--food-text);
 }
 
+.nav-links a.tp-nav-current:not(.btn-login) {
+    position: relative;
+    padding: 9px 11px;
+    border-radius: 7px;
+    background: rgba(4, 120, 87, .08);
+    color: #065f46;
+}
+.nav-links a.tp-nav-current:not(.btn-login)::after {
+    content: "";
+    position: absolute;
+    right: 11px;
+    bottom: 4px;
+    left: 11px;
+    height: 2px;
+    border-radius: 999px;
+    background: #047857;
+}
+
 .food-hero {
     min-height: 390px;
     display: grid;
@@ -67,7 +85,7 @@
 
 .food-filter-section,
 .food-content-section {
-    width: min(1400px, calc(100% - 40px));
+    width: min(1480px, calc(100% - 48px));
     margin-inline: auto;
 }
 
@@ -178,10 +196,7 @@
 .food-state-chip:hover { border-color: var(--food-black); background: var(--food-lime); color: var(--food-black); }
 
 .food-content-section {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 330px;
-    gap: 28px;
-    align-items: start;
+    display: block;
     padding-block: 56px 90px;
 }
 
@@ -204,7 +219,7 @@
 
 .food-card-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
 }
 
@@ -265,7 +280,7 @@
 .food-card__body {
     display: flex;
     flex-direction: column;
-    min-height: 290px;
+    min-height: 245px;
     padding: 18px;
 }
 
@@ -404,20 +419,19 @@
 .food-toast.show { transform: translateY(0); opacity: 1; }
 
 @media (max-width: 1180px) {
-    .food-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .food-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .food-filter-bar { grid-template-columns: 1fr 1fr; }
     .food-filter-button { width: 100%; }
 }
 
 @media (max-width: 900px) {
-    .food-content-section { grid-template-columns: 1fr; }
-    .food-list-panel { position: static; grid-row: 1; }
+    .food-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 650px) {
     .food-hero { min-height: 330px; padding: 56px 20px 78px; }
     .food-filter-section,
-    .food-content-section { width: min(100% - 24px, 1400px); }
+    .food-content-section { width: min(100% - 24px, 1480px); }
     .food-filter-section { margin-top: -42px; padding: 22px 17px; border-radius: 18px; }
     .food-section-heading,
     .food-results-header { align-items: flex-start; flex-direction: column; gap: 8px; }

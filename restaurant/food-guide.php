@@ -11,7 +11,7 @@ $states = array_values(array_unique(array_column($foodOptions, 'state')));
 sort($states);
 ?>
 
-<link rel="stylesheet" href="/TravelPal/restaurant/restaurant.css?v=1">
+<link rel="stylesheet" href="/TravelPal/restaurant/restaurant.css?v=2">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="food-guide-page">
@@ -19,7 +19,7 @@ sort($states);
         <div class="food-hero__content">
             <span class="food-kicker">MALAYSIA FOOD GUIDE</span>
             <h1>Plan what to eat before heading out</h1>
-            <p>Filter local food by state and city, then save your choices into one simple travel food list.</p>
+            <p>Filter local food by state and city, compare typical prices, and open each dish for useful details before heading out.</p>
         </div>
     </section>
 
@@ -110,10 +110,6 @@ sort($states);
                                 <span><i class="fa-regular fa-clock"></i> <?php echo food_escape($food['best_time']); ?></span>
                             </div>
 
-                            <button type="button" class="food-add-button" data-food-id="<?php echo (int)$food['id']; ?>">
-                                <i class="fa-solid fa-plus"></i>
-                                <span>Add to Favorites</span>
-                            </button>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -127,42 +123,12 @@ sort($states);
             </div>
         </div>
 
-        <aside class="food-list-panel" aria-labelledby="foodListTitle">
-            <div class="food-list-panel__header">
-                <div>
-                    <span class="food-eyebrow">Before heading out</span>
-                    <h2 id="foodListTitle">My Favorites</h2>
-                </div>
-                <span id="savedFoodCount" class="food-list-count">0</span>
-            </div>
-
-            <p class="food-list-help">Saved food stays on this device. My Trips can use this same favorite list later.</p>
-
-            <div id="savedFoodList" class="saved-food-list"></div>
-
-            <div id="savedFoodEmpty" class="saved-food-empty">
-                <i class="fa-regular fa-heart"></i>
-                <p>No favorites yet.</p>
-                <span>Save food options from the guide.</span>
-            </div>
-
-            <div class="food-list-actions">
-                <button type="button" id="clearFoodList" class="food-list-action">
-                    <i class="fa-regular fa-trash-can"></i> Clear
-                </button>
-            </div>
-        </aside>
     </section>
 </div>
 
-<div id="foodToast" class="food-toast" role="status" aria-live="polite"></div>
-
+<script src="/TravelPal/restaurant/restaurant_app.js?v=2"></script>
 <script>
 const foodOptions = <?php echo json_encode($foodOptions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>;
-const foodById = new Map(foodOptions.map(food => [Number(food.id), food]));
-// The My Trips page can read this same key when synchronization is added later.
-const storageKey = 'travelpal_food_favorites_v1';
-const previousStorageKey = 'travelpal_food_list_v1';
 
 const stateFilter = document.getElementById('stateFilter');
 const cityFilter = document.getElementById('cityFilter');
@@ -170,31 +136,6 @@ const foodSearch = document.getElementById('foodSearch');
 const foodCards = Array.from(document.querySelectorAll('.food-card'));
 const resultCount = document.getElementById('foodResultCount');
 const emptyState = document.getElementById('foodEmptyState');
-const savedListElement = document.getElementById('savedFoodList');
-const savedEmptyElement = document.getElementById('savedFoodEmpty');
-const savedCountElement = document.getElementById('savedFoodCount');
-const toast = document.getElementById('foodToast');
-
-let savedFoodIds = loadSavedFoodIds();
-let toastTimer;
-
-function loadSavedFoodIds() {
-    try {
-        const currentValue = localStorage.getItem(storageKey);
-        const previousValue = localStorage.getItem(previousStorageKey);
-        const stored = JSON.parse(currentValue || previousValue || '[]');
-        if (!currentValue && previousValue) {
-            localStorage.setItem(storageKey, JSON.stringify(stored));
-        }
-        return Array.isArray(stored) ? stored.map(Number).filter(id => foodById.has(id)) : [];
-    } catch (error) {
-        return [];
-    }
-}
-
-function saveFoodIds() {
-    localStorage.setItem(storageKey, JSON.stringify(savedFoodIds));
-}
 
 function getCitiesForState(state) {
     return [...new Set(foodOptions.filter(food => !state || food.state === state).map(food => food.city))].sort();
@@ -242,70 +183,6 @@ function updateStateChips() {
     });
 }
 
-function showToast(message) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
-}
-
-function toggleFood(foodId) {
-    const existingIndex = savedFoodIds.indexOf(foodId);
-    if (existingIndex >= 0) {
-        savedFoodIds.splice(existingIndex, 1);
-        showToast('Removed from Favorites');
-    } else {
-        savedFoodIds.push(foodId);
-        showToast('Added to Favorites');
-    }
-    saveFoodIds();
-    renderSavedFoodList();
-    updateAddButtons();
-}
-
-function renderSavedFoodList() {
-    savedListElement.innerHTML = '';
-    savedFoodIds.forEach(id => {
-        const food = foodById.get(id);
-        if (!food) return;
-
-        const item = document.createElement('div');
-        item.className = 'saved-food-item';
-        const details = document.createElement('div');
-        details.className = 'saved-food-item__details';
-        const name = document.createElement('strong');
-        name.textContent = food.name;
-        const location = document.createElement('span');
-        location.textContent = `${food.city}, ${food.state}`;
-        const price = document.createElement('small');
-        price.textContent = food.price;
-        details.append(name, location, price);
-
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.className = 'saved-food-remove';
-        removeButton.title = `Remove ${food.name}`;
-        removeButton.setAttribute('aria-label', `Remove ${food.name}`);
-        removeButton.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-        removeButton.addEventListener('click', () => toggleFood(id));
-        item.append(details, removeButton);
-        savedListElement.appendChild(item);
-    });
-
-    savedCountElement.textContent = savedFoodIds.length;
-    savedEmptyElement.hidden = savedFoodIds.length > 0;
-    document.getElementById('clearFoodList').disabled = savedFoodIds.length === 0;
-}
-
-function updateAddButtons() {
-    document.querySelectorAll('.food-add-button').forEach(button => {
-        const isSaved = savedFoodIds.includes(Number(button.dataset.foodId));
-        button.classList.toggle('saved', isSaved);
-        button.querySelector('i').className = isSaved ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-        button.querySelector('span').textContent = isSaved ? 'Saved to Favorites' : 'Add to Favorites';
-    });
-}
-
 function resetFilters() {
     stateFilter.value = '';
     cityFilter.value = '';
@@ -331,23 +208,10 @@ document.querySelectorAll('.food-state-chip').forEach(chip => {
         applyFilters();
     });
 });
-document.querySelectorAll('.food-add-button').forEach(button => {
-    button.addEventListener('click', () => toggleFood(Number(button.dataset.foodId)));
-});
 document.getElementById('resetFoodFilters').addEventListener('click', resetFilters);
-document.getElementById('clearFoodList').addEventListener('click', () => {
-    if (savedFoodIds.length === 0) return;
-    savedFoodIds = [];
-    saveFoodIds();
-    renderSavedFoodList();
-    updateAddButtons();
-    showToast('Your Favorites were cleared');
-});
 
 updateCityFilter();
 applyFilters();
-renderSavedFoodList();
-updateAddButtons();
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

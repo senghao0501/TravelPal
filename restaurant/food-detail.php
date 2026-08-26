@@ -53,7 +53,7 @@ if (!$food) {
 include __DIR__ . '/../header.php';
 ?>
 
-<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css?v=3">
+<link rel="stylesheet" href="/TravelPal/restaurant/restaurant_detail.css?v=4">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <?php if (!$food): ?>
@@ -95,11 +95,6 @@ include __DIR__ . '/../header.php';
                     <h1><?php echo detail_escape($food['name']); ?></h1>
                     <p><i class="fa-solid fa-location-dot"></i> <?php echo detail_escape($area['name']); ?></p>
                 </div>
-
-                <button type="button" id="detailFavoriteButton" class="detail-favorite-button" data-food-id="<?php echo (int)$food['id']; ?>">
-                    <i class="fa-regular fa-heart"></i>
-                    <span>Add to Favorites</span>
-                </button>
             </header>
 
             <section class="food-detail-gallery" aria-label="Food and place photos">
@@ -183,10 +178,10 @@ include __DIR__ . '/../header.php';
                     </section>
 
                     <section class="food-trip-note">
-                        <i class="fa-solid fa-suitcase-rolling"></i>
+                        <i class="fa-solid fa-heart"></i>
                         <div>
-                            <strong>My Trips connection</strong>
-                            <p>Favorites are stored now and can be displayed in My Trips when that page is connected later.</p>
+                            <strong>Save the restaurant instead</strong>
+                            <p>The Food Guide is for planning ideas. Add the restaurant itself to your shared favorites from the live restaurant pages.</p>
                         </div>
                     </section>
                 </aside>
@@ -194,62 +189,9 @@ include __DIR__ . '/../header.php';
         </div>
     </div>
 
-    <div id="detailToast" class="detail-toast" role="status" aria-live="polite"></div>
-
+    <script src="/TravelPal/restaurant/restaurant_app.js?v=2"></script>
     <script>
-    const detailFoodId = <?php echo (int)$food['id']; ?>;
-    // The My Trips page can read this same key when synchronization is implemented.
-    const favoriteStorageKey = 'travelpal_food_favorites_v1';
-    const previousStorageKey = 'travelpal_food_list_v1';
-    const favoriteButton = document.getElementById('detailFavoriteButton');
-    const detailToast = document.getElementById('detailToast');
     const toggleReviewsButton = document.getElementById('toggleReviewsButton');
-    let detailToastTimer;
-
-    function getFavoriteIds() {
-        try {
-            const currentValue = localStorage.getItem(favoriteStorageKey);
-            const previousValue = localStorage.getItem(previousStorageKey);
-            const ids = JSON.parse(currentValue || previousValue || '[]');
-            const normalizedIds = Array.isArray(ids) ? ids.map(Number) : [];
-            if (!currentValue && previousValue) {
-                localStorage.setItem(favoriteStorageKey, JSON.stringify(normalizedIds));
-            }
-            return normalizedIds;
-        } catch (error) {
-            return [];
-        }
-    }
-
-    function updateDetailFavoriteButton() {
-        const isFavorite = getFavoriteIds().includes(detailFoodId);
-        favoriteButton.classList.toggle('saved', isFavorite);
-        favoriteButton.querySelector('i').className = isFavorite ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
-        favoriteButton.querySelector('span').textContent = isFavorite ? 'Saved to Favorites' : 'Add to Favorites';
-    }
-
-    function showDetailToast(message) {
-        detailToast.textContent = message;
-        detailToast.classList.add('show');
-        clearTimeout(detailToastTimer);
-        detailToastTimer = setTimeout(() => detailToast.classList.remove('show'), 2200);
-    }
-
-    favoriteButton.addEventListener('click', () => {
-        const ids = getFavoriteIds();
-        const existingIndex = ids.indexOf(detailFoodId);
-
-        if (existingIndex >= 0) {
-            ids.splice(existingIndex, 1);
-            showDetailToast('Removed from Favorites');
-        } else {
-            ids.push(detailFoodId);
-            showDetailToast('Added to Favorites');
-        }
-
-        localStorage.setItem(favoriteStorageKey, JSON.stringify(ids));
-        updateDetailFavoriteButton();
-    });
 
     toggleReviewsButton.addEventListener('click', () => {
         const isExpanded = document.body.classList.toggle('food-reviews-expanded');
@@ -259,7 +201,6 @@ include __DIR__ . '/../header.php';
             : 'Show all 7 reviews <i class="fa-solid fa-chevron-down"></i>';
     });
 
-    updateDetailFavoriteButton();
     </script>
 <?php endif; ?>
 

@@ -9,6 +9,23 @@ $travelPalUserName = $_SESSION['user_name'] ?? 'My Account';
 $travelPalEmail = $_SESSION['user_email'] ?? 'Not Provided';
 
 $travelPalScript = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$travelPalNavPath = strtolower($travelPalScript);
+$travelPalNavSection = '';
+
+if (in_array($travelPalNavPath, ['/travelpal/index.php', '/travelpal/home/index.php'], true)) {
+    $travelPalNavSection = 'home';
+} elseif (strpos($travelPalNavPath, '/travelpal/flights/') === 0) {
+    $travelPalNavSection = 'flights';
+} elseif (strpos($travelPalNavPath, '/travelpal/hotels/') === 0) {
+    $travelPalNavSection = 'hotels';
+} elseif (strpos($travelPalNavPath, '/travelpal/restaurant/') === 0) {
+    $travelPalNavSection = 'restaurants';
+} elseif (strpos($travelPalNavPath, '/travelpal/attractions/') === 0) {
+    $travelPalNavSection = 'attractions';
+} elseif (strpos($travelPalNavPath, '/travelpal/trips/') === 0) {
+    $travelPalNavSection = 'trips';
+}
+
 $showFavoriteFab = in_array($travelPalScript, [
     '/TravelPal/index.php', '/TravelPal/flights/index.php', '/TravelPal/hotels/index.php',
     '/TravelPal/restaurant/index.php', '/TravelPal/attractions/index.php'
@@ -128,14 +145,14 @@ function displayPrice($myrPrice) {
         </a>
 
         <div class="nav-links">
-            <a href="/TravelPal/index.php">Home</a>
-            <a href="/TravelPal/flights/index.php">Flights</a>
-            <a href="/TravelPal/hotels/index.php">Hotels</a>
-            <a href="/TravelPal/restaurant/index.php">Restaurants</a>
-            <a href="/TravelPal/attractions/index.php">Attractions</a>
+            <a href="/TravelPal/index.php"<?php echo $travelPalNavSection === 'home' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>Home</a>
+            <a href="/TravelPal/flights/index.php"<?php echo $travelPalNavSection === 'flights' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>Flights</a>
+            <a href="/TravelPal/hotels/index.php"<?php echo $travelPalNavSection === 'hotels' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>Hotels</a>
+            <a href="/TravelPal/restaurant/index.php"<?php echo $travelPalNavSection === 'restaurants' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>Restaurants</a>
+            <a href="/TravelPal/attractions/index.php"<?php echo $travelPalNavSection === 'attractions' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>Attractions</a>
             
             <?php if ($travelPalLoggedIn): ?>
-                <a href="/TravelPal/trips/index.php">My Trips</a>
+                <a href="/TravelPal/trips/index.php"<?php echo $travelPalNavSection === 'trips' ? ' class="tp-nav-current" aria-current="page"' : ''; ?>>My Trips</a>
                 
                 <div class="avatar-dropdown-container">
                     <div class="profile-avatar" aria-label="Open account menu" title="My Account">
@@ -162,7 +179,7 @@ function displayPrice($myrPrice) {
                 </div>
 
             <?php else: ?>
-                <a href="#" onclick="event.preventDefault(); window.TravelPalLoginPopup && window.TravelPalLoginPopup.open();">My Trips</a>
+                <a href="#"<?php echo $travelPalNavSection === 'trips' ? ' class="tp-nav-current" aria-current="page"' : ''; ?> onclick="event.preventDefault(); window.TravelPalLoginPopup && window.TravelPalLoginPopup.open();">My Trips</a>
                 <a href="/TravelPal/auth/login.php" class="btn-login">Sign in</a>
             <?php endif; ?>
         </div>

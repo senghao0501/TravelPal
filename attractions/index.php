@@ -46,7 +46,7 @@ $placeholderImage = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placehol
 include '../header.php';
 ?>
 
-<link rel="stylesheet" href="../css/modules/attractions.css?v=20260824-2">
+<link rel="stylesheet" href="../css/modules/attractions.css?v=20260827-1">
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -59,12 +59,6 @@ include '../header.php';
     align-items: flex-end;
     gap: 20px;
     margin-bottom: 18px;
-}
-
-.carousel-meta {
-    color: #6b7280;
-    font-size: 13px;
-    white-space: nowrap;
 }
 
 .carousel-wrapper {
@@ -143,32 +137,6 @@ include '../header.php';
     right: -23px;
 }
 
-.carousel-progress {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    color: #6b7280;
-    font-size: 12px;
-}
-
-.carousel-progress-line {
-    width: 120px;
-    height: 4px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: #e5e7eb;
-}
-
-.carousel-progress-fill {
-    display: block;
-    width: 0;
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #7c3aed, #10b981);
-    transition: width .2s ease;
-}
-
 @media (max-width: 768px) {
     .carousel-btn {
         display: none;
@@ -183,11 +151,8 @@ include '../header.php';
         display: block;
     }
 
-    .carousel-meta {
-        display: block;
-        margin-top: 8px;
-    }
 }
+
 </style>
 
 <section class="hero-section">
@@ -401,9 +366,6 @@ include '../header.php';
                 </p>
             </div>
 
-            <div class="carousel-meta">
-                8 destinations · <?= count($mustVisitAttractions) ?> attractions
-            </div>
         </div>
 
         <div class="carousel-wrapper">
@@ -518,18 +480,66 @@ include '../header.php';
             </button>
         </div>
 
-        <div class="carousel-progress">
-            <span id="carouselPosition">
-                <?= $mustVisitAttractions === [] ? 0 : 1 ?>
-                / <?= count($mustVisitAttractions) ?>
-            </span>
+    </section>
 
-            <span class="carousel-progress-line">
-                <span
-                    class="carousel-progress-fill"
-                    id="carouselProgressFill"
-                ></span>
-            </span>
+    <section class="attraction-member-section" aria-label="TravelPal attraction benefits">
+        <?php if (!$travelPalLoggedIn): ?>
+            <div class="attraction-member-banner">
+                <div class="attraction-member-message">
+                    <span class="attraction-member-icon" aria-hidden="true">
+                        <i class="fa-solid fa-ticket"></i>
+                    </span>
+
+                    <div>
+                        <h2>Unlock More with TravelPal</h2>
+                        <p>
+                            Sign in to save favorite attractions, organize your timetable,
+                            and keep every experience in one trip.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="attraction-member-actions">
+                    <a href="/TravelPal/auth/login.php" class="attraction-member-signin">
+                        Sign In
+                    </a>
+                    <a href="/TravelPal/auth/register.php" class="attraction-member-register">
+                        Register Free
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <div class="attraction-benefits-grid">
+            <article class="attraction-benefit-card">
+                <span class="attraction-benefit-icon" aria-hidden="true">
+                    <i class="fa-solid fa-heart"></i>
+                </span>
+                <div>
+                    <h3>Save Your Favorites</h3>
+                    <p>Keep the attractions you love together and find them again easily.</p>
+                </div>
+            </article>
+
+            <article class="attraction-benefit-card">
+                <span class="attraction-benefit-icon" aria-hidden="true">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </span>
+                <div>
+                    <h3>Build Your Timetable</h3>
+                    <p>Arrange saved places into a clear hour-by-hour travel plan.</p>
+                </div>
+            </article>
+
+            <article class="attraction-benefit-card">
+                <span class="attraction-benefit-icon" aria-hidden="true">
+                    <i class="fa-solid fa-suitcase-rolling"></i>
+                </span>
+                <div>
+                    <h3>Add to My Trips</h3>
+                    <p>Choose your visit date and tickets before adding an attraction.</p>
+                </div>
+            </article>
         </div>
     </section>
 
@@ -584,8 +594,6 @@ include '../header.php';
 const carousel = document.getElementById('mustVisitCarousel');
 const previousButton = document.getElementById('carouselPrevious');
 const nextButton = document.getElementById('carouselNext');
-const positionText = document.getElementById('carouselPosition');
-const progressFill = document.getElementById('carouselProgressFill');
 
 function getCarouselStep() {
     const card = carousel.querySelector('.property-card');
@@ -620,24 +628,6 @@ function moveCarousel(direction) {
     });
 }
 
-function updateCarouselProgress() {
-    const cards = carousel.querySelectorAll('.property-card');
-    const step = getCarouselStep();
-    const visibleIndex = Math.round(carousel.scrollLeft / step);
-    const current = cards.length === 0
-        ? 0
-        : Math.min(cards.length, visibleIndex + 1);
-    const maximumScroll = carousel.scrollWidth - carousel.clientWidth;
-
-    positionText.textContent = current + ' / ' + cards.length;
-
-    const percentage = maximumScroll > 0
-        ? (carousel.scrollLeft / maximumScroll) * 100
-        : 100;
-
-    progressFill.style.width = Math.max(5, percentage) + '%';
-}
-
 previousButton.addEventListener('click', function () {
     moveCarousel(-1);
 });
@@ -645,9 +635,6 @@ previousButton.addEventListener('click', function () {
 nextButton.addEventListener('click', function () {
     moveCarousel(1);
 });
-
-carousel.addEventListener('scroll', updateCarouselProgress);
-window.addEventListener('resize', updateCarouselProgress);
 
 carousel.addEventListener('keydown', function (event) {
     if (event.key === 'ArrowRight') {
@@ -753,7 +740,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     dateInput.min = localDate;
     dateInput.value = localDate;
-    updateCarouselProgress();
 });
 
 const categoryInput = document.getElementById('categoryFilter');

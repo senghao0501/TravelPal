@@ -179,7 +179,6 @@ function displayPrice($myrPrice) {
                 </div>
 
             <?php else: ?>
-                <a href="#"<?php echo $travelPalNavSection === 'trips' ? ' class="tp-nav-current" aria-current="page"' : ''; ?> onclick="event.preventDefault(); window.TravelPalLoginPopup && window.TravelPalLoginPopup.open();">My Trips</a>
                 <a href="/TravelPal/auth/login.php" class="btn-login">Sign in</a>
             <?php endif; ?>
         </div>

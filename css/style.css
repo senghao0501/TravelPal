@@ -1360,3 +1360,69 @@ body.travelpal-login-modal-open {
 .tp-btn-cancel:hover { background: #e5e7eb; color: #111827; }
 .tp-btn-save { padding: 10px 24px; border: none; background: #047857; color: #fff; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
 .tp-btn-save:hover { background: #065f46; }
+
+/* =========================================================
+   18. Home Page Modules (Hero, Trending, Why Us, Zigzag)
+   ========================================================= */
+.tp-strict-slider { border-radius: 12px !important; overflow: hidden !important; background: #e2e8f0; position: relative; height: 380px; flex: 1; }
+.tp-strict-slider .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease; }
+.tp-strict-slider .slide.active { opacity: 1; }
+
+.tp-zigzag-row { display: flex; align-items: center; gap: 32px; margin-bottom: 40px; padding: 24px; background: #ffffff; border: 1px solid #d1d5db !important; border-radius: 12px !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important; }
+.tp-zigzag-row:nth-child(even) { flex-direction: row-reverse; }
+
+.tp-action-btn { display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px; transition: all 0.3s ease; }
+.tp-action-btn:hover { background: #047857; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(4, 120, 87, 0.3); }
+
+/* Trending Section */
+.tp-trend-section { margin-bottom: 60px; }
+.tp-trend-header { margin-bottom: 24px; }
+.tp-trend-header h2 { margin: 0 0 6px 0; font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -0.02em; }
+.tp-trend-header p { margin: 0; font-size: 15px; color: #6b7280; }
+.tp-trend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.tp-trend-card { position: relative; border-radius: 16px; overflow: hidden; height: 380px; text-decoration: none; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.tp-trend-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.tp-trend-card:hover img { transform: scale(1.06); }
+.tp-trend-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; color: #fff; transition: padding-bottom 0.3s ease; }
+.tp-trend-card:hover .tp-trend-overlay { padding-bottom: 30px; }
+.tp-trend-meta { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px; }
+.tp-trend-tag { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #a7f3d0; }
+.tp-trend-price { font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 6px; backdrop-filter: blur(4px); }
+.tp-trend-title { font-size: 24px; font-weight: 800; margin: 0 0 6px 0; letter-spacing: -0.01em; display: flex; justify-content: space-between; align-items: center; }
+.tp-trend-title span.rating { font-size: 14px; background: #047857; padding: 3px 8px; border-radius: 6px; }
+.tp-trend-desc { font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.4; }
+.tp-trend-btn { margin-top: 15px; font-size: 13px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 999px; display: inline-block; width: max-content; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3); }
+.tp-trend-card:hover .tp-trend-btn { opacity: 1; transform: translateY(0); }
+
+/* Why Choose Us */
+.tp-why-section { margin-bottom: 60px; padding: 40px 0; border-top: 1px solid #e2e8f0; }
+.tp-why-title { font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 30px; letter-spacing: -0.02em; }
+.tp-why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+.tp-why-item { display: flex; flex-direction: column; align-items: flex-start; }
+.tp-why-icon-wrap { width: 56px; height: 56px; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #047857; background: #ecfdf5; border-radius: 50%; transition: all 0.3s ease; }
+.tp-why-item:hover .tp-why-icon-wrap { transform: scale(1.15); background: #d1fae5; box-shadow: 0 4px 12px rgba(4,120,87,0.15); }
+.tp-why-item h4 { font-size: 16px; font-weight: 800; color: #111827; margin: 0 0 8px 0; }
+.tp-why-item p { font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; }
+
+/* Hero Section Bounce */
+@keyframes tp-bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+/* Responsive */
+@media (max-width: 900px) { 
+    .tp-zigzag-row, .tp-zigzag-row:nth-child(even) { flex-direction: column; text-align: center; gap: 30px; padding: 24px; }
+    .tp-strict-slider { width: 100%; height: 280px; }
+    .tp-trend-grid { grid-template-columns: 1fr; } 
+    .tp-trend-card { height: 280px; }
+    .tp-why-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 20px; }
+}
+@media (max-width: 768px) {
+    .hero-section { padding: 120px 20px 100px !important; }
+    .hero-section h1 { font-size: 40px !important; }
+}
+@media (max-width: 600px) {
+    .tp-why-grid { grid-template-columns: 1fr; gap: 30px; }
+}

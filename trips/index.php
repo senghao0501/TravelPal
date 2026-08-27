@@ -61,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insert->close();
             $ids = implode(',', array_map('intval', $selected));
             $delete = $auth_db->prepare("DELETE FROM trip_cart_items WHERE user_id = ? AND id IN ($ids)"); $delete->bind_param('i', $userId); $delete->execute(); $delete->close();
-            $auth_db->commit(); header('Location: receipt.php?order_id=' . $orderId); exit;
+            $auth_db->commit();
+$_SESSION['promo_used'] = true;
+			header('Location: receipt.php?order_id=' . $orderId); exit;
         } catch (Throwable $e) { $auth_db->rollback(); $error = 'Payment could not be completed. Please try again.'; }
     }
 }

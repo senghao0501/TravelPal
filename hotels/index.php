@@ -4,13 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 include '../header.php'; 
 ?>
-<link rel="stylesheet" href="../css/modules/hotels.css?v=6">
 
-<section class="hero-section">
+<!-- 强制时间戳刷新缓存，确保立刻看到最新 CSS -->
+<link rel="stylesheet" href="../css/modules/hotels.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<section class="search-hero-wrapper">
     <div class="hero-content">
-        <!-- 加上这一行作为小标题 (Kicker) -->
         <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
-        
         <h1>Find Your Perfect Stay in Malaysia</h1>
         <p>Compare real-time prices and availability across top destinations.</p>
     </div>
@@ -54,11 +55,11 @@ include '../header.php';
             </div>
 
             <div class="input-group guest-selector-group">
-                <div class="input-wrapper" id="guestInputTrigger" style="cursor: pointer;">
+                <div class="input-wrapper" id="guestInputTrigger" tabindex="0">
                     <label>Guests & Rooms</label>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="guest-display-wrapper">
                         <div class="guest-display-text" id="guestSummary">2 Adults, 0 Children, 1 Room</div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#172033" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; margin-right: 8px; flex-shrink: 0;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#172033" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="guest-dropdown-icon">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </div>
@@ -111,7 +112,7 @@ include '../header.php';
 
 <main class="main-content">
     
-    <!-- 1. 顶部先展示 Top Staycation Destinations 网格 -->
+    <!-- 1. Top Staycation Destinations -->
     <section class="gallery-section">
         <div class="section-header">
             <h2>Top Staycation Destinations</h2>
@@ -163,31 +164,24 @@ include '../header.php';
         </div>
     </section>
 
-<!-- 2. Sign In / Register 提示卡片 (外部 CSS 版) -->
+    <!-- 2. Sign In / Register Prompt -->
     <?php if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])): ?>
         <section class="hotel-promo-banner" aria-labelledby="hotel-promo-title">
-            
-            <!-- 左侧：图标 -->
             <div class="hotel-promo-icon" aria-hidden="true">
                 <i class="fa-solid fa-tags"></i>
             </div>
-            
-            <!-- 中间：文字说明 -->
             <div class="hotel-promo-content">
                 <h2 id="hotel-promo-title">Unlock Member Secret Prices</h2>
                 <p>Sign in to access exclusive hotel discounts, free room upgrades, and late check-outs.</p>
             </div>
-            
-            <!-- 右侧：按钮 -->
             <div class="hotel-promo-actions">
                 <a href="../auth/login.php" class="hotel-btn hotel-btn-primary">Sign In</a>
                 <a href="../auth/register.php" class="hotel-btn hotel-btn-outline">Register Free</a>
             </div>
-
         </section>
     <?php endif; ?>
 
-    <!-- Feature Highlights -->
+    <!-- 3. Feature Highlights -->
     <section class="features-section">
         <div class="feature-item">
             <div class="feature-icon-wrapper">
@@ -220,7 +214,7 @@ include '../header.php';
         </div>
     </section>
 
-    <!-- Travel Theme Dynamic Tabs -->
+    <!-- 4. Travel Theme Dynamic Tabs -->
     <section class="routes-section">
         <div class="section-header">
             <h2>Find Stays by Travel Theme</h2>
@@ -236,22 +230,22 @@ include '../header.php';
         <div id="tab-romantic" class="tab-content active">
             <div class="theme-grid">
                 <a href="detail.php?id=801" class="theme-card">
-                    <i class="fa-solid fa-heart"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1582719508461-905c673771fd" alt="Romantic">
+                    <div class="theme-card-body">
                         <h4>The Banjaran Hotsprings (Ipoh)</h4>
                         <p>Private geothermal hot spring villas surrounded by nature.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=401" class="theme-card">
-                    <i class="fa-solid fa-water"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1566073771259-6a8506099945" alt="Romantic">
+                    <div class="theme-card-body">
                         <h4>Casa del Rio (Melaka)</h4>
                         <p>Luxury Mediterranean vibes right on the Melaka River.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=802" class="theme-card">
-                    <i class="fa-solid fa-umbrella-beach"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1540541338287-41700207dee6" alt="Romantic">
+                    <div class="theme-card-body">
                         <h4>Pangkor Laut Resort</h4>
                         <p>One island, one luxury resort experience.</p>
                     </div>
@@ -262,22 +256,22 @@ include '../header.php';
         <div id="tab-family" class="tab-content">
             <div class="theme-grid">
                 <a href="detail.php?id=201" class="theme-card">
-                    <i class="fa-solid fa-gamepad"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b" alt="Family">
+                    <div class="theme-card-body">
                         <h4>Legoland Hotel (Johor)</h4>
                         <p>Interactive themed rooms with treasure hunts for kids.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=301" class="theme-card">
-                    <i class="fa-solid fa-person-swimming"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1590490360182-c33d57733427" alt="Family">
+                    <div class="theme-card-body">
                         <h4>Sunway Resort (Selangor)</h4>
                         <p>Direct access to Sunway Lagoon Theme Park.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=205" class="theme-card">
-                    <i class="fa-solid fa-guitar"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4" alt="Family">
+                    <div class="theme-card-body">
                         <h4>Hard Rock Hotel (Desaru)</h4>
                         <p>Waterpark access with fun rock & roll family suites.</p>
                     </div>
@@ -288,22 +282,22 @@ include '../header.php';
         <div id="tab-foodie" class="tab-content">
             <div class="theme-grid">
                 <a href="detail.php?id=101" class="theme-card">
-                    <i class="fa-solid fa-utensils"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9" alt="Foodie">
+                    <div class="theme-card-body">
                         <h4>E&O Hotel (Penang)</h4>
                         <p>3-minute walk to Penang’s top hawker stalls and nightlife.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=803" class="theme-card">
-                    <i class="fa-solid fa-bowl-food"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5" alt="Foodie">
+                    <div class="theme-card-body">
                         <h4>WEIL Hotel (Ipoh)</h4>
                         <p>Connected to Ipoh’s famous dim sum & bean sprout chicken district.</p>
                     </div>
                 </a>
                 <a href="detail.php?id=506" class="theme-card">
-                    <i class="fa-solid fa-store"></i>
-                    <div>
+                    <img class="theme-card-img" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836" alt="Foodie">
+                    <div class="theme-card-body">
                         <h4>Horizon Hotel (Kota Kinabalu)</h4>
                         <p>Located right on Gaya Street Sunday Night Market.</p>
                     </div>
@@ -392,14 +386,8 @@ include '../header.php';
     }
 </script>
 
-
-
-
-
 <?php 
-// 1. 开启自动弹窗
 $loginPopupAutoShow = true; 
-// 2. 引入同一目录下的弹窗文件
 include 'login_popup.php'; 
 ?>
 

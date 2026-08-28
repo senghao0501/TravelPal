@@ -1,695 +1,339 @@
 <?php
-
-// Page created by Shepard [Fabian Pijcke] <Shepard8@laposte.net>
-// Arno Esterhuizen <arno.esterhuizen@gmail.com>
-// and Romain Bourdon <rromain@romainbourdon.com>
-// and Hervé Leclerc <herve.leclerc@alterway.fr>
-// Icons by Mark James
-// Version 2.5 to 3.3.8 by Dominique Ottello alias Otomatic
-
-if(session_id() === '') session_start();
-$server_dir = "../";
-
-require $server_dir.'scripts/config.inc.php';
-require $server_dir.'scripts/wampserver.lib.php';
-$c_local_ip = $wampConf['LinksChooseIp'];
-
-//**** Scroll lists parameters ****
-//** Based on an idea by Panagiotis E. Papazoglou
-//General scrolling (on or off) is controlled by Wampserver parameter 'ScrollListsHomePage'
-// via Right-Click -> Wamp Settings -> Allow scrolling of lists on home page
-//To allow or not the individual scrolling of the lists Projects, Alias and VirtualHost
-//   'scroll' true or false to do the scroll or not
-//   'lines'  minimum number of lines to do the scroll
-// Do not change anything other than the values assigned to 'scroll' and 'lines'
-$Scroll_List = array(
-	'projects' => array('scroll' => true,'lines' => 16,'name' => 'ProjectsListScroller','nbname' => 'nbProjectsLines'),
-	'alias'    => array('scroll' => true,'lines' => 16,'name' => 'AliasListScroller',   'nbname' => 'nbAliasLines'),
-	'vhosts'   => array('scroll' => true,'lines' => 16,'name' => 'VhostsListScroller',  'nbname' => 'nbVirtualHostLines'),
-);
-foreach($Scroll_List as $key => $value) {
-	${$value['name']} = '';
-	${$value['nbname']} = 0;
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
-$nbAlias = $nbVirtualHost = $nbProjects = 0;
-
-//path to alias files
-$aliasDir = $server_dir.'alias/';
-
-//Works if you have ServerSignature On and ServerTokens Full in httpd.conf
-$server_software = $_SERVER['SERVER_SOFTWARE'];
-$error_content = '';
-
-// we get the versions of the applications
-$phpVersion = $wampConf['phpVersion'];
-$apacheVersion = $wampConf['apacheVersion'];
-$doca_version = 'doca'.substr($apacheVersion,0,3);
-$mysqlVersion = $wampConf['mysqlVersion'];
-// All php versions
-$phpVersionList = listDir($c_phpVersionDir,'checkPhpConf','php',true);
-$PhpAllVersions = implode(' - ',$phpVersionList);
-
-//--- VirtualHost Menu
-$VirtualHostMenu = 'on';
-
-//we get the value of apachePortUsed
-$port = $wampConf['apachePortUsed'];
-$UrlPort = $port !== "80" ? ":".$port : '';
-//We get the value(s) of the listening ports in Apache
-$ListenPorts = implode(' - ',listen_ports($c_apacheConfFile));
-//We get the value of mysqlPortUsed
-$Mysqlport = $wampConf['mysqlPortUsed'];
-
-//Directories to ignore in projects
-$projectsListIgnore = array ('.','..','wampthemes','wamplangues');
-
-//Search for available themes
-$styleswitcher = '<select id="themes">'."\n";
-$themes = glob('wampthemes/*', GLOB_ONLYDIR);
-foreach ($themes as $theme) {
-    if(file_exists($theme.'/style.css')) {
-        $theme = str_replace('wampthemes/', '', $theme);
-        $styleswitcher .= '<option id="'.$theme.'">'.$theme.'</option>'."\n";
-    }
-}
-$styleswitcher .= '</select>'."\n";
-
-//Displaying phpinfo
-if(isset($_GET['phpinfo'])) {
-	$type_info = intval(trim($_GET['phpinfo']));
-	if($type_info < -1 || $type_info > 64)
-		$type_info = -1;
-	phpinfo($type_info);
-	exit();
-}
-
-//Displaying xdebug_info();
-$xdebug_info = '';
-if(function_exists('xdebug_info')) {
-	if(isset($_GET['xdebuginfo'])) {
-		xdebug_info();
-		exit();
-	}
-	$xdebug_info = '<li><a href="?xdebuginfo">xdebug_info()</a></li>';
-}
-
-// Language
-$langue = $wampConf['language'];
-$i_langues = glob('wamplangues/index_*.php');
-$languages = array();
-foreach($i_langues as $value) {
-  $languages[] = str_replace(array('wamplangues/index_','.php'), '', $value);
-}
-$langueget = (!empty($_GET['lang']) ? strip_tags(trim($_GET['lang'])) : '');
-if(in_array($langueget,$languages))
-	$langue = $langueget;
-
-// Search for available languages
-$langueswitcher = '<form method="get" style="display:inline-block;"><select name="lang" id="langues" onchange="this.form.submit();">'."\n";
-$selected = false;
-foreach($languages as $i_langue) {
-  $langueswitcher .= '<option value="'.$i_langue.'"';
-  if(!$selected && $langue == $i_langue) {
-  	$langueswitcher .= ' selected ';
-  	$selected = true;
-  }
-  $langueswitcher .= '>'.$i_langue.'</option>'."\n";
-}
-$langueswitcher .= '</select></form>';
-
-include 'wamplangues/index_english.php';
-if(file_exists('wamplangues/index_'.$langue.'.php')) {
-	$langue_temp = $langues;
-	include 'wamplangues/index_'.$langue.'.php';
-	$langues = array_merge($langue_temp, $langues);
-}
-include 'wamplangues/help_english.php';
-if(file_exists('wamplangues/help_'.$langue.'.php')) {
-	$langue_temp = $langues;
-	include 'wamplangues/help_'.$langue.'.php';
-	$langues = array_merge($langue_temp, $langues);
-}
-
-$PhpAllVersionsNotFcgi = '';
-if(!isset($c_ApacheDefine['PHPROOT'])) {
-	$PhpAllVersionsNotFcgi = <<< EOF
-		<dt>&nbsp;</dt>
-		   <dd><small style='color:red;'>[FCGI]&nbsp;{$langues['fcgi_not_loaded']}</small></dd>
-EOF;
-}
-
-// MySQL retrieval if supported
-$nbDBMS = 0;
-$MySQLdb = '';
-if(isset($wampConf['SupportMySQL']) && $wampConf['SupportMySQL'] =='on') {
-	$nbDBMS++;
-	$defaultDBMSMySQL = ($wampConf['mysqlPortUsed'] == '3306') ? "&nbsp;-&nbsp;".$langues['defaultDBMS'] : "";
-	$MySQLdb = <<< EOF
-<dt>{$langues['versm']}</dt>
-	<dd>{$mysqlVersion}&nbsp;-&nbsp;{$langues['mysqlportUsed']}{$Mysqlport}{$defaultDBMSMySQL}&nbsp;-&nbsp; <a href='http://{$langues['docm']}'>{$langues['documentation-of']} MySQL</a></dd>
-EOF;
-}
-
-// MariaDB retrieval if supported
-$MariaDB = '';
-if(isset($wampConf['SupportMariaDB']) && $wampConf['SupportMariaDB'] =='on') {
-	$nbDBMS++;
-	$defaultDBMSMaria = ($wampConf['mariaPortUsed'] == '3306') ? "&nbsp;-&nbsp;".$langues['defaultDBMS'] : "";
-	$MariaDB = <<< EOF
-<dt>{$langues['versmaria']}</dt>
-  <dd>{$c_mariadbVersion}&nbsp;-&nbsp;{$langues['mariaportUsed']}{$wampConf['mariaPortUsed']}{$defaultDBMSMaria}&nbsp;-&nbsp; <a href='http://{$langues['docmaria']}'>{$langues['documentation-of']} MariaDB</a></dd>
-EOF;
-}
-
-//**** Modal Dialogs *****
-//Get PHP loaded extensions
-$message['phpLoadedExtensions'] = color('clean',GetPhpLoadedExtensions($c_phpVersion,6));
-//Dialog modal PHP extensions
-$divPhpExt = <<< EOF
-<div id="phpextloaded" class="modalOto">
-	<div>
-		<div class='modalOtoBar'><input type='button' value='Copy' class='js-copy' data-target='#tocopy'>
-			<a href="#closeOto" title="Close" class="closeOto">X</a>
-		</div>
-		<div id="tocopy">{$message['phpLoadedExtensions']}</div>
-	</div>
-</div>
-EOF;
-$popupPHPExtLink = "<a href='#phpextloaded'><small style='color:#777;'>".$langues['phpExtensions']."</small></a>";
-$ModalDialogs = $divPhpExt;
-unset($message['phpLoadedExtensions']);
-//Get PHP versions usage
-$message['phpVersionsUsage'] = GetPhpVersionsUsage();
-//Dialog modal PHP versions usage
-$divPhpUse = <<< EOF
-<div id="phpversionsuse" class="modalOto">
-	<div>
-		<div class='modalOtoBar'><input type='button' value='Copy' class='js-copya' data-target='#tocopya'>
-			<a href="#closeOto" title="Close" class="closeOto">X</a>
-		</div>
-		<div id="tocopya">{$message['phpVersionsUsage']}</div>
-	</div>
-</div>
-EOF;
-$popupPHPExtLink .= "&nbsp;-&nbsp;<a href='#phpversionsuse'><small style='color:#777;'>".$langues['phpVersionsUse']."</small></a>";
-$ModalDialogs .= $divPhpUse;
-unset($message['phpVersionsUsage']);
-//PHP FCGI help
-$message = str_replace('  ','&nbsp;&nbsp;',$langues['fcgi_mode_help']);
-$message = nl2br($message);
-$divHelpFCGI = <<< EOF
-<div id="helpfcgi" class="modalOtoArial">
-	<div>
-		<div class='modalOtoBar'><input type='button' value='Copy' class='js-copyb' data-target='#tocopyb'>
-			<a href="#closeOto" title="Close" class="closeOto">X</a>
-		</div>
-		<div id="tocopyb">{$message}</div>
-	</div>
-</div>
-EOF;
-$ModalDialogs .= $divHelpFCGI;
-$PhpAllVersions .= "&nbsp;-&nbsp;<a href='#helpfcgi'><small style='color:#777;'>".$langues['fcgi_mode_link']."</small></a>";
-unset($message);
-//Dialog modal MySQL - MariaDB
-$popupMySQLMariaDBLink = '';
-if($nbDBMS > 1) {
-	$divMySQLMariaDB = <<< EOF
-<div id="mysqlmariadb" class="modalOto">
-	<div>
-		<div class='modalOtoBar'><input type='button' value='' class='js-copyc' data-target='none'>
-			<a href="#closeOto" title="Close" class="closeOto">X</a>
-		</div>
-		{$langues['HelpMySQLMariaDB']}
-	</div>
-</div>
-EOF;
-	$popupMySQLMariaDBLink = "&nbsp;-&nbsp;<a href='#mysqlmariadb'><small style='color:#777;'>MySQL - MariaDB</small></a>";
-	$ModalDialogs .= $divMySQLMariaDB;
-}
-
-//Get Apache loaded modules
-require $server_dir.'files/apacheloadedmodules.php';
-//Dialog modal Apache modules
-$divApacheMod = <<< EOF
-<div id="apachemodloaded" class="modalOto">
-	<div>
-		<div class='modalOtoBar'><input type='button' value='Copy' class='js-copyd' data-target='#tocopy'>
-			<a href="#closeOto" title="Close" class="closeOto">X</a>
-		</div>
-	<div id="tocopyd">{$ApacheLoadedModule}<br></div>
-	</div>
-</div>
-EOF;
-$popupApacheModLink = "<a href='#apachemodloaded'><small style='color:#777;'>".$langues['apacheLoadedModules']."</small></a>";
-$ModalDialogs .= $divApacheMod;
-
-//**** End of Modal Dialogs *****
-
-//Default DBMS in first position
-if(empty($defaultDBMSMySQL))
-	$DBMSTypes = $MariaDB.str_replace('</dd>',$popupMySQLMariaDBLink.'</dd>',$MySQLdb);
-else
-	$DBMSTypes = $MySQLdb.str_replace('</dd>',$popupMySQLMariaDBLink.'</dd>',$MariaDB);
-
-// No Database Mysql System
-$noDBMS = (empty($MySQLdb) && empty($MariaDB)) ? true : false;
-
-//Alias
-GetAliasVersions();
-// Create alias menu
-$aliasContents = '';
-foreach($Alias_Contents['alias'] as $AliasName) {
-	if($AliasName == 'phpsysinfo') continue;
- 	if($noDBMS && ($Alias_Contents[$AliasName]['name'] == 'phpmyadmin' || $Alias_Contents[$AliasName]['name'] == 'adminer')) continue;
-	$file = $Alias_Contents[$AliasName]['name'].' '.$Alias_Contents[$AliasName]['version'];
-	$href = $Alias_Contents[$AliasName]['alias'];
-	$file_sup ='';
-	if($Alias_Contents[$AliasName]['fcgid'] && $Alias_Contents[$AliasName]['fcgidPHPOK']) {
-		$file_sup .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>FCGI -> PHP ".$Alias_Contents[$AliasName]['fcgidPHP']."</small></p>";
-	}
-	$aliasContents .= '<li><a href="'.$href.'/">'.$file.'</a>'.$file_sup.'</li>';
-	if(!empty($Alias_Contents[$AliasName]['notcompat'])) {
-		$aliasContents .= '<li class="phpmynot">'.$Alias_Contents[$AliasName]['notcompat'].'</li>';
-	}
-	$nbAlias++;
-}
-if(empty($aliasContents))
-	$aliasContents = "<li class='phpmynot'>".$langues['txtNoAlias']."</li>\n";
-
-// Get PhpSysInfo version and parameters
-$phpsysinfo = '';
-if($Alias_Contents['phpsysinfo']['OK']) {
-	$file_sup = '';
-	if($Alias_Contents['phpsysinfo']['fcgid'] && $Alias_Contents['phpsysinfo']['fcgidPHPOK']) {
-		$file_sup .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>FCGI -> PHP ".$Alias_Contents['phpsysinfo']['fcgidPHP']."</small></p>";
-	}
-	$phpsysinfo = '<li><a href="phpsysinfo">PhpSysInfo '.$Alias_Contents['phpsysinfo']['version'].'</a>'.$file_sup.'</li>';
-}
-
-//Retrieving ServerName from httpd-vhosts.conf
-$addVhost = "<li><a href='add_vhost.php?lang=".$langue."'>".$langues['txtAddVhost']."</a></li>";
-if($VirtualHostMenu == "on") {
-	$vhostError = false;
-	$vhostErrorCorrected = true;
-	$error_message = array();
-  $allToolsClass = "four-columns";
-	$virtualHost = check_virtualhost();
-	$nbVirtualHost = $nbVirtualHostLines = $virtualHost['nb_Server'];
-	$vhostsContents = '';
-	if($virtualHost['include_vhosts'] === false) {
-		$vhostsContents = "<li><i style='color:red;'>Error Include Apache</i></li>";
-		$vhostError = true;
-		$error_message[] = sprintf($langues['txtNoIncVhost'],$wampConf['apacheVersion']);
-	}
-	else {
-		if($virtualHost['vhosts_exist'] === false) {
-			$vhostsContents = "<li><i style='color:red;'>No vhosts file</i></li>";
-			$vhostError = true;
-			$error_message[] = sprintf($langues['txtNoVhostFile'],$virtualHost['vhosts_file']);
-		}
-		else {
-				if($virtualHost['nb_Server'] > 0) {
-				$port_number = true;
-				$nb_Server = $virtualHost['nb_Server'];
-				$nb_Virtual = $virtualHost['nb_Virtual'];
-				$nb_Document = $virtualHost['nb_Document'];
-				$nb_Directory = $virtualHost['nb_Directory'];
-				$nb_End_Directory = $virtualHost['nb_End_Directory'];
-
-				foreach($virtualHost['ServerName'] as $key => $value) {
-					if($virtualHost['ServerNameValid'][$value] === false) {
-						$vhostError = true;
-						$vhostErrorCorrected = false;
-						$vhostsContents .= '<li>'.$value.' - <i style="color:red;">syntax error</i></li>';
-						$error_message[] = sprintf($langues['txtServerName'],"<span style='color:black;'>".$value."</span>",$virtualHost['vhosts_file']);
-					}
-					elseif($virtualHost['ServerNameValid'][$value] === true) {
-						$UrlPortVH = ($virtualHost['ServerNamePort'][$value] != '80') ? ':'.$virtualHost['ServerNamePort'][$value] : '';
-						if(!$virtualHost['port_listen'] && $virtualHost['ServerNamePortListen'][$value] !== true || $virtualHost['ServerNamePortApacheVar'][$value] !== true) {
-							$value_url = ((strpos($value, ':') !== false) ? strstr($value,':',true) : $value);
-							$vhostsContents .= '<li>'.$value_url.$UrlPortVH.' - <i style="color:red;">Not a Listen port</i></li>';
-							if($virtualHost['ServerNamePortListen'][$value] !== true)
-								$msg_error = ' not an Apache Listen port';
-							elseif($virtualHost['ServerNamePortApacheVar'][$value] !== true)
-								$msg_error = ' not an Apache define variable';
-							if(!$vhostError) {
-								$vhostError = true;
-								$vhostErrorCorrected = false;
-								$error_message[] = "Port ".$UrlPortVH." used for the VirtualHost is ".$msg_error;
-							}
-						}
-						elseif($virtualHost['DocRootNotwww'][$value] === false) {
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$vhostsContents .= '<li>'.$value.' - <i style="color:red;">DocumentRoot error</i></li>';
-							$error_message[] = sprintf($langues['txtDocRoot'],"<span style='color:black;'>".$value."</span>","<span style='color:black;'>".$wwwDir."</span>");
-						}
-						elseif($virtualHost['ServerNameDev'][$value] === true) {
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$vhostsContents .= '<li>'.$value.' - <i style="color:red;">TLD error</i></li>';
-							$error_message[] = sprintf($langues['txtTLDdev'],"<span style='color:black;'>".$value."</span>","<span style='color:black;'>.dev</span>");
-						}
-						elseif($virtualHost['ServerNameIntoHosts'][$value] === false) {
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$vhostsContents .= '<li>'.$value.' - <i style="color:red;">hosts file error</i></li>';
-							$error_message[] = sprintf($langues['txtNoHosts'],"<span style='color:black;'>".$value."</span>");
-						}
-						else {
-							$http_mode = 'http://';
-							$value_aff = $vh_ip = '';
-							$value_url = ((strpos($value, ':') !== false) ? strstr($value,':',true) : $value);
-							$value_link = $value;
-							if($virtualHost['ServerNameIp'][$value] !== false) {
-								$vh_ip = $virtualHost['ServerNameIp'][$value];
-								$value_url = $value_link = $vh_ip;
-								$value_aff .= ' <i>('.$value.')</i>';
-								if($virtualHost['ServerNameIpValid'][$value] === false) {
-									$vhostError = true;
-									$vhostErrorCorrected = false;
-									$value_aff .=  ' <i style="color:red;">IP not valid</i>';
-									$error_message[] = sprintf($langues['txtServerNameIp'],"<span style='color:black;'>".$vh_ip."</span>","<span style='color:black;'>".$value."</span>",$virtualHost['vhosts_file']);
-								}
-							}
-							if($virtualHost['ServerNameIDNA'][$value] === true){
-								$value_aff .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>IDNA-> ".$virtualHost['ServerNameUTF8'][$value]."</small></p>";
-								$nbVirtualHostLines++;
-							}
-							if(isset($c_ApacheDefine['PHPROOT']) && $virtualHost['ServerNameFcgid'][$value] === true){
-								$value_aff .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>FCGI -> PHP ".$virtualHost['ServerNameFcgidPHP'][$value]."</small></p>";
-								$nbVirtualHostLines++;
-							}
-							if($virtualHost['ServerNameFcgid'][$value] === true && $virtualHost['ServerNameFcgidPHPOK'][$value] !== true) {
-								$value_aff .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>FCGI -> PHP ".$virtualHost['ServerNameFcgidPHP'][$value]." - <span style='color:red;'>".$langues['phpNotExists']."</span></small></p>";
-								$vhostError = true;
-								$vhostErrorCorrected = false;
-								$error_message[] = '<b>Error</b> --- VirtualHost '.$value.' - Fast CGI PHP '.$virtualHost['ServerNameFcgidPHP'][$value].' - '.$langues['phpNotExists'];
-							}
-							if(in_array($value,$virtualHost['ServerNameHttps'])) {
-								$http_mode = 'https://';
-								$value_aff .= "<p style='margin:-11px 0 -2px 25px;color:green;'><small>HTTPS </small></p>";
-								$UrlPortVH = '';
-								$nbVirtualHostLines++;
-							}
-							$vhostsContents .= '<li><a href="'.$http_mode.$value_url.$UrlPortVH.'">'.$value_link.'</a>'.$value_aff.'</li>';
-						}
-					}
-					else {
-						$vhostError = true;
-						$error_message[] = sprintf($langues['txtVhostNotClean'],$virtualHost['vhosts_file']);
-					}
-				}
-				//Check number of <Directory equals </Directory
-				if($nb_End_Directory != $nb_Directory) {
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = sprintf($langues['txtNbNotEqual'],"&lt;Directory ....&gt;","&lt;/Directory&gt;",$virtualHost['vhosts_file']);
-				}
-				//Check number of DocumentRoot equals to number of ServerName
-				if($nb_Document != $nb_Server) {
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = sprintf($langues['txtNbNotEqual'],"DocumentRoot","ServerName",$virtualHost['vhosts_file']);
-				}
-				//Check validity of DocumentRoot
-				if($virtualHost['document'] === false) {
-					foreach($virtualHost['documentPath'] as $value) {
-						if($virtualHost['documentPathValid'][$value] === false) {
-							$documentPathError = $value;
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$error_message[] = sprintf($langues['txtNoPath'],"<span style='color:black;'>".$value."</span>", "DocumentRoot", $virtualHost['vhosts_file']);
-							break;
-						}
-						elseif($virtualHost['documentPathNotSlashEnded'][$value] === false) {
-							$documentPathError = $value;
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$error_message[] = sprintf($langues['txtSlashEnd'],"<span style='color:black;'>".$value."</span>", "DocumentRoot", $virtualHost['vhosts_file']);
-							break;
-						}
-					}
-				}
-				//Check validity of Directory Path
-				if($virtualHost['directory'] === false) {
-					foreach($virtualHost['directoryPath'] as $value) {
-						if($virtualHost['directoryPathValid'][$value] === false) {
-							$documentPathError = $value;
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$error_message[] = sprintf($langues['txtNoPath'],"<span style='color:black;'>".$value."</span>", "&lt;Directory ...", $virtualHost['vhosts_file']);
-							break;
-						}
-					}
-				}
-				//Check Directory Path ended with a slash '/'
-				if($virtualHost['directorySlash'] === false) {
-					foreach($virtualHost['directoryPath'] as $value) {
-						if($virtualHost['directoryPathSlashEnded'][$value] === false) {
-							$documentPathError = $value;
-							$vhostError = true;
-							$vhostErrorCorrected = false;
-							$error_message[] = sprintf($langues['txtPathNoSlash'],"<span style='color:black;'>".$value."</span>", "&lt;Directory ...", $virtualHost['vhosts_file']);
-							break;
-						}
-					}
-				}
-				//Check number of <VirtualHost equals or > to number of ServerName
-				if($nb_Server != $nb_Virtual && $wampConf['NotCheckDuplicate'] == 'off') {
-					$port_number = false;
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = sprintf($langues['txtNbNotEqual'],"&lt;VirtualHost","ServerName",$virtualHost['vhosts_file']);
-				}
-				//Check number of port definition of <VirtualHost *:xx> equals to number of ServerName
-				if($virtualHost['nb_Virtual_Port'] != $nb_Virtual && $wampConf['NotCheckDuplicate'] == 'off') {
-					$port_number = false;
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = sprintf($langues['txtNbNotEqual'],"port definition of &lt;VirtualHost *:xx&gt;","ServerName",$virtualHost['vhosts_file']);
-				}
-				//Check validity of port number
-				if($port_number && $virtualHost['port_number'] === false) {
-					$port_number = false;
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = sprintf($langues['txtPortNumber'],"&lt;VirtualHost *:port&gt;",$virtualHost['vhosts_file']);
-				}
-				//Check if duplicate ServerName
-				if($virtualHost['nb_duplicate'] > 0) {
-					$DuplicateNames = '';
-					foreach($virtualHost['duplicate'] as $NameValue)
-						$DuplicateNames .= " ".$NameValue;
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = "Duplicate ServerName <span style='color:blue;'>".$DuplicateNames."</span> into ".$virtualHost['vhosts_file'];
-				}
-				//Check if duplicate Server IP
-				if($virtualHost['nb_duplicateIp'] > 0) {
-					$DuplicateNames = '';
-					foreach($virtualHost['duplicateIp'] as $NameValue)
-						$DuplicateNames .= " ".$NameValue;
-					$vhostError = true;
-					$vhostErrorCorrected = false;
-					$error_message[] = "Duplicate IP <span style='color:blue;'>".$DuplicateNames."</span> into ".$virtualHost['vhosts_file'];
-				}
-			}
-		}
-	}
-	if(empty($vhostsContents)) {
-		$vhostsContents = "<li><i style='color:red:'>No VirtualHost</i></li>";
-		$vhostError = true;
-		$error_message[] = sprintf($langues['txtNoVhost'],$wampConf['apacheVersion']);
-	}
-	if(!$c_hostsFile_writable){
-		$vhostError = true;
-		$error_message[] = sprintf($langues['txtNotWritable'],$c_hostsFile)."<br>".nl2br($WarningMsg);
-	}
-	if($vhostError) {
-		$vhostsContents .= "<li><i style='color:red;'>Error(s)</i> See below</li>";
-		$error_content .= "<p style='color:red;'>";
-		foreach($error_message as $value) {
-			$error_content .= $value."<br />";
-		}
-		$error_content .= "</p>\n";
-		if($vhostErrorCorrected)
-			$addVhost = "<li><a href='add_vhost.php?lang=".$langue."'>".$langues['txtAddVhost']."</a> <span style='font-size:0.72em;color:red;'>".$langues['txtCorrected']."</span></li>";
-	}
-}
-else {
-    $allToolsClass = "three-columns";
-}
-//End retrieving ServerName from httpd-vhosts.conf
-
-// Project recovery
-$list_projects = array();
-$handle=opendir(".");
-while (false !== ($file = readdir($handle))) {
-	if(is_dir($file) && !in_array($file,$projectsListIgnore))
-		$list_projects[] = $file;
-}
-closedir($handle);
-$projectContents = '';
-if(count($list_projects) > 0) {
-	if($wampConf['LinksOnProjectsHomePage'] == 'on') {
-		$projectContents .= "<li class='projectsdir'>http://localhost/project/</li>\n";
-	}
-	foreach($list_projects as $file) {
-		$projectContents .= ($wampConf['LinksOnProjectsHomePage'] == 'on') ? "<li><a href='http://localhost/".$file."/'>".$file."</a></li>" : '<li>'.$file.'</li>';
-		$nbProjects++;
-		$nbProjectsLines++;
-	}
-	if($wampConf['LinksOnProjectsHomeByIp'] == 'on') {
-		$projectContents = str_replace('localhost',$c_local_ip,$projectContents);
-	}
-}
-
-if(empty($projectContents))
-	$projectContents = "<li class='projectsdir'>".$langues['txtNoProjet']."</li>\n";
-else {
-	if($wampConf['LinksOnProjectsHomePage'] == 'off') {
-		$projectContents .= "<li class='projectsdir'>".sprintf($langues['txtProjects'].'.<br>'.$langues['txtProjectsLink'],$wwwDir)."</li>";
-		if(strpos($projectContents,"http://localhost/") !== false) {
-			$projectContents .= "<li><i style='color:blue;'>Warning:</i> See below</li>";
-			if(!isset($error_content))
-				$error_content = '';
-			$error_content .= "<p style='color:blue;'>".sprintf($langues['nolocalhost'],$wampConf['apacheVersion'])."</p>";
-		}
-	}
-}
-
-// To scroll Projects, Alias and VirtualHost list display
-if($wampConf['ScrollListsHomePage'] == 'on') {
-	foreach($Scroll_List as $value) {
-		if($value['scroll'] && ${$value['nbname']} > $value['lines']) {
-			${$value['name']} = " style='height:21rem;overflow-y:scroll;padding-right:5px;'";
-		}
-	}
-}
-
-//Miscellaneous checks - Which php.ini is loaded?
-$phpini = mb_strtolower(trim(str_replace("\\","/",php_ini_loaded_file())));
-$c_phpConfFileOri = mb_strtolower($c_phpVersionDir.'/php'.$wampConf['phpVersion'].'/'.$phpConfFileForApache);
-$c_phpCliConf = mb_strtolower($c_phpVersionDir.'/php'.$wampConf['phpVersion'].'/'.$wampConf['phpConfFile']);
-if($phpini != mb_strtolower($c_phpConfFile) && $phpini != $c_phpConfFileOri) {
-	$error_content .= "<p style='color:red;'>*** ERROR *** The PHP configuration loaded file is: ".$phpini." - should be: ".$c_phpConfFile." or ".$c_phpConfFileOri;
-	$error_content .= "<br>You must perform: <span style='color:green;'>Right-click icon Wampmanager -> Refresh</span><br>";
-	if($phpini == $c_phpCliConf || $phpini == $c_phpCliConfFile)
-		$error_content .= " - This file is only for PHP in Command Line.";
-	$error_content .= "</p>";
-}
-if($filelist = php_ini_scanned_files()) {
-	if(strlen($filelist) > 0) {
-		$error_content .= "<p style='color:red;'>*** ERROR *** There are too many php.ini files</p>";
-		$files = explode(',', $filelist);
-		foreach ($files as $file) {
-			$error_content .= "<p style='color:red;'>*** ERROR *** There are other php.ini files: ".trim(str_replace("\\","/",$file))."</p>";
-		}
-	}
-}
-
-$pageContents = <<< EOPAGE
-<!DOCTYPE html>
-<html>
-<head>
-	<title>{$langues['titreHtml']}</title>
-	<meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width">
-	<link id="stylecall" rel="stylesheet" href="wampthemes/classic/style.css" />
-	<link id="stylecall" rel="stylesheet" href="wampthemes/popupmodal.css" />
-	<link rel="shortcut icon" href="favicon.ico" type="image/ico" />
-</head>
-
-<body>
-  <div id="head">
-    <div class="innerhead">
-	    <h1><abbr title="Windows">W</abbr><abbr title="Apache">a</abbr><abbr title="MySQL/MariaDB">m</abbr><abbr title="PHP">p</abbr><abbr title="server WEB local">server</abbr></h1>
-		   <ul>
-			   <li>Apache 2.4</li><li>-</li><li>MySQL 5, 8 &amp; 9</li><li>-</li><li>MariaDB 10 &amp; 11</li><li>-</li><li>PHP 5, 7 &amp; 8</li>		   </ul>
-     </div>
-		<ul class="utility">
-		  <li>Version {$c_wampVersion} - {$c_wampMode}</li>
-      <li>{$langueswitcher}{$styleswitcher}</li>
-	  </ul>
-	</div>
-
-	<div class="config">
-	    <div class="innerconfig">
-        <h2>{$langues['titreConf']}</h2>
-	        <dl class="content">
-		        <dt>{$langues['versa']}</dt>
-		            <dd>{$apacheVersion}&nbsp;&nbsp;-&nbsp;<a href='http://{$langues[$doca_version]}'>{$langues['documentation-of']} Apache</a>&nbsp;-&nbsp;{$popupApacheModLink}</dd>
-		        <dt>{$langues['server']}</dt>
-		            <dd>{$server_software}&nbsp;-&nbsp;{$langues['portUsed']}{$ListenPorts}</dd>
-		        <dt>{$langues['versp']}</dt>
-		            <dd><small style='color:blue;'>[Apache module]&nbsp;</small>&nbsp;{$phpVersion}&nbsp;-&nbsp;<a href='http://{$langues['docp']}'>{$langues['documentation-of']} PHP</a>&nbsp;-&nbsp;{$popupPHPExtLink}</dd>
-		        {$PhpAllVersionsNotFcgi}
-		        <dt>&nbsp;</dt>
-		        		<dd><small style='color:green;'>[FCGI]</small>&nbsp;{$PhpAllVersions}</dd>
-						{$DBMSTypes}
-	        </dl>
-      </div>
-  </div>
-   <div class="divider1">&nbsp;</div>
-   <div class="alltools {$allToolsClass}">
-	    <div class="inneralltools">
-	        <div class="column">
-	            <h2>{$langues['titrePage']}</h2>
-	            <ul class="tools">
-		            <li><a href="?phpinfo=-1">phpinfo()</a></li>
-		            {$xdebug_info}
-		            {$phpsysinfo}
-		            {$addVhost}
-	            </ul>
-	        </div>
-	        		<div class="column">
-	            <h2>{$langues['txtProjet']}&nbsp;<span style='font-size:60%;'>({$nbProjects})</span></h2>
-	            <ul class="projects"{$ProjectsListScroller}>
-	                {$projectContents}
-	            </ul>
-	        </div>
-	        	<div class="column">
-	            <h2>{$langues['txtAlias']}&nbsp;<span style='font-size:60%;'>({$nbAlias})</span></h2>
-	            <ul class="aliases"{$AliasListScroller}>
-	                {$aliasContents}
-	            </ul>
-	        </div>
-EOPAGE;
-if($VirtualHostMenu == "on") {
-$pageContents .= <<< EOPAGEA
-	        <div class="column">
-	            <h2>{$langues['txtVhost']}&nbsp;<span style='font-size:60%;'>({$nbVirtualHost})</span></h2>
-	            <ul class="vhost"{$VhostsListScroller}>
-	                {$vhostsContents}
-	            </ul>
-	        </div>
-EOPAGEA;
-}
-if(!empty($error_content)) {
-$pageContents .= <<< EOPAGEB
-	<div id="error" style="clear:both;"></div>
-	{$error_content}
-EOPAGEB;
-}
-$pageContents .= <<< EOPAGEC
-      </div>
-    </div>
-	<div class="divider2">&nbsp;</div>
-	<ul id="foot">
-		<li><a href="{$langues['forumLink']}">{$langues['forum']}</a></li>
-	</ul>
-{$ModalDialogs}
-
-EOPAGEC;
-include 'wampthemes/select_themes.php';
-include 'wampthemes/copy_modal.php';
-$pageContents .= <<< EOPAGED
-</body>
-</html>
-EOPAGED;
-
-echo $pageContents;
-
+include 'header.php'; 
 ?>
+
+<!-- 强制时间戳刷新缓存 -->
+<link rel="stylesheet" href="../css/style.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- 🌟 零重复、纯视觉沉浸式的 Hero Section 🌟 -->
+<section class="hero-section" style="position: relative; padding: 180px 24px 140px; text-align: center; background: linear-gradient(to bottom, rgba(17,24,39,0.65), rgba(17,24,39,0.3)), url('https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1600&q=80') center/cover no-repeat; border-radius: 0 0 32px 32px; margin-bottom: 50px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+    
+    <div class="hero-content" style="max-width: 800px; margin: 0 auto; color: #ffffff; position: relative; z-index: 2;">
+        <span class="hero-kicker" style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 800; letter-spacing: 0.2em; color: #a7f3d0; text-transform: uppercase;">
+            TravelPal · Malaysia
+        </span>
+        <h1 style="font-size: 56px; font-weight: 900; line-height: 1.1; margin: 0 0 24px; letter-spacing: -0.02em; text-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            Find Your Perfect Stay
+        </h1>
+        <p style="font-size: 18px; color: rgba(255,255,255,0.9); margin: 0 auto; max-width: 600px; line-height: 1.6; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+            Discover real-time prices, top attractions, and local delicacies across the best destinations in Malaysia.
+        </p>
+
+        <!-- 纯引导，无跳转的跳动箭头 -->
+        <div style="margin-top: 60px; animation: tp-bounce 2s infinite;">
+            <span style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                Scroll to Explore
+                <i class="fa-solid fa-chevron-down" style="font-size: 18px; color: #ffffff;"></i>
+            </span>
+        </div>
+    </div>
+</section>
+
+<main style="padding-top: 10px; padding-bottom: 80px;">
+    <!-- 核心结界：1440px 宽度 -->
+    <div style="width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 24px; box-sizing: border-box;">
+
+        <!-- 🌟 Trending This Week (增强预订版) -->
+        <div class="tp-trend-section">
+            <div class="tp-trend-header">
+                <h2>Trending This Week</h2>
+                <p>Get inspired and book these highly-rated destinations</p>
+            </div>
+            <div class="tp-trend-grid">
+                <!-- 卡片 1 -->
+                <a href="/TravelPal/hotels/after_search.php?query=Sabah" class="tp-trend-card">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" alt="Sabah">
+                    <div class="tp-trend-overlay">
+                        <div class="tp-trend-meta">
+                            <span class="tp-trend-tag">Crystal Waters</span>
+                            <span class="tp-trend-price">From RM 399 / night</span>
+                        </div>
+                        <h3 class="tp-trend-title">Semporna, Sabah <span class="rating"><i class="fa-solid fa-star" style="font-size:10px;"></i> 4.9</span></h3>
+                        <p class="tp-trend-desc">Dive into the world's most beautiful archipelagos and coral reefs.</p>
+                        <span class="tp-trend-btn">Explore Stays <i class="fa-solid fa-arrow-right" style="margin-left:5px;"></i></span>
+                    </div>
+                </a>
+                <!-- 卡片 2 -->
+                <a href="/TravelPal/hotels/after_search.php?query=Pahang" class="tp-trend-card">
+                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800&q=80" alt="Cameron Highlands">
+                    <div class="tp-trend-overlay">
+                        <div class="tp-trend-meta">
+                            <span class="tp-trend-tag">Cool Breezes</span>
+                            <span class="tp-trend-price">From RM 180 / night</span>
+                        </div>
+                        <h3 class="tp-trend-title">Cameron Highlands <span class="rating"><i class="fa-solid fa-star" style="font-size:10px;"></i> 4.7</span></h3>
+                        <p class="tp-trend-desc">Stroll through endless emerald tea plantations above the clouds.</p>
+                        <span class="tp-trend-btn">Explore Stays <i class="fa-solid fa-arrow-right" style="margin-left:5px;"></i></span>
+                    </div>
+                </a>
+                <!-- 卡片 3 -->
+                <a href="/TravelPal/hotels/after_search.php?query=Penang" class="tp-trend-card">
+                    <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80" alt="Penang">
+                    <div class="tp-trend-overlay">
+                        <div class="tp-trend-meta">
+                            <span class="tp-trend-tag">Rich Culture</span>
+                            <span class="tp-trend-price">From RM 150 / night</span>
+                        </div>
+                        <h3 class="tp-trend-title">Georgetown, Penang <span class="rating"><i class="fa-solid fa-star" style="font-size:10px;"></i> 4.8</span></h3>
+                        <p class="tp-trend-desc">Explore living history and taste world-class street food.</p>
+                        <span class="tp-trend-btn">Explore Stays <i class="fa-solid fa-arrow-right" style="margin-left:5px;"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- 1. 分类标题 -->
+        <div style="text-align: left; margin-bottom: 24px;">
+            <h2 style="margin: 0 0 6px 0; color: #111827; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">Explore TravelPal by Category</h2>
+            <p style="margin: 0; color: #4b5563; font-size: 15px;">Your complete guide to traveling across Malaysia</p>
+        </div>
+
+        <!-- 2. 四个分类方格 -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 80px;">
+            <?php 
+            $smartData = [
+                ['icon' => 'fa-plane', 'title' => 'Flights', 'desc' => 'Domestic & International', 'label' => 'Lowest Fares From', 'val' => 'RM 89', 'trend' => 92, 'link' => '/TravelPal/flights/index.php'],
+                ['icon' => 'fa-hotel', 'title' => 'Hotels', 'desc' => 'Resorts & City Stays', 'label' => 'Properties Available', 'val' => '120+', 'trend' => 85, 'link' => '/TravelPal/hotels/index.php'],
+                ['icon' => 'fa-utensils', 'title' => 'Restaurants', 'desc' => 'Local Delicacies', 'label' => 'Top Rated Spots', 'val' => '4.8★', 'trend' => 88, 'link' => '/TravelPal/restaurant/index.php']
+            ];
+            foreach ($smartData as $data): ?>
+            
+            <a class="tp-strict-card" href="<?php echo $data['link']; ?>" style="text-decoration: none; background: linear-gradient(135deg, #f8fbf9 0%, #dcfce7 100%); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                        <i class="fa-solid <?php echo $data['icon']; ?>"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 2px 0; line-height: 1.2;"><?php echo $data['title']; ?></h3>
+                        <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3;"><?php echo $data['desc']; ?></p>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;"><?php echo $data['label']; ?></span>
+                    <div style="font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1;"><?php echo $data['val']; ?></div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(4,120,87,0.1);">
+                    <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(<?php echo $data['trend']; ?> * 1%), rgba(4,120,87,0.2) 0); display: flex; align-items: center; justify-content: center;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div>
+                    </div>
+                    <span style="font-size: 12px; font-weight: 700; color: #4b5563;">Trending: <?php echo $data['trend']; ?>%</span>
+                </div>
+            </a>
+            <?php endforeach; ?>
+
+            <!-- 🌟🌟 第 4 个：智能判断的会员卡片 🌟🌟 -->
+            <?php 
+            $promoUsed = $_SESSION['promo_used'] ?? false; 
+            ?>
+            
+            <?php if ($travelPalLoggedIn && $promoUsed): ?>
+                <a class="tp-strict-card" href="/TravelPal/attractions/index.php" style="text-decoration: none; background: linear-gradient(135deg, #f8fbf9 0%, #dcfce7 100%); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="fa-solid fa-ticket-simple"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 2px 0; line-height: 1.2;">Attractions</h3>
+                            <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3;">Theme Parks & Tours</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;">Top Experiences</span>
+                        <div style="font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1;">50+</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(4,120,87,0.1);">
+                        <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(89 * 1%), rgba(4,120,87,0.2) 0); display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div>
+                        </div>
+                        <span style="font-size: 12px; font-weight: 700; color: #4b5563;">Trending: 89%</span>
+                    </div>
+                </a>
+
+            <?php elseif ($travelPalLoggedIn && !$promoUsed): ?>
+                <a class="tp-strict-member" href="/TravelPal/flights/index.php" style="text-decoration: none; background: #047857; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; transition: transform 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 44px; height: 44px; background: #ffffff; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; line-height: 1.2;">Welcome Back!</h3>
+                            <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3;">TravelPal Member</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <span style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em;">Now you can enjoy your</span>
+                        <div style="font-size: 28px; font-weight: 900; color: #C6FF34; margin-top: 4px; line-height: 1;">15% OFF</div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size: 12px; font-weight: 700; color: #ffffff;">Book your trip now</span>
+                        <i class="fa-solid fa-arrow-right" style="color: #ffffff; font-size: 14px;"></i>
+                    </div>
+                </a>
+
+            <?php else: ?>
+                <a class="tp-strict-member" href="/TravelPal/auth/login.php" style="text-decoration: none; background: #047857; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; transition: transform 0.2s ease;">
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <div style="width: 44px; height: 44px; background: #ffffff; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; line-height: 1.2;">Member Benefits</h3>
+                            <p style="font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3;">Unlock exclusive rewards</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <span style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em;">Register Free & Save Up To</span>
+                        <div style="font-size: 28px; font-weight: 900; color: #C6FF34; margin-top: 4px; line-height: 1;">15% OFF</div>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size: 12px; font-weight: 700; color: #ffffff;">Sign In / Join Now</span>
+                        <i class="fa-solid fa-arrow-right" style="color: #ffffff; font-size: 14px;"></i>
+                    </div>
+                </a>
+            <?php endif; ?>
+        </div>
+
+        <!-- 3. 左右交替图文 -->
+        <div style="margin-bottom: 80px;">
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Explore The Skies</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Flights to Top Destinations</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Compare and book cheap flights across Malaysia. Find the best airlines and lowest fares for your next getaway.</p>
+                    <a href="/TravelPal/flights/index.php" class="tp-action-btn">Search Flights</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800&q=80" class="slide">
+                </div>
+            </div>
+
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Comfortable Stays</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Hotels & Holiday Rentals</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">From luxury 5-star beachfront resorts in Penang to cozy boutique stays in KL, discover thousands of accommodations with real-time prices.</p>
+                    <a href="/TravelPal/hotels/index.php" class="tp-action-btn">Explore Hotels</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&q=80" class="slide">
+                </div>
+            </div>
+
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Culinary Journeys</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Restaurants & Local Food</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Savor the best local delicacies and fine dining. Discover top-rated eateries, street food guides, and cozy cafes recommended by locals.</p>
+                    <a href="/TravelPal/restaurants/index.php" class="tp-action-btn">Find Restaurants</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80" class="slide">
+                </div>
+            </div>
+            
+            <div class="tp-zigzag-row">
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start;">
+                    <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px;">Unforgettable Experiences</span>
+                    <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Attractions & Activities</h2>
+                    <p style="font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6;">Immerse yourself in culture, nature, and adventure. Book tickets to iconic landmarks, theme parks, and hidden nature trails across Malaysia.</p>
+                    <a href="/TravelPal/attractions/index.php" class="tp-action-btn">Discover Attractions</a>
+                </div>
+                <div class="tp-strict-slider zigzag-slider" data-interval="5000">
+                    <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80" class="slide active">
+                    <img src="https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800&q=80" class="slide">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. About TravelPal -->
+        <div style="display: flex; align-items: center; gap: 50px; margin-bottom: 80px; padding: 48px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div style="flex: 1;">
+                <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px; display: block;">Our Story</span>
+                <h2 style="font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2;">Connecting You to the Heart of Malaysia</h2>
+                <p style="font-size: 16px; color: #4b5563; margin: 0 0 16px 0; line-height: 1.6;">
+                    Founded with a simple mission: to make exploring Malaysia seamless, authentic, and unforgettable. TravelPal started as a vision to bring together the best flights, accommodations, and hidden local gems into one smart platform.
+                </p>
+                <p style="font-size: 16px; color: #4b5563; margin: 0 0 32px 0; line-height: 1.6;">
+                    As a proudly local tech company, we combine cutting-edge technology with deep local knowledge to ensure every journey you take is perfectly crafted. From the bustling streets of Kuala Lumpur to the pristine beaches of Sabah, we are your ultimate travel companion.
+                </p>
+                <div style="display: flex; gap: 40px;">
+                    <div>
+                        <h4 style="font-size: 28px; font-weight: 900; color: #047857; margin: 0 0 4px 0; line-height: 1;">100%</h4>
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Locally Founded</span>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 28px; font-weight: 900; color: #047857; margin: 0 0 4px 0; line-height: 1;">8</h4>
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">States Covered</span>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 28px; font-weight: 900; color: #047857; margin: 0 0 4px 0; line-height: 1;">24/7</h4>
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Travel Support</span>
+                    </div>
+                </div>
+            </div>
+            <div style="flex: 1; border-radius: 12px; overflow: hidden; height: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+                <img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800&q=80" alt="About TravelPal" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            </div>
+        </div>
+
+        <!-- 🌟🌟 5. 新增：Why Choose TravelPal (位于视频上方) 🌟🌟 -->
+        <div class="tp-why-section">
+            <h2 class="tp-why-title">Why choose TravelPal</h2>
+            <div class="tp-why-grid">
+                <div class="tp-why-item">
+                    <div class="tp-why-icon-wrap"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h4>Discover the possibilities</h4>
+                    <p>With hundreds of flights, hotels & top attractions across Malaysia, you're sure to find joy.</p>
+                </div>
+                <div class="tp-why-item">
+                    <div class="tp-why-icon-wrap"><i class="fa-solid fa-tags"></i></div>
+                    <h4>Enjoy deals & delights</h4>
+                    <p>Quality activities. Great prices. Plus, enjoy exclusive member discounts to save more.</p>
+                </div>
+                <div class="tp-why-item">
+                    <div class="tp-why-icon-wrap"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <h4>Exploring made easy</h4>
+                    <p>Book last minute, skip the lines & manage all your itineraries in one seamless dashboard.</p>
+                </div>
+                <div class="tp-why-item">
+                    <div class="tp-why-icon-wrap"><i class="fa-solid fa-shield-heart"></i></div>
+                    <h4>Travel you can trust</h4>
+                    <p>Read real guest reviews & get reliable customer support. We're with you at every step.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. AI 宣传视频模块 -->
+        <div class="tp-strict-card" style="width: 100%; aspect-ratio: 16 / 9; background: #000; margin-bottom: 40px; border-radius: 12px !important; overflow: hidden !important;">
+            <video width="100%" controls autoplay loop playsinline style="display: block; width: 100%; height: 100%; object-fit: cover;">
+                <source src="/TravelPal/assets/malaysia-promo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div> 
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".zigzag-slider").forEach(slider => {
+        const slides = slider.querySelectorAll(".slide");
+        let idx = 0;
+        setInterval(() => {
+            slides[idx].classList.remove("active");
+            idx = (idx + 1) % slides.length;
+            slides[idx].classList.add("active");
+        }, parseInt(slider.getAttribute("data-interval")));
+    });
+});
+</script>
+
+<?php include 'footer.php'; ?>

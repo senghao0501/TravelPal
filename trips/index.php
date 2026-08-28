@@ -75,6 +75,7 @@ $items = tp_get_cart_items($userId);
 include __DIR__ . '/../header.php';
 ?>
 <link rel="stylesheet" href="/TravelPal/css/modules/trips-cart.css?v=2">
+<link rel="stylesheet" href="/TravelPal/css/modules/trips-layout-overrides.css?v=1">
 <section class="trips-page">
     <div class="trips-shell">
         <div class="trips-hero"><div><span>MY TRIPS</span><h1>Your travel cart</h1><p>Review booking details, adjust travellers, nights or attraction tickets, then continue to payment.</p></div><div class="trips-hero-links"><a href="/TravelPal/trips/favorites.php" class="trips-outline">Favorites &amp; timetable</a><a href="/TravelPal/trips/history.php" class="trips-outline">Transaction history</a></div></div>

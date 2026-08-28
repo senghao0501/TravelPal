@@ -37,6 +37,7 @@ include __DIR__ . '/../header.php';
 ?>
 
 <link rel="stylesheet" href="/TravelPal/css/modules/favorites.css?v=3">
+<link rel="stylesheet" href="/TravelPal/css/modules/favorites-overrides.css?v=1">
 <link rel="stylesheet" href="/TravelPal/css/modules/attraction-favorites.css?v=1">
 
 <section class="favorites-page">
@@ -70,10 +71,10 @@ include __DIR__ . '/../header.php';
                 </div>
 
                 <div class="timetable-date-bar no-print">
-                    <button type="button" id="previousDate" aria-label="Previous day"><i class="fa-solid fa-chevron-left"></i></button>
-                    <label>Schedule date <input type="date" id="scheduleDate" value="<?= tp_h($selectedDate) ?>"></label>
-                    <button type="button" id="nextDate" aria-label="Next day"><i class="fa-solid fa-chevron-right"></i></button>
-                    <button type="button" class="change-date" id="changeDate">Choose date</button>
+                    <span>Your trip dates</span>
+                    <div class="schedule-date-tabs" id="scheduleDateTabs"></div>
+                    <button type="button" class="change-date" id="changeDate">Change dates</button>
+                    <input type="hidden" id="scheduleDate" value="<?= tp_h($selectedDate) ?>">
                 </div>
 
                 <div class="timeline">
@@ -104,7 +105,6 @@ include __DIR__ . '/../header.php';
                 <div class="favorite-list-head">
                     <span>SAVED ITEMS</span>
                     <h2>Drag into your day</h2>
-                    <div id="deleteDrop" class="delete-drop" aria-label="Drop a timetable item here to remove it"><i class="fa-solid fa-trash"></i> Remove from timetable</div>
                 </div>
 
                 <?php foreach ($favoriteTypes as $type => $config): ?>
@@ -139,12 +139,19 @@ include __DIR__ . '/../header.php';
                                     'quantity' => $quantity,
                                     'duration_hours' => $durationHours,
                                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
+                                $detailUrl = match ($type) {
+                                    'hotel' => preg_match('/^hotel-([^\-]+)/', (string) $item['item_key'], $matches) ? '/TravelPal/hotels/detail.php?id=' . rawurlencode($matches[1]) : '/TravelPal/hotels/index.php',
+                                    'restaurant' => preg_match('/^restaurant-(\d+)/', (string) $item['item_key'], $matches) ? '/TravelPal/restaurant/detail.php?id=' . rawurlencode($matches[1]) : '/TravelPal/restaurant/all.php',
+                                    'flight' => preg_match('/^flight-([^-]+)/', (string) $item['item_key'], $matches) ? '/TravelPal/flights/detail.php?id=' . rawurlencode($matches[1]) : '/TravelPal/flights/index.php',
+                                    default => (string) ($metadata['detail_url'] ?? '/TravelPal/attractions/index.php'),
+                                };
                                 ?>
 
                                 <article
                                     class="favorite-item"
                                     draggable="true"
                                     data-favorite="<?= tp_h($favoritePayload) ?>"
+                                    data-detail-url="<?= tp_h($detailUrl) ?>"
                                 >
                                     <div class="favorite-icon <?= tp_h($type) ?>">
                                         <i class="fa-solid fa-<?= tp_h($config['icon']) ?>"></i>
@@ -160,7 +167,7 @@ include __DIR__ . '/../header.php';
                                         </em>
                                     </div>
 
-                                    <i class="fa-solid fa-grip-lines drag-mark"></i>
+                                    <button type="button" class="favorite-remove" aria-label="Remove <?= tp_h($item['title']) ?> from favorites"><i class="fa-solid fa-trash"></i></button>
                                 </article>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -173,10 +180,11 @@ include __DIR__ . '/../header.php';
 
 <div class="planner-modal" id="dateModal" aria-hidden="true">
     <div class="planner-modal-card" role="dialog" aria-modal="true" aria-labelledby="dateModalTitle">
-        <h2 id="dateModalTitle">Choose a day to plan</h2>
-        <p>Select the date for this timetable. Each date keeps its own saved schedule.</p>
-        <input type="date" id="modalScheduleDate" value="<?= tp_h($selectedDate) ?>">
-        <div class="planner-modal-actions"><button type="button" class="modal-cancel" id="dateModalCancel">Cancel</button><button type="button" class="modal-confirm" id="dateModalConfirm">Open timetable</button></div>
+        <h2 id="dateModalTitle">Choose your trip dates</h2>
+        <p>Choose the start and end date. A separate timetable will be kept for every day in this range.</p>
+        <label>Start date <input type="date" id="modalStartDate" value="<?= tp_h($selectedDate) ?>"></label>
+        <label>End date <input type="date" id="modalEndDate" value="<?= tp_h($selectedDate) ?>"></label>
+        <div class="planner-modal-actions"><button type="button" class="modal-cancel" id="dateModalCancel">Cancel</button><button type="button" class="modal-confirm" id="dateModalConfirm">Create trip days</button></div>
     </div>
 </div>
 
@@ -298,10 +306,31 @@ async function loadSchedule(dateValue) {
     if (!response.ok || !result.ok) throw new Error('Unable to load this timetable.');
     blocks.splice(0, blocks.length, ...result.items.map(item => ({...item, start_hour: Number(item.start_hour), end_hour: Number(item.end_hour), unit_price: Number(item.unit_price), quantity: Number(item.quantity)})));
     scheduleDateInput.value = dateValue;
-    document.getElementById('modalScheduleDate').value = dateValue;
+    renderDateTabs();
     draw();
 }
-function changeDate(offset) { const date = new Date(scheduleDateInput.value + 'T00:00:00'); date.setDate(date.getDate() + offset); loadSchedule(date.toISOString().slice(0, 10)).catch(error => window.alert(error.message)); }
+let tripRange = {start_date: scheduleDateInput.value, end_date: scheduleDateInput.value};
+function datesInRange() {
+    const dates = [], cursor = new Date(tripRange.start_date + 'T00:00:00'), last = new Date(tripRange.end_date + 'T00:00:00');
+    while (cursor <= last) { dates.push(cursor.toISOString().slice(0, 10)); cursor.setDate(cursor.getDate() + 1); }
+    return dates;
+}
+function renderDateTabs() {
+    document.getElementById('scheduleDateTabs').innerHTML = datesInRange().map(date => `<button type="button" class="schedule-date-tab${date === scheduleDateInput.value ? ' active' : ''}" data-date="${date}">${new Intl.DateTimeFormat('en-MY', {day:'numeric', month:'short'}).format(new Date(date + 'T00:00:00'))}</button>`).join('');
+    document.querySelectorAll('.schedule-date-tab').forEach(button => button.addEventListener('click', () => loadSchedule(button.dataset.date).catch(error => window.alert(error.message))));
+}
+async function loadRange() {
+    const response = await fetch('/TravelPal/trips/timetable_action.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'range'})});
+    const result = await response.json(); tripRange = result.range; document.getElementById('modalStartDate').value = tripRange.start_date; document.getElementById('modalEndDate').value = tripRange.end_date;
+    if (result.has_range && !datesInRange().includes(scheduleDateInput.value)) await loadSchedule(tripRange.start_date); else renderDateTabs();
+    if (!result.has_range) showModal(dateModal);
+}
+async function saveRange() {
+    const start = document.getElementById('modalStartDate').value, end = document.getElementById('modalEndDate').value;
+    const response = await fetch('/TravelPal/trips/timetable_action.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'range', method:'save', start_date:start, end_date:end})});
+    const result = await response.json(); if (!response.ok || !result.ok) throw new Error('Choose a valid date range of up to 32 days.');
+    tripRange = result; await loadSchedule(start);
+}
 function showModal(modal) { modal.classList.add('is-visible'); modal.setAttribute('aria-hidden', 'false'); }
 function hideModal(modal) { modal.classList.remove('is-visible'); modal.setAttribute('aria-hidden', 'true'); }
 
@@ -322,6 +351,19 @@ document.querySelectorAll('.favorite-item').forEach(function (item) {
     });
     item.addEventListener('dragend', function () {
         item.classList.remove('is-dragging');
+    });
+    item.addEventListener('click', function (event) {
+        if (!event.target.closest('.favorite-remove') && !item.classList.contains('is-dragging')) window.location.href = item.dataset.detailUrl;
+    });
+});
+
+document.querySelectorAll('.favorite-remove').forEach(function (button) {
+    button.addEventListener('click', async function (event) {
+        event.preventDefault(); event.stopPropagation();
+        const item = button.closest('.favorite-item'); const favorite = JSON.parse(item.dataset.favorite);
+        if (!confirm('Remove this item from Favorites?')) return;
+        const response = await fetch('/TravelPal/trips/favorites_action.php', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action:'remove', item_type:favorite.item_type, item_key:favorite.item_key})});
+        const result = await response.json(); if (response.ok && result.ok) item.remove(); else window.alert('This favorite could not be removed.');
     });
 });
 
@@ -353,14 +395,6 @@ document.querySelectorAll('.timeline-drop').forEach(function (drop) {
     });
 });
 
-const deleteDrop = document.getElementById('deleteDrop');
-deleteDrop.addEventListener('dragover', event => { event.preventDefault(); deleteDrop.classList.add('drag-over'); });
-deleteDrop.addEventListener('dragleave', () => deleteDrop.classList.remove('drag-over'));
-deleteDrop.addEventListener('drop', event => {
-    event.preventDefault(); deleteDrop.classList.remove('drag-over');
-    if (timetableBlockDragging !== null) { blocks.splice(timetableBlockDragging, 1); timetableBlockDragging = null; draw(); save(); }
-});
-
 document.getElementById('clearTimetable').addEventListener('click', function () {
     if (confirm('Clear your saved timetable?')) {
         blocks.splice(0);
@@ -369,12 +403,9 @@ document.getElementById('clearTimetable').addEventListener('click', function () 
     }
 });
 
-document.getElementById('previousDate').addEventListener('click', () => changeDate(-1));
-document.getElementById('nextDate').addEventListener('click', () => changeDate(1));
-scheduleDateInput.addEventListener('change', () => loadSchedule(scheduleDateInput.value).catch(error => window.alert(error.message)));
 document.getElementById('changeDate').addEventListener('click', () => showModal(dateModal));
 document.getElementById('dateModalCancel').addEventListener('click', () => hideModal(dateModal));
-document.getElementById('dateModalConfirm').addEventListener('click', () => { loadSchedule(document.getElementById('modalScheduleDate').value).then(() => hideModal(dateModal)).catch(error => window.alert(error.message)); });
+document.getElementById('dateModalConfirm').addEventListener('click', () => { saveRange().then(() => hideModal(dateModal)).catch(error => window.alert(error.message)); });
 dateModal.addEventListener('click', event => { if (event.target === dateModal) hideModal(dateModal); });
 
 document.getElementById('printTimetable').addEventListener('click', async function () {
@@ -388,7 +419,7 @@ document.getElementById('printModalCancel').addEventListener('click', () => hide
 document.getElementById('printModalConfirm').addEventListener('click', () => loadSchedule(document.getElementById('printScheduleDate').value).then(() => { hideModal(printModal); window.print(); }));
 
 draw();
-showModal(dateModal);
+loadRange().catch(() => showModal(dateModal));
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

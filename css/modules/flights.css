@@ -90,7 +90,7 @@ a {
 .search-container,
 .main-content,
 .detail-page-container {
-    width: min(1180px, calc(100% - 48px));
+    width: min(1360px, calc(100% - 32px));
     margin-left: auto;
     margin-right: auto;
 }
@@ -2680,10 +2680,10 @@ input:focus-visible {
 
 /* Desktop: keep the search bar anchored to the same left edge in every browser. */
 .search-container {
-    width: calc(100vw - 50px);
-    max-width: none;
-    margin-left: 50px;
-    margin-right: 0;
+    width: min(1360px, calc(100% - 32px));
+    max-width: 1360px;
+    margin-left: auto;
+    margin-right: auto;
     transform: none;
     box-sizing: border-box;
 }
@@ -2806,8 +2806,8 @@ input:focus-visible {
 @media (min-width: 1300px) {
     .search-container {
         /* Use the same content column as the hero and main section. */
-        width: min(1240px, calc(100% - 48px));
-        max-width: 1240px;
+        width: min(1360px, calc(100% - 32px));
+        max-width: 1360px;
         margin-left: auto;
         margin-right: auto;
         transform: none;

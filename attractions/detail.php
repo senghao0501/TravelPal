@@ -180,6 +180,7 @@ include '../header.php';
         'image_url' => (string) ($attraction['image'] ?? ''),
         'unit_price' => $tripUnitPrice,
         'metadata' => [
+            'detail_url' => $_SERVER['REQUEST_URI'] ?? '/TravelPal/attractions/index.php',
             'visit_date' => $selectedVisitDate,
             'adults' => $selectedAdults,
             'children' => $selectedChildren,

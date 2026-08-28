@@ -398,6 +398,7 @@ include '../header.php';
                             (string) ($attraction['price'] ?? 'Check price')
                         ),
                         'metadata' => [
+                            'detail_url' => $detailUrl,
                             'duration_hours' => 2,
                             'tickets' => 2,
                         ],

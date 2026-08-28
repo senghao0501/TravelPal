@@ -10,6 +10,7 @@ $stmt->close();
 include __DIR__ . '/../header.php';
 ?>
 <link rel="stylesheet" href="/TravelPal/css/modules/trips-cart.css?v=2">
+<link rel="stylesheet" href="/TravelPal/css/modules/trips-layout-overrides.css?v=1">
 <section class="trips-page">
     <div class="trips-shell history-shell">
         <div class="trips-hero"><div><span>TRANSACTION HISTORY</span><h1>Past bookings</h1><p>View completed demo payments and open the related receipt.</p></div><a href="/TravelPal/trips/index.php" class="trips-outline">Back to My Trips</a></div>

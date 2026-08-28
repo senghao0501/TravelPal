@@ -128,12 +128,16 @@ function displayPrice($myrPrice) {
         .tp-switch input:checked + .tp-slider:before { transform: translateX(20px); }
         .tp-modal-footer {
             padding: 16px 24px; border-top: 1px solid #e5e7eb;
-            display: flex; justify-content: flex-end; gap: 12px; background: #f8fafc;
+            display: flex; align-items: center; justify-content: flex-end; gap: 12px; background: #f8fafc;
         }
-        .tp-btn-cancel { padding: 10px 18px; border: none; background: transparent; font-weight: 700; color: #6b7280; cursor: pointer; border-radius: 6px; }
+        .tp-btn-cancel { flex: 0 0 auto; white-space: nowrap; padding: 10px 18px; border: none; background: transparent; font-weight: 700; color: #6b7280; cursor: pointer; border-radius: 6px; }
         .tp-btn-cancel:hover { background: #e5e7eb; color: #111827; }
-        .tp-btn-save { padding: 10px 24px; border: none; background: #047857; color: #fff; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
+        .tp-btn-save { flex: 0 0 auto; white-space: nowrap; padding: 10px 24px; border: none; background: #047857; color: #fff; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
         .tp-btn-save:hover { background: #065f46; }
+        .tp-btn-save:disabled { background: #94a3b8; cursor: wait; }
+        .tp-save-status { flex: 1 1 auto; min-width: 0; max-width: 190px; margin: 0 auto 0 0; font-size: 12px; line-height: 1.35; font-weight: 700; overflow-wrap: anywhere; }
+        .tp-save-status.success { color: #047857; }
+        .tp-save-status.error { color: #b91c1c; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -257,8 +261,9 @@ function displayPrice($myrPrice) {
         </div>
         
         <div class="tp-modal-footer">
+            <p id="tp-save-status" class="tp-save-status" role="status" aria-live="polite"></p>
             <button class="tp-btn-cancel" onclick="closeSettingsModal()">Cancel</button>
-            <button class="tp-btn-save" onclick="saveSettingsModal()">Save Changes</button>
+            <button type="button" id="tp-save-button" class="tp-btn-save" onclick="saveSettingsModal()">Save Changes</button>
         </div>
     </div>
 </div>
@@ -266,6 +271,7 @@ function displayPrice($myrPrice) {
 <script>
     function openSettingsModal(tabId) {
         document.getElementById('tpSettingsModal').classList.add('active');
+        setSettingsStatus('', '');
         switchSettingsTab(tabId);
     }
 
@@ -280,45 +286,73 @@ function displayPrice($myrPrice) {
         document.getElementById('tabBtn-' + tabId).classList.add('active');
     }
 
-    // 🌟 高级保存逻辑：不仅同步 UI，还把数据发给后端，并处理汇率刷新
-    function saveSettingsModal() {
-        // 1. 抓取用户设定的新值
-        let newName = document.getElementById('input-display-name').value;
-        let newCurrency = document.getElementById('select-currency').value;
-        let newLanguage = document.getElementById('select-language').value;
-        
-        // 2. 立刻更新前端下拉菜单的 UI (让用户感觉反应很快)
-        if (newName.trim() !== '') {
-            let nameElement = document.getElementById('nav-dropdown-name');
-            if (nameElement) nameElement.innerText = newName;
+    function setSettingsStatus(message, type) {
+        const statusElement = document.getElementById('tp-save-status');
+        statusElement.textContent = message;
+        statusElement.className = 'tp-save-status' + (type ? ' ' + type : '');
+    }
+
+    async function saveSettingsModal() {
+        const nameInput = document.getElementById('input-display-name');
+        const saveButton = document.getElementById('tp-save-button');
+        const newName = nameInput.value.trim().replace(/\s+/g, ' ');
+        const newCurrency = document.getElementById('select-currency').value;
+        const newLanguage = document.getElementById('select-language').value;
+
+        if (Array.from(newName).length < 2 || Array.from(newName).length > 100) {
+            setSettingsStatus('Display name must contain between 2 and 100 characters.', 'error');
+            nameInput.focus();
+            return;
         }
-        
-        // 3. 将数据打包，准备发送给后台 PHP
-        let formData = new FormData();
+
+        const formData = new FormData();
         formData.append('display_name', newName);
         formData.append('currency', newCurrency);
         formData.append('language', newLanguage);
 
-        // 4. 发送 AJAX 请求到后台
-        fetch('/TravelPal/settings/update_prefs.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                closeSettingsModal();
-                // 🚀 核心：如果货币改变了，强制刷新当前页面！
-                // 这样 PHP 就能用新的 $_SESSION['currency'] 重新计算全站的价格！
-                window.location.reload(); 
-            } else {
-                alert('Failed to save settings. Please try again.');
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+        setSettingsStatus('', '');
+
+        try {
+            const response = await fetch('/TravelPal/settings/update_prefs.php', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const responseText = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(responseText);
+            } catch (error) {
+                throw new Error('The server returned an invalid response.');
             }
-        })
-        .catch(error => {
+
+            if (!response.ok || !data.success) {
+                if (data.silent) {
+                    console.error('Profile settings could not be saved.');
+                    setSettingsStatus('', '');
+                    return;
+                }
+                throw new Error(data.message || 'Your profile could not be saved.');
+            }
+
+            nameInput.value = data.profile.display_name;
+            const nameElement = document.getElementById('nav-dropdown-name');
+            if (nameElement) {
+                nameElement.textContent = data.profile.display_name;
+            }
+
+            setSettingsStatus(data.message, 'success');
+            window.setTimeout(() => window.location.reload(), 650);
+        } catch (error) {
             console.error('Error:', error);
-            closeSettingsModal();
-        });
+            setSettingsStatus(error.message || 'Your profile could not be saved.', 'error');
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Changes';
+        }
     }
 </script>
 

@@ -28,16 +28,10 @@ $stmt = $auth_db->prepare(
     'SELECT item_type, item_key, title, unit_price, quantity, start_hour, end_hour '
     . 'FROM trip_timetable_items WHERE user_id = ? AND schedule_date = ? ORDER BY start_hour, id'
 );
-$scheduled = [];
-
-if ($stmt) {
-    $stmt->bind_param('is', $userId, $selectedDate);
-    $stmt->execute();
-    $scheduled = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-} else {
-    error_log('Unable to load trip timetable: ' . $auth_db->error);
-}
+$stmt->bind_param('is', $userId, $selectedDate);
+$stmt->execute();
+$scheduled = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
 include __DIR__ . '/../header.php';
 ?>

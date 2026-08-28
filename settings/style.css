@@ -29,6 +29,30 @@
     margin: 0;
 }
 
+.settings-notice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 24px;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.settings-notice-success {
+    color: #065f46;
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.settings-notice-error {
+    color: #991b1b;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
 /* 2. Booking.com 风格的 Help Center / 登录引导大卡片 */
 .help-center-card {
     background: #ffffff !important;

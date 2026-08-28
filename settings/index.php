@@ -76,6 +76,18 @@ include '../header.php';
         <p class="settings-subtitle">Manage your account preferences, region options, and safety settings.</p>
     </div>
 
+    <?php if ($settingsMessage === 'saved'): ?>
+        <div class="settings-notice settings-notice-success" role="status">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+            Your account settings have been saved.
+        </div>
+    <?php elseif ($settingsError !== ''): ?>
+        <div class="settings-notice settings-notice-error" role="alert">
+            <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+            <?php echo htmlspecialchars($settingsError); ?>
+        </div>
+    <?php endif; ?>
+
     <!-- 未登录 (Guest) 专属：Booking.com 风格的 Help Center / 登录引导卡片 -->
     <?php if (!$isLoggedIn): ?>
         <div class="help-center-card">
@@ -158,7 +170,7 @@ include '../header.php';
                 </div>
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" name="username" value="<?php echo htmlspecialchars($userName); ?>" placeholder="Your Name">
+                    <input type="text" name="username" value="<?php echo htmlspecialchars($userName); ?>" placeholder="Your Name" minlength="2" maxlength="100" required>
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
@@ -178,7 +190,7 @@ include '../header.php';
                 </div>
                 <div class="form-group">
                     <label for="new_pass">New Password</label>
-                    <input type="password" id="new_pass" name="new_pass" placeholder="Enter new password (min. 6 characters)">
+                    <input type="password" id="new_pass" name="new_pass" placeholder="Enter new password (min. 8 characters)">
                 </div>
             </div>
         <?php endif; ?>
@@ -187,7 +199,7 @@ include '../header.php';
         <div class="form-actions">
             <button type="submit" class="btn-save-settings">Save Changes</button>
             <?php if ($isLoggedIn): ?>
-                <a href="../logout.php" class="btn-logout">Log Out</a>
+                <a href="../auth/logout.php" class="btn-logout">Log Out</a>
             <?php endif; ?>
         </div>
 

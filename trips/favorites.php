@@ -12,6 +12,8 @@ $favoriteTypes = [
     'attraction' => ['label' => 'Attractions', 'icon' => 'ticket'],
 ];
 $favorites = tp_get_favorites($userId);
+$selectedDate = (string) ($_GET['date'] ?? date('Y-m-d'));
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $selectedDate)) $selectedDate = date('Y-m-d');
 $grouped = array_fill_keys(array_keys($favoriteTypes), []);
 
 foreach ($favorites as $favorite) {
@@ -24,9 +26,9 @@ foreach ($favorites as $favorite) {
 
 $stmt = $auth_db->prepare(
     'SELECT item_type, item_key, title, unit_price, quantity, start_hour, end_hour '
-    . 'FROM trip_timetable_items WHERE user_id = ? ORDER BY start_hour, id'
+    . 'FROM trip_timetable_items WHERE user_id = ? AND schedule_date = ? ORDER BY start_hour, id'
 );
-$stmt->bind_param('i', $userId);
+$stmt->bind_param('is', $userId, $selectedDate);
 $stmt->execute();
 $scheduled = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
@@ -34,7 +36,7 @@ $stmt->close();
 include __DIR__ . '/../header.php';
 ?>
 
-<link rel="stylesheet" href="/TravelPal/css/modules/favorites.css?v=2">
+<link rel="stylesheet" href="/TravelPal/css/modules/favorites.css?v=3">
 <link rel="stylesheet" href="/TravelPal/css/modules/attraction-favorites.css?v=1">
 
 <section class="favorites-page">
@@ -44,8 +46,8 @@ include __DIR__ . '/../header.php';
                 <span>TRIP PLANNER</span>
                 <h1>Favorites &amp; timetable</h1>
                 <p>
-                    Drag a saved favorite into the hour you want to be there.
-                    Click a scheduled block to change its finish time.
+                    Plan each day separately. Drag a saved favorite into an hour,
+                    then click its block to adjust or remove it.
                 </p>
             </div>
 
@@ -67,6 +69,13 @@ include __DIR__ . '/../header.php';
                     </button>
                 </div>
 
+                <div class="timetable-date-bar no-print">
+                    <button type="button" id="previousDate" aria-label="Previous day"><i class="fa-solid fa-chevron-left"></i></button>
+                    <label>Schedule date <input type="date" id="scheduleDate" value="<?= tp_h($selectedDate) ?>"></label>
+                    <button type="button" id="nextDate" aria-label="Next day"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button type="button" class="change-date" id="changeDate">Choose date</button>
+                </div>
+
                 <div class="timeline">
                     <div class="timeline-hours">
                         <?php for ($hour = 0; $hour < 24; $hour++): ?>
@@ -85,7 +94,7 @@ include __DIR__ . '/../header.php';
                         <small>Based on favorites, passengers, tickets and nights.</small>
                     </div>
 
-                    <button class="print-timetable no-print" onclick="window.print()">
+                    <button class="print-timetable no-print" id="printTimetable" type="button">
                         <i class="fa-solid fa-print"></i> Print timetable
                     </button>
                 </div>
@@ -95,6 +104,7 @@ include __DIR__ . '/../header.php';
                 <div class="favorite-list-head">
                     <span>SAVED ITEMS</span>
                     <h2>Drag into your day</h2>
+                    <div id="deleteDrop" class="delete-drop" aria-label="Drop a timetable item here to remove it"><i class="fa-solid fa-trash"></i> Remove from timetable</div>
                 </div>
 
                 <?php foreach ($favoriteTypes as $type => $config): ?>
@@ -161,6 +171,24 @@ include __DIR__ . '/../header.php';
     </div>
 </section>
 
+<div class="planner-modal" id="dateModal" aria-hidden="true">
+    <div class="planner-modal-card" role="dialog" aria-modal="true" aria-labelledby="dateModalTitle">
+        <h2 id="dateModalTitle">Choose a day to plan</h2>
+        <p>Select the date for this timetable. Each date keeps its own saved schedule.</p>
+        <input type="date" id="modalScheduleDate" value="<?= tp_h($selectedDate) ?>">
+        <div class="planner-modal-actions"><button type="button" class="modal-cancel" id="dateModalCancel">Cancel</button><button type="button" class="modal-confirm" id="dateModalConfirm">Open timetable</button></div>
+    </div>
+</div>
+
+<div class="planner-modal" id="printModal" aria-hidden="true">
+    <div class="planner-modal-card" role="dialog" aria-modal="true" aria-labelledby="printModalTitle">
+        <h2 id="printModalTitle">Print a timetable</h2>
+        <p>Only dates with saved timetable items are listed.</p>
+        <select id="printScheduleDate"></select>
+        <div class="planner-modal-actions"><button type="button" class="modal-cancel" id="printModalCancel">Cancel</button><button type="button" class="modal-confirm" id="printModalConfirm">Print</button></div>
+    </div>
+</div>
+
 <script>
 const savedSchedule = <?= json_encode(
     $scheduled,
@@ -169,7 +197,11 @@ const savedSchedule = <?= json_encode(
 const blocks = [];
 const timeline = document.querySelector('.timeline-hours');
 const estimate = document.getElementById('estimateRange');
+const scheduleDateInput = document.getElementById('scheduleDate');
+const dateModal = document.getElementById('dateModal');
+const printModal = document.getElementById('printModal');
 let dragging = null;
+let timetableBlockDragging = null;
 
 function timeLabel(hour) {
     return String(hour).padStart(2, '0') + ':00';
@@ -209,6 +241,9 @@ function draw() {
         block.style.height = `calc(${Math.max(1, item.end_hour - item.start_hour) * 52}px - 6px)`;
         block.innerHTML = `<strong>${escapeHtml(item.title)}</strong><span>${timeLabel(item.start_hour)} – ${timeLabel(item.end_hour)}</span>`;
         block.title = 'Click to set the end hour or remove this item';
+        block.draggable = true;
+        block.addEventListener('dragstart', function (event) { timetableBlockDragging = index; event.dataTransfer.effectAllowed = 'move'; });
+        block.addEventListener('dragend', function () { timetableBlockDragging = null; });
         block.addEventListener('click', function () {
             const answer = prompt(
                 `Finish time for ${item.title} (between ${item.start_hour + 1} and 24). Leave blank to remove.`,
@@ -250,11 +285,25 @@ function save() {
     fetch('/TravelPal/trips/timetable_action.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({action: 'save', items: blocks})
+        body: JSON.stringify({action: 'save', schedule_date: scheduleDateInput.value, items: blocks})
     }).catch(function () {
         window.alert('The timetable could not be saved right now.');
     });
 }
+
+async function loadSchedule(dateValue) {
+    if (!dateValue) return;
+    const response = await fetch('/TravelPal/trips/timetable_action.php', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action: 'list', schedule_date: dateValue})});
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error('Unable to load this timetable.');
+    blocks.splice(0, blocks.length, ...result.items.map(item => ({...item, start_hour: Number(item.start_hour), end_hour: Number(item.end_hour), unit_price: Number(item.unit_price), quantity: Number(item.quantity)})));
+    scheduleDateInput.value = dateValue;
+    document.getElementById('modalScheduleDate').value = dateValue;
+    draw();
+}
+function changeDate(offset) { const date = new Date(scheduleDateInput.value + 'T00:00:00'); date.setDate(date.getDate() + offset); loadSchedule(date.toISOString().slice(0, 10)).catch(error => window.alert(error.message)); }
+function showModal(modal) { modal.classList.add('is-visible'); modal.setAttribute('aria-hidden', 'false'); }
+function hideModal(modal) { modal.classList.remove('is-visible'); modal.setAttribute('aria-hidden', 'true'); }
 
 savedSchedule.forEach(function (item) {
     blocks.push({
@@ -304,6 +353,14 @@ document.querySelectorAll('.timeline-drop').forEach(function (drop) {
     });
 });
 
+const deleteDrop = document.getElementById('deleteDrop');
+deleteDrop.addEventListener('dragover', event => { event.preventDefault(); deleteDrop.classList.add('drag-over'); });
+deleteDrop.addEventListener('dragleave', () => deleteDrop.classList.remove('drag-over'));
+deleteDrop.addEventListener('drop', event => {
+    event.preventDefault(); deleteDrop.classList.remove('drag-over');
+    if (timetableBlockDragging !== null) { blocks.splice(timetableBlockDragging, 1); timetableBlockDragging = null; draw(); save(); }
+});
+
 document.getElementById('clearTimetable').addEventListener('click', function () {
     if (confirm('Clear your saved timetable?')) {
         blocks.splice(0);
@@ -312,7 +369,26 @@ document.getElementById('clearTimetable').addEventListener('click', function () 
     }
 });
 
+document.getElementById('previousDate').addEventListener('click', () => changeDate(-1));
+document.getElementById('nextDate').addEventListener('click', () => changeDate(1));
+scheduleDateInput.addEventListener('change', () => loadSchedule(scheduleDateInput.value).catch(error => window.alert(error.message)));
+document.getElementById('changeDate').addEventListener('click', () => showModal(dateModal));
+document.getElementById('dateModalCancel').addEventListener('click', () => hideModal(dateModal));
+document.getElementById('dateModalConfirm').addEventListener('click', () => { loadSchedule(document.getElementById('modalScheduleDate').value).then(() => hideModal(dateModal)).catch(error => window.alert(error.message)); });
+dateModal.addEventListener('click', event => { if (event.target === dateModal) hideModal(dateModal); });
+
+document.getElementById('printTimetable').addEventListener('click', async function () {
+    const response = await fetch('/TravelPal/trips/timetable_action.php', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({action: 'dates'})});
+    const result = await response.json(); const select = document.getElementById('printScheduleDate');
+    select.innerHTML = (result.dates || []).map(row => `<option value="${row.schedule_date}">${row.schedule_date} (${row.item_count} item${Number(row.item_count) === 1 ? '' : 's'})</option>`).join('');
+    if (!select.options.length) { window.alert('There is no saved timetable to print yet.'); return; }
+    select.value = scheduleDateInput.value; showModal(printModal);
+});
+document.getElementById('printModalCancel').addEventListener('click', () => hideModal(printModal));
+document.getElementById('printModalConfirm').addEventListener('click', () => loadSchedule(document.getElementById('printScheduleDate').value).then(() => { hideModal(printModal); window.print(); }));
+
 draw();
+showModal(dateModal);
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

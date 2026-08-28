@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS trip_order_items (
 CREATE TABLE IF NOT EXISTS trip_timetable_items (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT,
     user_id INT UNSIGNED NOT NULL,
+    schedule_date DATE NOT NULL,
     item_type ENUM('flight','hotel','restaurant','attraction') NOT NULL,
     item_key VARCHAR(160) NOT NULL DEFAULT '',
     title VARCHAR(200) NOT NULL,
@@ -100,6 +101,7 @@ CREATE TABLE IF NOT EXISTS trip_timetable_items (
     end_hour TINYINT UNSIGNED NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
+    KEY idx_timetable_user_date (user_id, schedule_date),
     CONSTRAINT fk_timetable_account FOREIGN KEY (user_id) REFERENCES accounts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

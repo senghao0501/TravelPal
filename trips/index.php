@@ -38,6 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update') { header('Location: index.php?updated=1'); exit; }
     
     if ($action === 'pay') {
+        if (($_POST['confirm_payment'] ?? '') !== '1') {
+            $error = 'Please review and confirm the payment before it is submitted.';
+        } else {
         $selected = array_values(array_filter(array_map('intval', $_POST['selected'] ?? [])));
         $items = tp_get_cart_items($userId, $selected);
         if (!$items) { header('Location: index.php?error=no_selection'); exit; }
@@ -65,18 +68,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $_SESSION['promo_used'] = true;
 			header('Location: receipt.php?order_id=' . $orderId); exit;
         } catch (Throwable $e) { $auth_db->rollback(); $error = 'Payment could not be completed. Please try again.'; }
+        }
     }
 }
 $items = tp_get_cart_items($userId);
-$orders = [];
-$stmt = $auth_db->prepare('SELECT id, order_ref, total_amount, payment_status, created_at FROM trip_orders WHERE user_id = ? ORDER BY created_at DESC');
-$stmt->bind_param('i', $userId); $stmt->execute(); $orders = $stmt->get_result()->fetch_all(MYSQLI_ASSOC); $stmt->close();
 include __DIR__ . '/../header.php';
 ?>
-<link rel="stylesheet" href="/TravelPal/css/modules/trips-cart.css?v=1">
+<link rel="stylesheet" href="/TravelPal/css/modules/trips-cart.css?v=2">
 <section class="trips-page">
     <div class="trips-shell">
-        <div class="trips-hero"><div><span>MY TRIPS</span><h1>Your travel cart</h1><p>Review booking details, adjust travellers, nights or attraction tickets, then pay securely.</p></div><a href="/TravelPal/trips/favorites.php" class="trips-outline"><i class="fa-regular fa-heart"></i> Favorites &amp; timetable</a></div>
+        <div class="trips-hero"><div><span>MY TRIPS</span><h1>Your travel cart</h1><p>Review booking details, adjust travellers, nights or attraction tickets, then continue to payment.</p></div><div class="trips-hero-links"><a href="/TravelPal/trips/favorites.php" class="trips-outline">Favorites &amp; timetable</a><a href="/TravelPal/trips/history.php" class="trips-outline">Transaction history</a></div></div>
         <?php if (isset($_GET['added'])): ?><div class="trips-alert success">Added to My Trips. Your booking is ready for checkout.</div><?php endif; ?>
         <?php if (isset($_GET['error']) || isset($error)): ?><div class="trips-alert error"><?php echo tp_h($error ?? 'Choose at least one booking to continue.'); ?></div><?php endif; ?>
         <form method="post" id="cartForm" class="trips-layout">
@@ -120,7 +121,7 @@ include __DIR__ . '/../header.php';
                 <!-- 🌟 新增：如果符合首次购买条件，动态显示 15% 折扣 -->
                 <?php if ($isFirstTime): ?>
                     <div class="summary-row" style="color: #047857; margin-top: 8px;">
-                        <span><i class="fa-solid fa-gift"></i> New Member (15% OFF)</span>
+                        <span>New member discount (15% off)</span>
                         <strong id="cartDiscount">- RM 0.00</strong>
                     </div>
                 <?php endif; ?>
@@ -130,12 +131,21 @@ include __DIR__ . '/../header.php';
                 </div>
                 
                 <p>Demo payment only. No real payment is collected.</p>
-                <button class="pay-btn" type="submit" name="action" value="pay" <?php echo !$items ? 'disabled' : ''; ?>><i class="fa-solid fa-lock"></i> Pay &amp; get receipt</button>
+                <button class="pay-btn" type="button" id="openPaymentConfirm" <?php echo !$items ? 'disabled' : ''; ?>>Proceed to payment</button>
             </aside>
         </form>
-        <section class="transaction-history" id="transactions"><div><span>TRANSACTION HISTORY</span><h2>Past receipts</h2></div><?php if (!$orders): ?><p>No completed payments yet.</p><?php else: ?><div class="order-list"><?php foreach ($orders as $order): ?><a href="receipt.php?order_id=<?php echo $order['id']; ?>"><span><strong><?php echo tp_h($order['order_ref']); ?></strong><small><?php echo date('d M Y, H:i', strtotime($order['created_at'])); ?></small></span><span><?php echo tp_h($order['payment_status']); ?> · RM <?php echo number_format($order['total_amount'], 2); ?> <i class="fa-solid fa-chevron-right"></i></span></a><?php endforeach; ?></div><?php endif; ?></section>
     </div>
 </section>
+
+<div class="payment-modal" id="paymentConfirm" aria-hidden="true">
+    <div class="payment-modal-card" role="dialog" aria-modal="true" aria-labelledby="paymentConfirmTitle">
+        <h2 id="paymentConfirmTitle">Confirm payment</h2>
+        <p>You are about to pay for <strong id="confirmCount">0</strong> selected booking(s).</p>
+        <div class="payment-confirm-total"><span>Total to pay</span><strong id="confirmTotal">RM 0.00</strong></div>
+        <p class="payment-note">This is a demo checkout. No real payment will be charged.</p>
+        <div class="payment-modal-actions"><button type="button" id="cancelPayment">Back</button><button type="button" id="confirmPayment">Confirm &amp; pay</button></div>
+    </div>
+</div>
 
 <!-- 🌟 JS 核心逻辑更新：自动计算并呈现 15% 折扣效果 -->
 <script>
@@ -175,6 +185,21 @@ checks.forEach(check=>check.addEventListener('change',refreshCart));
 document.querySelectorAll('.qty-input').forEach(input=>input.addEventListener('input',refreshCart)); 
 if(all) all.addEventListener('change',()=>{checks.forEach(c=>c.checked=all.checked); refreshCart();}); 
 refreshCart();
+
+const paymentModal = document.getElementById('paymentConfirm');
+document.getElementById('openPaymentConfirm')?.addEventListener('click', function () {
+    const selectedCount = checks.filter(check => check.checked).length;
+    if (!selectedCount) { window.alert('Select at least one booking to continue.'); return; }
+    document.getElementById('confirmCount').textContent = selectedCount;
+    document.getElementById('confirmTotal').textContent = 'RM ' + (total?.textContent || '0.00');
+    paymentModal.classList.add('is-visible'); paymentModal.setAttribute('aria-hidden', 'false');
+});
+document.getElementById('cancelPayment')?.addEventListener('click', () => { paymentModal.classList.remove('is-visible'); paymentModal.setAttribute('aria-hidden', 'true'); });
+document.getElementById('confirmPayment')?.addEventListener('click', function () {
+    const confirmation = document.createElement('input'); confirmation.type = 'hidden'; confirmation.name = 'confirm_payment'; confirmation.value = '1'; cartForm.appendChild(confirmation);
+    const action = document.createElement('input'); action.type = 'hidden'; action.name = 'action'; action.value = 'pay'; cartForm.appendChild(action);
+    cartForm.submit();
+});
 </script>
 
 <?php include __DIR__ . '/../footer.php'; ?>

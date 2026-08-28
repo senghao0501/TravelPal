@@ -144,11 +144,10 @@ function buildSearchUrl(array $overrides = []): string
     return htmlspecialchars($_SERVER['PHP_SELF'] . '?' . http_build_query($params), ENT_QUOTES, 'UTF-8');
 }
 
-include __DIR__ . '/../header.php';
-
-// Shared login reminder: show once when the Flight search page is opened.
+// The shared popup is rendered by header.php. Set this before including it so
+// guests see the reminder, while signed-in members do not.
 $loginPopupAutoShow = true;
-include __DIR__ . '/../login_popup.php';
+include __DIR__ . '/../header.php';
 ?>
 
 <link rel="stylesheet" href="../css/modules/flights.css?v=2">

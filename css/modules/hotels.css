@@ -1,7 +1,4 @@
-/* =========================================================
-   TravelPal Hotels Module Styles
-   (Perfect Asymmetric Width: Search 1180px / Content 1440px)
-   ========================================================= */
+
 
 :root {
     --primary: #047857;
@@ -42,9 +39,6 @@ body {
     line-height: 1.5;
 }
 
-/* =========================================================
-   🚨 核心排版：非对称宽屏布局 🚨
-   ========================================================= */
 .hero-content,
 .search-container {
     width: 100% !important;
@@ -79,9 +73,7 @@ body {
     margin: 0 !important;
 }
 
-/* =========================================================
-   HERO / SEARCH AREA 
-   ========================================================= */
+
 .hero-section,
 .search-hero-wrapper {
     position: relative;
@@ -119,9 +111,7 @@ body {
     font-size: 16px;
 }
 
-/* =========================================================
-   FILTER BAR & SEARCH BOX
-   ========================================================= */
+
 .filter-bar {
     display: grid;
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.5fr) 200px;
@@ -236,9 +226,7 @@ body {
     box-shadow: 0 4px 10px rgba(4, 120, 87, 0.22);
 }
 
-/* =========================================================
-   GUEST PICKER DROPDOWN
-   ========================================================= */
+
 .guest-picker-dropdown {
     position: absolute;
     top: calc(100% + 8px);
@@ -299,9 +287,7 @@ body {
 }
 .btn-picker-done:hover { background: var(--primary-dark); }
 
-/* =========================================================
-   MAIN CONTENT & HOME CARDS (HOTELS)
-   ========================================================= */
+
 .main-content {
     margin-top: 34px;
     margin-bottom: 70px;
@@ -320,7 +306,6 @@ body {
 .section-header h2 { margin: 0; color: var(--text-dark); font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: -0.015em; }
 .section-header p { margin: 5px 0 0; color: var(--text-muted); font-size: 13px; }
 
-/* 🌟 Gallery Grid 🌟 */
 .gallery-section { margin-bottom: 48px; }
 .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .gallery-card { position: relative; height: 240px; overflow: hidden; border-radius: 5px; background: #d9dee6; text-decoration: none; display: block; }
@@ -331,14 +316,12 @@ body {
 .gallery-overlay h3 { margin: 0 0 3px; font-size: 17px; font-weight: 700; }
 .gallery-overlay p { margin: 0; color: rgba(255, 255, 255, 0.84); font-size: 11px; }
 
-/* 🌟 Features Grid 🌟 */
 .features-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 48px; }
 .feature-item { display: flex; align-items: flex-start; gap: 13px; padding: 19px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); }
 .feature-icon-wrapper { width: 38px; height: 38px; flex: 0 0 38px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); background: #f0f5fb; color: var(--primary); font-size: 15px; }
 .feature-info h4 { margin: 0 0 4px; color: var(--text-dark); font-size: 14px; font-weight: 700; }
 .feature-info p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
 
-/* 🌟 Tabs Grid 🌟 */
 .routes-section { padding: 25px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); margin-bottom: 48px; }
 .category-tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #e2e6eb; overflow-x: auto; }
 .tab-btn { position: relative; padding: 11px 17px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #697586; font-size: 13px; font-weight: 650; cursor: pointer; white-space: nowrap; }
@@ -354,7 +337,6 @@ body {
 .theme-card-body h4 { margin: 0 0 6px; color: var(--text-dark); font-size: 14px; font-weight: 700; }
 .theme-card-body p { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.4; }
 
-/* 🌟 Promo Banner 🌟 */
 .hotel-promo-banner { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin: 40px 0; padding: 24px 28px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 10px; box-shadow: 0 5px 16px rgba(4, 120, 87, 0.08); }
 .hotel-promo-icon { display: flex; align-items: center; justify-content: center; flex: 0 0 58px; width: 58px; height: 58px; color: #ffffff; background: var(--primary); border-radius: 50%; font-size: 22px; }
 .hotel-promo-content { min-width: 250px; flex: 1; }
@@ -367,9 +349,7 @@ body {
 .hotel-btn-outline { border: 1px solid var(--primary); color: var(--primary); background: #ffffff; }
 .hotel-btn-outline:hover { background: var(--primary-soft); }
 
-/* =========================================================
-   RESULTS PAGE (LIST)
-   ========================================================= */
+
 
 .results-header-area { margin-bottom: 24px; }
 .results-header-area h2 { font-size: 34px; color: #0f172a; font-weight: 700; margin: 0; letter-spacing: -0.02em; }
@@ -406,15 +386,12 @@ body {
 .btn-book-now, .btn-checkout { width: 100%; }
 .btn-view-detail:hover, .btn-book-now:hover, .btn-checkout:hover { background: var(--primary-dark); box-shadow: 0 4px 10px rgba(4, 120, 87, 0.22); }
 
-/* LIST PAGE FAV BUTTONS */
 .fav-wrapper { position: absolute; top: 12px; right: 12px; z-index: 10; }
 .btn-fav { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.9); border: none; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #64748b; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(4px); }
 .btn-fav:hover { transform: scale(1.1); background: #ffffff; color: var(--primary); }
 .btn-fav.active { color: var(--primary) !important; }
 
-/* =========================================================
-   DETAIL PAGE & REVIEWS
-   ========================================================= */
+
 
 .detail-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid #dfe4ea; }
 .detail-title { margin: 0 0 7px; color: var(--text-dark); font-size: 32px; line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
@@ -436,7 +413,6 @@ body {
 
 .info-card i.fa-solid { -webkit-text-stroke: 1px var(--primary); color: transparent !important; }
 
-/* DETAIL FAV BUTTON */
 .btn-fav-detail { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.2s ease; }
 .btn-fav-detail:hover { border-color: var(--primary); color: var(--primary); }
 .btn-fav-detail.active { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
@@ -490,7 +466,6 @@ body {
 .booking-form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0, 108, 228, 0.10); }
 
 
-/* RESPONSIVE DESIGN */
 @media (max-width: 1050px) {
     .filter-bar { grid-template-columns: minmax(160px, 1fr) minmax(140px, 1fr) minmax(140px, 1fr) minmax(160px, 1fr); }
     .btn-search { grid-column: span 4; min-width: 0; }

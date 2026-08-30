@@ -6,151 +6,123 @@ include '../header.php';
 require_once 'hotels_data.php';
 require_once 'hotel_api.php'; 
 
-// 🚨 设施图标映射函数 - 返回 FontAwesome 类名 (Booking.com 风格线性图标)
 function getFacilityIcon($facilityName) {
     $name = strtolower($facilityName);
     
-    // Non-smoking
     if (strpos($name, 'non-smoking') !== false || strpos($name, 'smoke') !== false || strpos($name, '禁烟') !== false) {
         return 'fa-solid fa-ban-smoking';
     }
     
-    // Wi-Fi / Internet
     if (strpos($name, 'wifi') !== false || strpos($name, 'internet') !== false || strpos($name, 'wireless') !== false) {
         return 'fa-solid fa-wifi';
     }
     
-    // 24-hour Front Desk / Reception
     if (strpos($name, 'front desk') !== false || strpos($name, 'reception') !== false || strpos($name, 'concierge') !== false) {
         return 'fa-solid fa-bell-concierge';
     }
     
-    // Elevator / Lift
     if (strpos($name, 'lift') !== false || strpos($name, 'elevator') !== false) {
         return 'fa-solid fa-elevator';
     }
     
-    // Daily Housekeeping / Cleaning
     if (strpos($name, 'housekeeping') !== false || strpos($name, 'cleaning') !== false || strpos($name, 'clean') !== false) {
         return 'fa-solid fa-spray-can-sparkles';
     }
     
-    // Air Conditioning
     if (strpos($name, 'air condition') !== false || strpos($name, 'ac') !== false || strpos($name, 'cooling') !== false) {
         return 'fa-solid fa-snowflake';
     }
     
-    // Breakfast
     if (strpos($name, 'breakfast') !== false) {
         return 'fa-solid fa-mug-hot';
     }
     
-    // Swimming Pool
     if (strpos($name, 'pool') !== false || strpos($name, 'swimming') !== false) {
         return 'fa-solid fa-person-swimming';
     }
     
-    // Fitness / Gym
     if (strpos($name, 'fitness') !== false || strpos($name, 'gym') !== false || strpos($name, 'workout') !== false) {
         return 'fa-solid fa-dumbbell';
     }
     
-    // Restaurant / Dining
     if (strpos($name, 'restaurant') !== false || strpos($name, 'dining') !== false) {
         return 'fa-solid fa-utensils';
     }
     
-    // Parking
+    
     if (strpos($name, 'parking') !== false) {
         return 'fa-solid fa-square-parking';
     }
     
-    // Spa / Sauna / Wellness
     if (strpos($name, 'spa') !== false || strpos($name, 'sauna') !== false || strpos($name, 'wellness') !== false) {
         return 'fa-solid fa-spa';
     }
     
-    // Bar
     if (strpos($name, 'bar') !== false) {
         return 'fa-solid fa-martini-glass-citrus';
     }
     
-    // Coffee / Cafe
     if (strpos($name, 'coffee') !== false || strpos($name, 'cafe') !== false) {
         return 'fa-solid fa-mug-saucer';
     }
     
-    // Room Service
     if (strpos($name, 'room service') !== false) {
         return 'fa-solid fa-bell';
     }
     
-    // Family / Children
     if (strpos($name, 'family') !== false || strpos($name, 'children') !== false) {
         return 'fa-solid fa-people-group';
     }
     
-    // Pet
+    
     if (strpos($name, 'pet') !== false || strpos($name, 'dog') !== false) {
         return 'fa-solid fa-dog';
     }
     
-    // Business / Meeting
     if (strpos($name, 'business') !== false || strpos($name, 'meeting') !== false || strpos($name, 'conference') !== false) {
         return 'fa-solid fa-briefcase';
     }
     
-    // Laundry
     if (strpos($name, 'laundry') !== false || strpos($name, 'dry cleaning') !== false) {
         return 'fa-solid fa-shirt';
     }
     
-    // Accessibility / Wheelchair
     if (strpos($name, 'wheelchair') !== false || strpos($name, 'accessible') !== false) {
         return 'fa-solid fa-wheelchair';
     }
     
-    // View
     if (strpos($name, 'view') !== false) {
         return 'fa-solid fa-mountain-sun';
     }
     
-    // TV / Television
     if (strpos($name, 'tv') !== false || strpos($name, 'television') !== false || strpos($name, 'flat-screen') !== false) {
         return 'fa-solid fa-tv';
     }
     
-    // Phone
     if (strpos($name, 'phone') !== false || strpos($name, 'telephone') !== false) {
         return 'fa-solid fa-phone';
     }
     
-    // Safe / Security
     if (strpos($name, 'safe') !== false || strpos($name, 'security') !== false) {
         return 'fa-solid fa-shield';
     }
     
-    // Kitchen
     if (strpos($name, 'kitchen') !== false || strpos($name, 'kitchenette') !== false) {
         return 'fa-solid fa-kitchen-set';
     }
     
-    // Garden / Terrace / Outdoor
     if (strpos($name, 'garden') !== false || strpos($name, 'terrace') !== false || strpos($name, 'balcony') !== false) {
         return 'fa-solid fa-tree';
     }
     
-    // Airport Shuttle / Transfer
     if (strpos($name, 'airport') !== false || strpos($name, 'shuttle') !== false || strpos($name, 'transfer') !== false) {
         return 'fa-solid fa-plane-departure';
     }
     
-    // Luggage Storage
     if (strpos($name, 'luggage') !== false || strpos($name, 'baggage') !== false || strpos($name, 'storage') !== false) {
         return 'fa-solid fa-suitcase';
     }
     
-    // 默认使用绿色圆点
     return 'fa-solid fa-circle';
 }
 
@@ -170,7 +142,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 $hotel = null;
 $liveApiUsed = false;
 
-// 🚨 核心修复：现在调用只传 1 个 ID 参数，完美解决崩溃报错！
 if ($hotel_id > 9000) {
     $apiDetails = getLiveHotelDetails($hotel_id);
     if ($apiDetails) {
@@ -210,10 +181,8 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 
 <link rel="stylesheet" href="../css/modules/hotels.css?v=6">
 
-<!-- 🚨 移除了所有可能阻挡高度的内联样式，确保类名正确 🚨 -->
 <section class="search-hero-wrapper">
     <div class="hero-content">
-        <!-- 🚨 加回小标题 (Kicker) 🚨 -->
         <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
         
         <h1>Find Your Perfect Stay in Malaysia</h1>
@@ -305,7 +274,6 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 </div>
     </div>
 
-    <!-- 真实的 API 高清组图 -->
     <div class="photo-gallery">
         <img class="gallery-main" referrerpolicy="no-referrer" src="<?php echo $hotel['img_main']; ?>" alt="Hotel Exterior">
         <div class="gallery-sub-grid">
@@ -349,7 +317,6 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
                             gap: 12px; 
                             padding: 6px 0;
                         ">
-                            <!-- Booking.com 风格的线性图标 (FontAwesome) -->
                             <i class="<?php echo $iconClass; ?>" style="
                                 font-size: 18px;
                                 color: #00a650;
@@ -485,7 +452,6 @@ $google_map_url = "https://www.google.com/maps/search/?api=1&query=" . $map_quer
 <script>
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
-// 预订逻辑的拦截（虽然按钮已经换了，保险起见保留表单拦截）
 function handleBooking(event) {
     if (!isLoggedIn) {
         event.preventDefault();
@@ -495,7 +461,6 @@ function handleBooking(event) {
     return true;
 }
 
-// 现在 toggleDetailFav 只在已登录时才会被调用
 function toggleDetailFav(btn) {
     fetch('/TravelPal/trips/favorites_action.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
         action: btn.classList.contains('active') ? 'remove' : 'save', item_type: 'hotel', item_key: 'hotel-<?php echo htmlspecialchars($hotel['id']); ?>',
@@ -548,9 +513,6 @@ function closeGuestDropdown(e) {
 }
 </script>
 
-<!-- =========================================================
-     引入强制登录弹窗 (未登录用户点击核心按钮时触发)
-     ========================================================= -->
 <?php include 'login_popup.php'; ?>
 
 <?php include __DIR__ . '/../footer.php'; ?>

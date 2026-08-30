@@ -5,7 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
 include '../header.php'; 
 ?>
 
-<!-- 强制时间戳刷新缓存，确保立刻看到最新 CSS -->
 <link rel="stylesheet" href="../css/modules/hotels.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -112,7 +111,6 @@ include '../header.php';
 
 <main class="main-content">
     
-    <!-- 1. Top Staycation Destinations -->
     <section class="gallery-section">
         <div class="section-header">
             <h2>Top Staycation Destinations</h2>
@@ -164,7 +162,6 @@ include '../header.php';
         </div>
     </section>
 
-    <!-- 2. Sign In / Register Prompt -->
     <?php if (!isset($_SESSION['user']) && !isset($_SESSION['user_id'])): ?>
         <section class="hotel-promo-banner" aria-labelledby="hotel-promo-title">
             <div class="hotel-promo-icon" aria-hidden="true">
@@ -181,7 +178,6 @@ include '../header.php';
         </section>
     <?php endif; ?>
 
-    <!-- 3. Feature Highlights -->
     <section class="features-section">
         <div class="feature-item">
             <div class="feature-icon-wrapper">
@@ -214,7 +210,6 @@ include '../header.php';
         </div>
     </section>
 
-    <!-- 4. Travel Theme Dynamic Tabs -->
     <section class="routes-section">
         <div class="section-header">
             <h2>Find Stays by Travel Theme</h2>

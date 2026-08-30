@@ -1,7 +1,5 @@
 <?php
-// 马来西亚 8 个州属，每州 8 家酒店，完美均衡的 Vibe 比例！
 $all_hotels = [
-    // ==================== 1. PENANG (槟城) ====================
     [
         'id' => 101, 'name' => 'Eastern & Oriental Hotel', 'state' => 'Penang', 'city' => 'Georgetown',
         'type' => 'Heritage Boutique', 'vibe' => 'Heritage', 'price' => 580, 'rating' => 9.3, 'score_text' => 'Exceptional',
@@ -75,7 +73,6 @@ $all_hotels = [
         'desc' => 'Boutique city hotel in a restored 100-year-old historic manor.'
     ],
 
-    // ==================== 2. JOHOR (柔佛) ====================
     [
         'id' => 201, 'name' => 'Legoland Hotel Malaysia', 'state' => 'Johor', 'city' => 'Iskandar Puteri',
         'type' => 'City Hotel', 'vibe' => 'All Stays', 'price' => 550, 'rating' => 8.8, 'score_text' => 'Fabulous',
@@ -149,7 +146,6 @@ $all_hotels = [
         'desc' => 'Directly connected to Adventure Waterpark Desaru Coast.'
     ],
 
-    // ==================== 3. SELANGOR (雪兰莪) ====================
     [
         'id' => 301, 'name' => 'Sunway Resort Hotel', 'state' => 'Selangor', 'city' => 'Sunway City',
         'type' => 'City Hotel', 'vibe' => 'All Stays', 'price' => 520, 'rating' => 9.1, 'score_text' => 'Superb',
@@ -223,7 +219,6 @@ $all_hotels = [
         'desc' => 'Escape the city heat to this beautiful highland retreat.'
     ],
 
-    // ==================== 4. MELAKA (马六甲) ====================
     [
         'id' => 401, 'name' => 'Casa del Rio Melaka', 'state' => 'Melaka', 'city' => 'Melaka River',
         'type' => 'Heritage Boutique', 'vibe' => 'Heritage', 'price' => 460, 'rating' => 9.2, 'score_text' => 'Exceptional',
@@ -297,7 +292,6 @@ $all_hotels = [
         'desc' => 'Log-cabin style eco resort surrounded by nature and pine trees.'
     ],
 
-    // ==================== 5. SABAH (沙巴) ====================
     [
         'id' => 501, 'name' => 'Shangri-La Tanjung Aru', 'state' => 'Sabah', 'city' => 'Kota Kinabalu',
         'type' => 'Luxury Resort', 'vibe' => 'Beach Resorts', 'price' => 780, 'rating' => 9.3, 'score_text' => 'Exceptional',
@@ -371,7 +365,6 @@ $all_hotels = [
         'desc' => 'Nestled along Danum River in Sabah’s ancient primary rainforest.'
     ],
 
-    // ==================== 6. SARAWAK (砂拉越) ====================
     [
         'id' => 601, 'name' => 'Pullman Kuching', 'state' => 'Sarawak', 'city' => 'Kuching',
         'type' => 'City Hotel', 'vibe' => 'All Stays', 'price' => 320, 'rating' => 8.8, 'score_text' => 'Fabulous',
@@ -445,7 +438,6 @@ $all_hotels = [
         'desc' => 'Luxurious rainforest lodge near UNESCO World Heritage Mulu Caves.'
     ],
 
-    // ==================== 7. PAHANG (彭亨) ====================
     [
         'id' => 701, 'name' => 'The Ritz-Carlton Genting Highlands', 'state' => 'Pahang', 'city' => 'Genting Highlands',
         'type' => 'Luxury Resort', 'vibe' => 'Highlands', 'price' => 880, 'rating' => 9.4, 'score_text' => 'Exceptional',
@@ -519,7 +511,6 @@ $all_hotels = [
         'desc' => 'French-themed village resort modeled after 16th-century Colmar town.'
     ],
 
-    // ==================== 8. PERAK (霹雳) ====================
     [
         'id' => 801, 'name' => 'The Banjaran Hotsprings Retreat', 'state' => 'Perak', 'city' => 'Ipoh',
         'type' => 'Nature & Eco Lodge', 'vibe' => 'Hot Springs', 'price' => 1250, 'rating' => 9.6, 'score_text' => 'Exceptional',
@@ -594,9 +585,7 @@ $all_hotels = [
     ]
 ];
 
-// ==========================================
-// 动态评论生成器（保证每家酒店都有 10 条高质量评论）
-// ==========================================
+
 $master_review_pool = [
     ['user' => 'Lim Kok Wai', 'date' => '2026-04-12', 'rating' => 9, 'comment' => 'Very pleasant stay! Clean rooms and friendly front desk staff.'],
     ['user' => 'Siti Nurhaliza', 'date' => '2026-04-05', 'rating' => 10, 'comment' => 'Exceptional hospitality. Will definitely choose this hotel again.'],

@@ -20,9 +20,7 @@
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
-/* ----------------------------------------------------
-   1. Header / Navbar
-   ---------------------------------------------------- */
+
 .navbar {
     position: sticky;
     top: 0;
@@ -117,9 +115,7 @@
     transform: translateY(-1px);
 }
 
-/* ----------------------------------------------------
-   2. Main Home Page Hero & Modules (Moved from index)
-   ---------------------------------------------------- */
+
 .tp-hero-bg {
     position: relative; 
     padding: 180px 24px 140px; 
@@ -191,12 +187,26 @@
 .tp-strict-slider { border-radius: 12px !important; overflow: hidden !important; background: #e2e8f0; position: relative; height: 380px; flex: 1; }
 .tp-strict-slider .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease; }
 .tp-strict-slider .slide.active { opacity: 1; }
-.tp-zigzag-row { display: flex; align-items: center; gap: 32px; margin-bottom: 40px; padding: 24px; background: #ffffff; border: 1px solid #d1d5db !important; border-radius: 12px !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important; }
-.tp-zigzag-row:nth-child(even) { flex-direction: row-reverse; }
+
+
+.tp-zigzag-row 
+{ display: flex; align-items: center; 
+gap: 32px; margin-bottom: 40px; 
+padding: 24px; background: #ffffff; 
+border: 1px solid #d1d5db ; border-radius: 12px ; 
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) ; }
+
+
+
+.tp-zigzag-row:nth-child(even) 
+{ flex-direction: row-reverse; }
+
+
+
+
 .tp-action-btn { display: inline-flex; align-items: center; gap: 8px; background: #111827; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 28px; border-radius: 999px; transition: all 0.3s ease; }
 .tp-action-btn:hover { background: #047857; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(4, 120, 87, 0.3); }
 
-/* Trending Section */
 .tp-trend-section { margin-bottom: 60px; }
 .tp-trend-header { margin-bottom: 24px; }
 .tp-trend-header h2 { margin: 0 0 6px 0; font-size: 26px; font-weight: 800; color: #111827; letter-spacing: -0.02em; }
@@ -216,7 +226,6 @@
 .tp-trend-btn { margin-top: 15px; font-size: 13px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 999px; display: inline-block; width: max-content; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3); }
 .tp-trend-card:hover .tp-trend-btn { opacity: 1; transform: translateY(0); }
 
-/* Why Choose Us */
 .tp-why-section { margin-bottom: 60px; padding: 40px 0; border-top: 1px solid #e2e8f0; }
 .tp-why-title { font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 30px; letter-spacing: -0.02em; }
 .tp-why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
@@ -226,9 +235,7 @@
 .tp-why-item h4 { font-size: 16px; font-weight: 800; color: #111827; margin: 0 0 8px 0; }
 .tp-why-item p { font-size: 14px; color: #4b5563; margin: 0; line-height: 1.5; }
 
-/* ----------------------------------------------------
-   3. Account avatar + Settings + Dropdown
-   ---------------------------------------------------- */
+
 .profile-avatar {
     width: 36px;
     height: 36px;
@@ -350,9 +357,7 @@
     border: none;
 }
 
-/* ----------------------------------------------------
-   4. Settings Modal
-   ---------------------------------------------------- */
+
 .tp-modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
@@ -424,9 +429,7 @@
 .tp-btn-save { padding: 10px 24px; border: none; background: #047857; color: #fff; font-weight: 700; cursor: pointer; border-radius: 6px; transition: background 0.2s; }
 .tp-btn-save:hover { background: #065f46; }
 
-/* ----------------------------------------------------
-   15. TravelPal - Shared Login Reminder Popup
-   ---------------------------------------------------- */
+
 .travelpal-login-overlay {
     position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
     padding: 20px; background: rgba(0, 0, 0, 0.55); opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -458,9 +461,7 @@
 .travelpal-login-button:hover { background: #0057b8; }
 body.travelpal-login-modal-open { overflow: hidden; }
 
-/* ----------------------------------------------------
-   16. Floating FAB
-   ---------------------------------------------------- */
+
 .travelpal-favorite-fab {
     position: fixed; right: 26px; bottom: 26px; z-index: 90; width: 54px; height: 54px;
     display: grid; place-items: center; border-radius: 50%; background: #ffffff;
@@ -469,9 +470,7 @@ body.travelpal-login-modal-open { overflow: hidden; }
 }
 .travelpal-favorite-fab:hover { transform: translateY(-3px); background: #fff2f4; }
 
-/* ----------------------------------------------------
-   17. Footer Section
-   ---------------------------------------------------- */
+
 #travelPalFooter { background: #111827; color: #ffffff; padding-top: 60px; border-top: none; }
 .footerSection { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; padding-bottom: 40px; padding-left: 20px; padding-right: 20px; }
 .footer-card { width: 30%; }
@@ -485,9 +484,6 @@ body.travelpal-login-modal-open { overflow: hidden; }
 .ending .logo img { height: 40px; width: auto; display: block; object-fit: contain; }
 .ending span { line-height: 1.6; }
 
-/* ----------------------------------------------------
-   18. NEW: AI Video Section (4:3 Split Layout)
-   ---------------------------------------------------- */
 .tp-video-section {
     display: flex; 
     align-items: center; 
@@ -545,10 +541,9 @@ body.travelpal-login-modal-open { overflow: hidden; }
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-/* 🟢 Control Video Size Here 🟢 */
 .tp-video-wrapper {
     flex: 1; 
-    max-width: 480px; /* Adjust this value to make the video bigger/smaller */
+    max-width: 480px; 
     border-radius: 12px; 
     overflow: hidden; 
     box-shadow: 0 12px 30px rgba(0,0,0,0.12); 
@@ -558,13 +553,10 @@ body.travelpal-login-modal-open { overflow: hidden; }
 .tp-video-wrapper video {
     display: block; 
     width: 100%; 
-    aspect-ratio: 4 / 3; /* Set to 16 / 9 for widescreen, or 9 / 16 for vertical */
+    aspect-ratio: 4 / 3; 
     object-fit: cover;
 }
 
-/* ----------------------------------------------------
-   19. Responsive Overrides
-   ---------------------------------------------------- */
 @media (max-width: 900px) { 
     .tp-zigzag-row, .tp-zigzag-row:nth-child(even) { flex-direction: column; text-align: center; gap: 30px; padding: 24px; }
     .tp-strict-slider { width: 100%; height: 280px; }
@@ -572,7 +564,6 @@ body.travelpal-login-modal-open { overflow: hidden; }
     .tp-trend-card { height: 280px; }
     .tp-why-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 20px; }
     
-    /* Make video section stack vertically on mobile */
     .tp-video-section { flex-direction: column !important; text-align: center !important; padding: 30px 20px !important; gap: 30px !important; }
     .tp-video-text { padding-right: 0 !important; }
     .tp-video-wrapper { max-width: 100% !important; }
@@ -593,4 +584,68 @@ body.travelpal-login-modal-open { overflow: hidden; }
     .travelpal-login-logo { height: 40px; margin-bottom: 20px; }
     .travelpal-login-content h2 { font-size: 22px; }
     .travelpal-login-content p { font-size: 14px; }
+}
+
+
+
+.tp-main-container { padding-top: 10px; padding-bottom: 80px; }
+.tp-content-wrapper { width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 24px; box-sizing: border-box; }
+
+.tp-cat-header { text-align: left; margin-bottom: 24px; }
+.tp-cat-header h2 { margin: 0 0 6px 0; color: #111827; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.tp-cat-header p { margin: 0; color: #4b5563; font-size: 15px; }
+
+.tp-cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 80px; }
+
+
+.tp-cat-card { text-decoration: none; background: linear-gradient(135deg, #f8fbf9 0%, #dcfce7 100%); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; }
+.tp-cat-top { display: flex; align-items: center; gap: 14px; }
+.tp-cat-icon { width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.tp-cat-title { font-size: 17px; font-weight: 700; color: #111827; margin: 0 0 2px 0; line-height: 1.2; }
+.tp-cat-desc { font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3; }
+.tp-cat-mid { margin-top: 20px; }
+.tp-cat-label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
+.tp-cat-val { font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1; }
+.tp-cat-bot { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(4,120,87,0.1); }
+.tp-cat-trend-circle { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.tp-cat-trend-inner { width: 8px; height: 8px; border-radius: 50%; background: #ffffff; }
+.tp-cat-trend-txt { font-size: 12px; font-weight: 700; color: #4b5563; }
+
+.tp-member-card { text-decoration: none; background: #047857; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px; }
+.tp-member-icon { width: 44px; height: 44px; background: #ffffff; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.tp-member-title { font-size: 17px; font-weight: 700; color: #ffffff; margin: 0 0 2px 0; line-height: 1.2; }
+.tp-member-desc { font-size: 13px; color: rgba(255,255,255,0.85); margin: 0; line-height: 1.3; }
+.tp-member-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 0.05em; }
+.tp-member-val { font-size: 28px; font-weight: 900; color: #C6FF34; margin-top: 4px; line-height: 1; }
+.tp-member-bot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2); }
+.tp-member-bot span { font-size: 12px; font-weight: 700; color: #ffffff; }
+.tp-member-bot i { color: #ffffff; font-size: 14px; }
+
+.tp-zigzag-container { margin-bottom: 80px; }
+.tp-zigzag-text { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
+.tp-zigzag-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px; }
+.tp-zigzag-title { font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2; }
+.tp-zigzag-desc { font-size: 16px; color: #4b5563; margin: 0 0 28px 0; line-height: 1.6; }
+
+.tp-about-section { display: flex; align-items: center; gap: 50px; margin-bottom: 80px; padding: 48px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; }
+.tp-about-text { flex: 1; }
+.tp-about-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #047857; margin-bottom: 10px; display: block; }
+.tp-about-title { font-size: 32px; font-weight: 800; color: #111827; margin: 0 0 16px 0; line-height: 1.2; }
+.tp-about-desc { font-size: 16px; color: #4b5563; margin: 0 0 16px 0; line-height: 1.6; }
+.tp-about-desc:nth-of-type(2) { margin-bottom: 32px; }
+.tp-about-stats { display: flex; gap: 40px; }
+.stat-box h4 { font-size: 28px; font-weight: 900; color: #047857; margin: 0 0 4px 0; line-height: 1; }
+.stat-box span { font-size: 13px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.tp-about-img { flex: 1; border-radius: 12px; overflow: hidden; height: 380px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+.tp-about-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+@media (max-width: 900px) {
+    .tp-cat-grid { grid-template-columns: repeat(2, 1fr); }
+    .tp-about-section { flex-direction: column; padding: 32px 20px; text-align: center; }
+    .tp-about-stats { justify-content: center; flex-wrap: wrap; }
+    .tp-about-img { width: 100%; height: 280px; }
+}
+
+@media (max-width: 600px) {
+    .tp-cat-grid { grid-template-columns: 1fr; }
 }

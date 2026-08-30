@@ -19,7 +19,6 @@ $sort     = $_GET['sort'] ?? 'popular';
 $liveApiUsed = false;
 $filtered_hotels = [];
 
-// 1. 使用真实 API 搜索
 if (!empty($query)) {
     $apiHotels = searchLiveHotels($query, $check_in, $check_out, $adults, $rooms);
     if (!empty($apiHotels)) {
@@ -28,7 +27,6 @@ if (!empty($query)) {
     }
 }
 
-// 2. 如果 API 失败/没拿到数据，退回假数据
 if (empty($filtered_hotels)) {
     $filtered_hotels = array_filter($all_hotels, function($h) use ($query) {
         if (!empty($query) && strcasecmp($h['state'], $query) !== 0 && stripos($h['city'], $query) === false) return false;
@@ -37,7 +35,6 @@ if (empty($filtered_hotels)) {
     if (empty($filtered_hotels) && empty($query)) {
         $filtered_hotels = array_filter($all_hotels, fn($h) => $h['state'] === 'Penang');
     }
-    // Fallback 也只要前 8 家
     $filtered_hotels = array_slice($filtered_hotels, 0, 8);
 }
 
@@ -57,10 +54,8 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 
 <link rel="stylesheet" href="../css/modules/hotels.css?v=8">
 
-<!-- 🚨 移除了所有可能阻挡高度的内联样式，确保类名正确 🚨 -->
 <section class="search-hero-wrapper">
     <div class="hero-content">
-        <!-- 🚨 加回小标题 (Kicker) 🚨 -->
         <span class="hero-kicker">TRAVELPAL · MALAYSIA</span>
         
         <h1>Find Your Perfect Stay in Malaysia</h1>
@@ -152,7 +147,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 
 <main class="results-container">
     <div class="results-header-area">
-        <!-- 🚨 完全保留了原本最原始的绿底牌子 🚨 -->
         <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 8px; flex-wrap: wrap;">
             <h2>Stay in <?php echo htmlspecialchars($page_title); ?></h2>
             <?php if ($liveApiUsed): ?>
@@ -161,11 +155,9 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 <span style="background: #f1f3f6; color: #596579; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; border: 1px solid #e0e4ea;">Cached Data</span>
             <?php endif; ?>
         </div>
-        <!-- 🚨 改为新的文案 🚨 -->
         <p>Discover the best stays and experiences in <?php echo htmlspecialchars($page_title); ?></p>
     </div>
 
-    <!-- 🚨 移除了 Showing 字段，将右边的排序推到边缘对齐 🚨 -->
     <div class="sort-bar" style="justify-content: flex-end;">
         <div class="sort-group">
             <label for="sortSelect">Sort by:</label>
@@ -236,7 +228,6 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
 <script>
 const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
 
-// 现在 toggleFavorite 只在已登录时才会被调用
 function toggleFavorite(event, btn, hotel) {
     event.stopPropagation();
     event.preventDefault();
@@ -289,9 +280,7 @@ function applySort() {
 }
 </script>
 
-<!-- =========================================================
-     引入强制登录弹窗 (不需要一进页面就弹，所以不设 AutoShow)
-     ========================================================= -->
+
 <?php include 'login_popup.php'; ?>
 
 <?php include __DIR__ . '/../footer.php'; ?>

@@ -1,5 +1,4 @@
 <?php
-// hotel_api.php - 连接 Booking.com 实时数据的桥梁
 
 define('HOTEL_RAPIDAPI_KEY', 'b982361cbdmsha64336d3492549fp15ed91jsnd2566fd6498c');
 define('HOTEL_RAPIDAPI_HOST', 'booking-com.p.rapidapi.com');
@@ -13,7 +12,7 @@ function callHotelAPI($endpoint, $params) {
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => "",
         CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 6, // 提高响应速度
+        CURLOPT_TIMEOUT => 6, 
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_SSL_VERIFYHOST => 0,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
@@ -30,14 +29,11 @@ function callHotelAPI($endpoint, $params) {
     return json_decode($response, true);
 }
 
-// 搜索酒店列表
 function searchLiveHotels($query, $checkIn, $checkOut, $adults, $rooms) {
     
-    // 强制使用真实日期避免 API 报错
     $apiCheckIn = date('Y-m-d', time() + (86400 * 14));
     $apiCheckOut = date('Y-m-d', time() + (86400 * 15));
 
-    // 获取城市 ID
     $destRes = callHotelAPI('locations', ['name' => $query, 'locale' => 'en-gb']);
     
     $destFallback = [
@@ -60,7 +56,6 @@ function searchLiveHotels($query, $checkIn, $checkOut, $adults, $rooms) {
         $searchType = $destRes[0]['dest_type'];
     }
 
-    // 搜酒店
     $hotelRes = callHotelAPI('search', [
         'dest_id' => $destId,
         'dest_type' => $searchType,
@@ -90,7 +85,6 @@ function searchLiveHotels($query, $checkIn, $checkOut, $adults, $rooms) {
 
         $rating = $item['review_score'] ?? 8.5;
         
-        // 🚨 核心修复：砍掉名字前面的序号 (例如 "6. Holiday Inn" 变成 "Holiday Inn")
         $rawName = $item['hotel_name'] ?? 'Premium Hotel';
         $cleanName = preg_replace('/^\d+\.\s*/', '', $rawName);
         
@@ -108,20 +102,17 @@ function searchLiveHotels($query, $checkIn, $checkOut, $adults, $rooms) {
         ];
 
         $validCount++;
-        if ($validCount >= 8) break; // 只要 8 家
+        if ($validCount >= 8) break; 
     }
     return $hotels;
 }
 
-// 🚨 核心修复：现在函数只接受 1 个参数 ($hotelId)，防止报错崩溃！
-// 🚨 核心修复：现在函数只接受 1 个参数 ($hotelId)，防止报错崩溃！
+
 function getLiveHotelDetails($hotelId) {
     
-    // 1. 获取真实描述
     $descRes = callHotelAPI('description', ['hotel_id' => $hotelId, 'locale' => 'en-gb']);
     $desc = $descRes['description'] ?? 'A wonderful stay awaits at this beautiful property with premium amenities.';
 
-    // 2. 获取真实照片
     $photosRes = callHotelAPI('photos', ['hotel_id' => $hotelId, 'locale' => 'en-gb']);
     $photos = [];
     if (is_array($photosRes)) {
@@ -131,15 +122,12 @@ function getLiveHotelDetails($hotelId) {
         }
     }
 
-    // 3. ✅ 修复：获取真实设施（移除数量限制，获取全部）
     $facRes = callHotelAPI('facilities', ['hotel_id' => $hotelId, 'locale' => 'en-gb']);
     $facilities = [];
     
-    // 兼容不同的 API 返回结构
     $amenityList = $facRes['facilities'] ?? $facRes['amenities'] ?? $facRes ?? [];
     
     if (!empty($amenityList) && is_array($amenityList)) {
-        // ✅ 移除 array_slice 限制，获取所有设施
         foreach($amenityList as $fac) {
             $facName = is_array($fac) ? ($fac['name'] ?? $fac['translated_name'] ?? '') : $fac;
             if (!empty($facName)) {
@@ -148,7 +136,6 @@ function getLiveHotelDetails($hotelId) {
         }
     }
     
-    // 如果 API 完全没有返回设施，用更丰富的保底数据（至少8-10个）
     if (empty($facilities)) {
         $facilities = [
             'Free High-speed Wi-Fi',
@@ -164,7 +151,6 @@ function getLiveHotelDetails($hotelId) {
         ];
     }
 
-    // 4. 获取真实评价
     $revRes = callHotelAPI('reviews', ['hotel_id' => $hotelId, 'locale' => 'en-gb', 'page_number' => 0, 'sort_type' => 'SORT_MOST_RELEVANT']);
     $reviews = [];
     if (!empty($revRes['result'])) {
@@ -184,7 +170,7 @@ function getLiveHotelDetails($hotelId) {
         'img_main' => !empty($photos[0]) ? $photos[0] : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80',
         'img_lobby' => !empty($photos[1]) ? $photos[1] : 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
         'img_bathroom' => !empty($photos[2]) ? $photos[2] : 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80',
-        'facilities' => $facilities, // ✅ 现在返回所有设施
+        'facilities' => $facilities, 
         'reviews' => $reviews,
         '_source' => 'api'
     ];

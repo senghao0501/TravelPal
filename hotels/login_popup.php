@@ -1,8 +1,5 @@
 <?php
-// login_popup.php - Shared TravelPal login reminder popup.
-// Include this file from any module that needs the login reminder.
-// Set $loginPopupAutoShow = true before including it when the popup should
-// open automatically on page load. Otherwise it opens only when requested.
+
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -30,11 +27,9 @@ $loginPopupLoggedIn = !empty($_SESSION['user_id']);
             <h2 id="travelpalLoginTitle">Sign in to continue</h2>
 
             <p>
-                <!-- 修改为针对酒店的描述 -->
                 Sign in or create a TravelPal account to save your favorite hotels, access exclusive member rates, and manage your bookings.
             </p>
 
-            <!-- 按钮颜色被内联样式强制改为主题绿 -->
             <a href="/TravelPal/auth/login.php" 
                class="travelpal-login-button" 
                style="background-color: #047857 !important; transition: background-color 0.2s;"
@@ -63,7 +58,6 @@ window.TravelPalLoginPopup.isLoggedIn = <?php echo $loginPopupLoggedIn ? 'true' 
     }
 
     function openPopup(e) {
-        // 如果是从点击事件传过来的（比如 a 标签），阻止它跳转
         if (e && e.preventDefault) {
             e.preventDefault();
         }

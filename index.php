@@ -6,26 +6,26 @@ include 'header.php';
 ?>
 
 <!-- 强制时间戳刷新缓存 -->
-<link rel="stylesheet" href="../css/style.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <!-- 🌟 零重复、纯视觉沉浸式的 Hero Section 🌟 -->
-<section class="hero-section" style="position: relative; padding: 180px 24px 140px; text-align: center; background: linear-gradient(to bottom, rgba(17,24,39,0.65), rgba(17,24,39,0.3)), url('https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=1600&q=80') center/cover no-repeat; border-radius: 0 0 32px 32px; margin-bottom: 50px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+<section class="hero-section tp-hero-bg">
     
-    <div class="hero-content" style="max-width: 800px; margin: 0 auto; color: #ffffff; position: relative; z-index: 2;">
-        <span class="hero-kicker" style="display: block; margin-bottom: 16px; font-size: 13px; font-weight: 800; letter-spacing: 0.2em; color: #a7f3d0; text-transform: uppercase;">
+    <div class="hero-content tp-hero-content">
+        <span class="hero-kicker tp-hero-kicker">
             TravelPal · Malaysia
         </span>
-        <h1 style="font-size: 56px; font-weight: 900; line-height: 1.1; margin: 0 0 24px; letter-spacing: -0.02em; text-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+        <h1 class="tp-hero-title">
             Find Your Perfect Stay
         </h1>
-        <p style="font-size: 18px; color: rgba(255,255,255,0.9); margin: 0 auto; max-width: 600px; line-height: 1.6; text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+        <p class="tp-hero-desc">
             Discover real-time prices, top attractions, and local delicacies across the best destinations in Malaysia.
         </p>
 
         <!-- 纯引导，无跳转的跳动箭头 -->
-        <div style="margin-top: 60px; animation: tp-bounce 2s infinite;">
-            <span style="display: flex; flex-direction: column; align-items: center; gap: 8px; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+        <div class="tp-bounce-arrow">
+            <span class="tp-bounce-text">
                 Scroll to Explore
                 <i class="fa-solid fa-chevron-down" style="font-size: 18px; color: #ffffff;"></i>
             </span>
@@ -37,7 +37,7 @@ include 'header.php';
     <!-- 核心结界：1440px 宽度 -->
     <div style="width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 24px; box-sizing: border-box;">
 
-        <!-- 🌟 Trending This Week (增强预订版) -->
+        <!-- 🌟 Trending This Week -->
         <div class="tp-trend-section">
             <div class="tp-trend-header">
                 <h2>Trending This Week</h2>
@@ -101,7 +101,6 @@ include 'header.php';
                 ['icon' => 'fa-utensils', 'title' => 'Restaurants', 'desc' => 'Local Delicacies', 'label' => 'Top Rated Spots', 'val' => '4.8★', 'trend' => 88, 'link' => '/TravelPal/restaurant/index.php']
             ];
             foreach ($smartData as $data): ?>
-            
             <a class="tp-strict-card" href="<?php echo $data['link']; ?>" style="text-decoration: none; background: linear-gradient(135deg, #f8fbf9 0%, #dcfce7 100%); padding: 24px; display: flex; flex-direction: column; justify-content: space-between; height: 200px;">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <div style="width: 44px; height: 44px; background: #ecfdf5; color: #047857; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">
@@ -112,12 +111,10 @@ include 'header.php';
                         <p style="font-size: 13px; color: #6b7280; margin: 0; line-height: 1.3;"><?php echo $data['desc']; ?></p>
                     </div>
                 </div>
-                
                 <div style="margin-top: 20px;">
                     <span style="font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em;"><?php echo $data['label']; ?></span>
                     <div style="font-size: 26px; font-weight: 900; color: #047857; margin-top: 4px; line-height: 1;"><?php echo $data['val']; ?></div>
                 </div>
-                
                 <div style="display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid rgba(4,120,87,0.1);">
                     <div style="width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#047857 calc(<?php echo $data['trend']; ?> * 1%), rgba(4,120,87,0.2) 0); display: flex; align-items: center; justify-content: center;">
                         <div style="width: 8px; height: 8px; border-radius: 50%; background: #ffffff;"></div>
@@ -285,7 +282,7 @@ include 'header.php';
             </div>
         </div>
 
-        <!-- 🌟🌟 5. 新增：Why Choose TravelPal (位于视频上方) 🌟🌟 -->
+        <!-- 🌟🌟 5. Why Choose TravelPal 🌟🌟 -->
         <div class="tp-why-section">
             <h2 class="tp-why-title">Why choose TravelPal</h2>
             <div class="tp-why-grid">
@@ -312,12 +309,28 @@ include 'header.php';
             </div>
         </div>
 
-        <!-- 6. AI 宣传视频模块 -->
-        <div class="tp-strict-card" style="width: 100%; aspect-ratio: 16 / 9; background: #000; margin-bottom: 40px; border-radius: 12px !important; overflow: hidden !important;">
-            <video width="100%" controls autoplay loop playsinline style="display: block; width: 100%; height: 100%; object-fit: cover;">
-                <source src="/TravelPal/assets/malaysia-promo.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+        <!-- 🌟🌟 6. AI 宣传视频模块 (精致 4:3 左右排版版) 🌟🌟 -->
+        <div class="tp-video-section">
+            
+            <!-- 左侧：文字情绪铺垫 -->
+            <div class="tp-video-text">
+                <span>The Escape Awaits</span>
+                <h2>One Tap to Your Dream Getaway</h2>
+                <p>From the dull daily grind to pristine beaches and cool misty highlands. Watch how TravelPal transforms your travel dreams into reality instantly.</p>
+                <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+                    Start Planning <i class="fa-solid fa-arrow-up"></i>
+                </a>
+            </div>
+
+            <!-- 右侧：精简版 4:3 比例视频 -->
+            <!-- 🔽 在 CSS 中控制了这里的最大宽度 max-width: 480px 🔽 -->
+            <div class="tp-video-wrapper">
+                <video controls autoplay loop playsinline>
+                    <source src="/TravelPal/assets/malaysia-promo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
         </div>
     </div> 
 </main>

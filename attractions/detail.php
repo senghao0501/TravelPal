@@ -88,7 +88,7 @@ $savedAttractionKeys = attractionFavoriteKeysForCurrentUser();
 include '../header.php';
 ?>
 
-<link rel="stylesheet" href="../css/details/attractions_detail.css?v=20260824-3">
+<link rel="stylesheet" href="../css/details/attractions_detail.css?v=20260902-2">
 <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"

@@ -411,12 +411,12 @@ include __DIR__ . '/../header.php';
                 <p>Popular places to fly to from major Malaysian airports.</p>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=700&q=80" alt="Sabah"><div class="gallery-overlay"><h3>Sabah</h3><p>Mount Kinabalu & islands</p></div></div>
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=700&q=80" alt="Penang"><div class="gallery-overlay"><h3>Penang</h3><p>Heritage & street food</p></div></div>
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=700&q=80" alt="Selangor"><div class="gallery-overlay"><h3>Selangor</h3><p>Modern skyline & Batu Caves</p></div></div>
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=700&q=80" alt="Sarawak"><div class="gallery-overlay"><h3>Sarawak</h3><p>Rainforests & culture</p></div></div>
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=700&q=80" alt="Melaka"><div class="gallery-overlay"><h3>Melaka</h3><p>History & architecture</p></div></div>
-                <div class="gallery-card"><img src="https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=700&q=80" alt="Perak"><div class="gallery-overlay"><h3>Perak</h3><p>Ipoh, caves & cuisine</p></div></div>
+                <div class="gallery-card"><img src="https://www.outlooktravelmag.com/media/sabah-1-1584531714.profileImage.2x-1536x884.webp" alt="Sabah"><div class="gallery-overlay"><h3>Sabah</h3><p>Mount Kinabalu & islands</p></div></div>
+                <div class="gallery-card"><img src="https://image-tc.galaxy.tf/wijpeg-5ceeuotjgsje7hmec0vhg4ijh/file.jpg" alt="Penang" alt="Penang"><div class="gallery-overlay"><h3>Penang</h3><p>Heritage & street food</p></div></div>
+                <div class="gallery-card"><img src="https://ik.imagekit.io/tvlk/blog/2024/06/shutterstock_2321572815.jpg?tr=q-70,c-at_max,w-1000,h-600" alt="Selangor"><div class="gallery-overlay"><h3>Selangor</h3><p>Modern skyline & Batu Caves</p></div></div>
+                <div class="gallery-card"><img src="https://res.klook.com/image/upload/w_500,h_313,c_fill,q_85/activities/s7mlx3vyc4egzi1hdap8.jpg" alt="Sarawak"><div class="gallery-overlay"><h3>Sarawak</h3><p>Rainforests & culture</p></div></div>
+                <div class="gallery-card"><img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/32/97/bd/04/caption.jpg?w=500&h=400&s=1" alt="Melaka"><div class="gallery-overlay"><h3>Melaka</h3><p>History & architecture</p></div></div>
+                <div class="gallery-card"><img src="https://ik.imagekit.io/tvlk/blog/2024/08/shutterstock_2391192199.jpg" alt="Perak" alt="Perak"><div class="gallery-overlay"><h3>Perak</h3><p>Ipoh, caves & cuisine</p></div></div>
             </div>
         </section>
 

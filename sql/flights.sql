@@ -1,8 +1,6 @@
--- 创建数据库
 CREATE DATABASE IF NOT EXISTS flight_booking;
 USE flight_booking;
 
--- 州/城市表
 CREATE TABLE IF NOT EXISTS states (
     id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
@@ -13,7 +11,6 @@ CREATE TABLE IF NOT EXISTS states (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 航班表 (存储从API获取的航班数据)
 CREATE TABLE IF NOT EXISTS flights (
     id INT PRIMARY KEY AUTO_INCREMENT,
     airline VARCHAR(100) NOT NULL,
@@ -39,7 +36,6 @@ CREATE TABLE IF NOT EXISTS flights (
     UNIQUE KEY unique_flight (flight_no, departure_date, from_code, to_code)
 );
 
--- 用户收藏表
 CREATE TABLE IF NOT EXISTS user_favorites (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
@@ -48,7 +44,6 @@ CREATE TABLE IF NOT EXISTS user_favorites (
     UNIQUE KEY unique_favorite (user_id, flight_id)
 );
 
--- 插入马来西亚8个州的数据
 INSERT INTO states (name, code, airport_name, airport_code) VALUES
 ('Selangor', 'KUL', 'Kuala Lumpur International Airport', 'KUL'),
 ('Selangor', 'SZB', 'Subang Airport', 'SZB'),

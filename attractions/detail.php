@@ -13,7 +13,6 @@ $slug = trim((string) ($_GET['slug'] ?? ''));
 $attraction = null;
 $reviews = [];
 $availability = [];
-$apiNotice = '';
 $availabilityRequested = ($_GET['check_availability'] ?? '') === '1';
 $selectedVisitDate = (string) ($_GET['visit_date'] ?? date('Y-m-d'));
 $selectedAdults = max(1, min(10, (int) ($_GET['adults'] ?? 2)));
@@ -33,7 +32,6 @@ if ($slug !== '') {
 
     if (isset($apiResponse['error'])) {
         $attraction = $cachedAttraction;
-        $apiNotice = 'Live details are temporarily unavailable; cached information is shown.';
     } else {
         $attraction = normalizeApiAttractionDetails(
             $apiResponse,
@@ -95,15 +93,6 @@ include '../header.php';
 >
 
 <style>
-.api-detail-notice {
-    margin: 0 0 18px;
-    padding: 12px 16px;
-    border: 1px solid #fde68a;
-    border-radius: 12px;
-    background: #fffbeb;
-    color: #92400e;
-}
-
 .traveller-review-list {
     display: grid;
     gap: 14px;
@@ -210,12 +199,6 @@ include '../header.php';
             <i class="fa-solid fa-chevron-right"></i>
             <span><?= detailEscape($location) ?></span>
         </nav>
-
-        <?php if ($apiNotice !== ''): ?>
-            <p class="api-detail-notice">
-                <?= detailEscape($apiNotice) ?>
-            </p>
-        <?php endif; ?>
 
         <section class="detail-heading">
             <div>

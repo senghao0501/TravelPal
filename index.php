@@ -283,7 +283,7 @@ include 'header.php';
                 </a>
             </div>
             <div class="tp-video-wrapper">
-                <video controls autoplay loop playsinline>
+                <video controls playsinline>
                     <source src="/TravelPal/assets/malaysia-promo.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>

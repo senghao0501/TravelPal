@@ -94,7 +94,6 @@ function displayPrice($myrPrice) {
                             <small>TravelPal Member</small>
                         </div>
                         <a href="#" onclick="event.preventDefault(); openSettingsModal('profile');"><i class="fa-solid fa-user"></i> Profile Settings</a>
-                        <a href="#" onclick="event.preventDefault(); openSettingsModal('language');"><i class="fa-solid fa-globe"></i> Language & Currency</a>
                         <a href="#" onclick="event.preventDefault(); openSettingsModal('notifications');"><i class="fa-solid fa-bell"></i> Notifications</a>
                         <hr class="dropdown-divider">
                         <a href="/TravelPal/auth/logout.php" style="color: #e11d48 !important;">
@@ -146,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         <div class="tp-modal-tabs">
             <button class="tp-tab-btn" id="tabBtn-profile" onclick="switchSettingsTab('profile')">Profile</button>
-            <button class="tp-tab-btn" id="tabBtn-language" onclick="switchSettingsTab('language')">Language</button>
             <button class="tp-tab-btn" id="tabBtn-notifications" onclick="switchSettingsTab('notifications')">Notifications</button>
         </div>
         
@@ -159,27 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="tp-form-group">
                     <label>Email Address</label>
                     <input type="email" class="tp-input" value="<?php echo htmlspecialchars($travelPalEmail); ?>" disabled style="background:#f3f4f6; color:#9ca3af;">
-                </div>
-            </div>
-
-            <div id="tab-language" class="tp-tab-content">
-                <div class="tp-form-group">
-                    <label>Language</label>
-                    <?php $currentLang = $_SESSION['language'] ?? 'EN'; ?>
-                    <select id="select-language" class="tp-select">
-                        <option value="EN" <?php echo $currentLang == 'EN' ? 'selected' : ''; ?>>English (UK)</option>
-                        <option value="MS" <?php echo $currentLang == 'MS' ? 'selected' : ''; ?>>Bahasa Melayu</option>
-                        <option value="ZH" <?php echo $currentLang == 'ZH' ? 'selected' : ''; ?>>中文 (简体)</option>
-                    </select>
-                </div>
-                <div class="tp-form-group">
-                    <label>Currency</label>
-                    <?php $currentCurr = $_SESSION['currency'] ?? 'MYR'; ?>
-                    <select id="select-currency" class="tp-select">
-                        <option value="MYR" <?php echo $currentCurr == 'MYR' ? 'selected' : ''; ?>>MYR - Malaysian Ringgit</option>
-                        <option value="SGD" <?php echo $currentCurr == 'SGD' ? 'selected' : ''; ?>>SGD - Singapore Dollar</option>
-                        <option value="USD" <?php echo $currentCurr == 'USD' ? 'selected' : ''; ?>>USD - US Dollar</option>
-                    </select>
                 </div>
             </div>
 
@@ -237,8 +214,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const nameInput = document.getElementById('input-display-name');
         const saveButton = document.getElementById('tp-save-button');
         const newName = nameInput.value.trim().replace(/\s+/g, ' ');
-        const newCurrency = document.getElementById('select-currency').value;
-        const newLanguage = document.getElementById('select-language').value;
 
         if (Array.from(newName).length < 2 || Array.from(newName).length > 100) {
             setSettingsStatus('Display name must contain between 2 and 100 characters.', 'error');
@@ -248,8 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData();
         formData.append('display_name', newName);
-        formData.append('currency', newCurrency);
-        formData.append('language', newLanguage);
 
         saveButton.disabled = true;
         saveButton.textContent = 'Saving...';

@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $travelPalLoggedIn = !empty($_SESSION['user_id']);
 
-// 🌟 精准抓取你在 login.php 里面设置的 session 变量
 $travelPalUserName = $_SESSION['user_name'] ?? 'My Account';
 $travelPalEmail = $_SESSION['user_email'] ?? 'Not Provided';
 
@@ -53,7 +52,6 @@ function displayPrice($myrPrice) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelPal</title>
-    <!-- 所有的 CSS 都已经统一集中到 style.css 中 -->
     <link rel="stylesheet" href="/TravelPal/css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -65,7 +63,6 @@ function displayPrice($myrPrice) {
             <img src="/TravelPal/logo.png" alt="TravelPal Logo">
         </a>
 
-        <!-- 🌟 汉堡菜单按钮 -->
         <button id="tp-mobile-btn" class="mobile-menu-btn" aria-label="Menu">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -109,7 +106,6 @@ function displayPrice($myrPrice) {
     </div>
 </nav>
 
-<!-- 🌟 汉堡菜单交互脚本 -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const mobileBtn = document.getElementById('tp-mobile-btn');
@@ -135,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <?php include __DIR__ . '/login_popup.php'; ?>
 
-<!-- 高级设置弹窗 -->
 <div id="tpSettingsModal" class="tp-modal-overlay">
     <div class="tp-modal-box">
         <div class="tp-modal-header">

@@ -7,7 +7,7 @@ if (!isset($cities[$requestedCity])) {
 $partySize = max(1, min(8, (int)($_GET['party'] ?? 2)));
 include '../header.php';
 ?>
-<link rel="stylesheet" href="restaurants.css?v=4">
+<link rel="stylesheet" href="restaurants.css?v=5">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <div class="rp-page" id="restaurantResultsPage" data-city="<?php echo htmlspecialchars($requestedCity); ?>" data-party="<?php echo $partySize; ?>">
@@ -33,7 +33,7 @@ include '../header.php';
     </div>
 </div>
 
-<script src="restaurant_app.js?v=2"></script>
+<script src="restaurant_app.js?v=3"></script>
 <script>
 const cityData = <?php echo json_encode($cities, JSON_UNESCAPED_SLASHES); ?>;
 const grid = document.getElementById('restaurantGrid');

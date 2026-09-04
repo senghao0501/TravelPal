@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<script src="restaurant_app.js?v=1"></script>
+<script src="restaurant_app.js?v=3"></script>
 <script>
 const favoriteGrid = document.getElementById('favoriteGrid');
 const favoriteEmpty = document.getElementById('favoriteEmpty');

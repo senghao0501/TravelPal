@@ -1,6 +1,4 @@
 <?php
-// Malaysia food-guide data. Every row has its own matching dish photo and
-// sensory notes used to create seven dish-specific traveler reviews.
 $foodRows = [
     [101, 'Laksa Johor', 'Johor', 'Johor Bahru', 'Noodles', 'RM 8–15', 'Lunch', 'Spaghetti-style noodles served with a thick, aromatic fish gravy, herbs and sambal.', 'https://storage.googleapis.com/images.ikhlas.com/strapi/Laksa_Johor_07b10f6c1a/Laksa_Johor_07b10f6c1a.jpg', 'rich fish gravy and fresh herbs', 'firm spaghetti that holds the thick sauce', 'mix in the sambal gradually and finish with calamansi'],
     [102, 'Kacang Pool', 'Johor', 'Johor Bahru', 'Breakfast', 'RM 7–12', 'Breakfast', 'A savoury broad-bean stew topped with egg, onions and chilli, served with toasted bread.', 'https://dimg04.tripcdn.com/images/0M74e12000pddzhk1E0CA.jpg', 'earthy beans, runny egg and a bright squeeze of lime', 'thick stew against crisp buttered toast', 'tear the toast into small pieces and scoop everything together'],
@@ -37,7 +35,6 @@ $foodOptions = array_map(static function (array $row): array {
     ];
 }, $foodRows);
 
-// The two side images are local streets and landmarks, not generic interiors.
 $foodAreas = [
     'Johor Bahru' => ['Johor Bahru Heritage Food Area', 'Jalan Tan Hiok Nee, Bandar Johor Bahru, 80000 Johor Bahru, Johor', ['https://leveragehotel.com/cdn/shop/articles/let-s-eat-at-old-street.jpg?v=1704725298', '/TravelPal/restaurant/images/generated/sultan-abu-bakar-mosque.jpg'], ['Jalan Tan Hiok Nee heritage street', 'Sultan Abu Bakar State Mosque']],
     'Muar' => ['Muar Glutton Street Food Area', 'Jalan Haji Abu, 84000 Muar, Johor', ['https://3.bp.blogspot.com/-nU3rEFNY-BQ/VwZIF_Mba_I/AAAAAAACY1U/iTxgYSEfd0g7ZupZglLLMGTHc2I5Wd9iw/s1600/DSC03579.JPG', 'https://nickchan.net/wp-content/uploads/2014/02/8298115937_202760575d_z.jpg'], ['Muar Glutton Street market', 'Jalan Haji Abu food street']],

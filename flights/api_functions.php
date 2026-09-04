@@ -1,7 +1,5 @@
 <?php
-// api_functions.php - 完整的API函数和辅助函数
 
-// ==================== 配置定义 ====================
 if (!defined('DB_HOST')) {
     define('DB_HOST', 'localhost');
     define('DB_NAME', 'flight_booking');
@@ -18,7 +16,6 @@ define('MIN_PASSENGERS', 1);
 define('MAX_PASSENGERS', 9);
 define('DEFAULT_AIRLINE_LOGO', 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80');
 
-// ==================== 机场数据 ====================
 $AIRPORTS = [
     'KUL' => ['state' => 'Selangor', 'label' => 'Selangor (KUL)', 'api_id' => 'KUL.AIRPORT'],
     'SZB' => ['state' => 'Selangor', 'label' => 'Selangor (SZB)', 'api_id' => 'SZB.AIRPORT'],
@@ -37,7 +34,6 @@ $AIRPORTS = [
 
 $SEARCH_AIRPORT_CODES = ['KUL', 'PEN', 'JHB', 'MKZ', 'IPH', 'PKG', 'BKI', 'KCH'];
 
-// 向后兼容
 $STATE_API_MAP = [];
 $STATE_CODE_TO_NAME = [];
 foreach ($AIRPORTS as $code => $airport) {
@@ -45,19 +41,11 @@ foreach ($AIRPORTS as $code => $airport) {
     $STATE_CODE_TO_NAME[$code] = $airport['state'];
 }
 
-// ==================== 辅助函数 ====================
-
-/**
- * 规范化行程类型
- */
 function normalizeTripType($value): string
 {
     return $value === 'round_trip' ? 'round_trip' : 'one_way';
 }
 
-/**
- * 验证并清理日期
- */
 function sanitizeDate($date): string
 {
     if (empty($date)) {
@@ -70,18 +58,12 @@ function sanitizeDate($date): string
     return date('Y-m-d', $timestamp);
 }
 
-/**
- * 检查日期是否在今天之前
- */
 function isDateBeforeToday($date): bool
 {
     $today = date('Y-m-d');
     return $date < $today;
 }
 
-/**
- * 验证乘客数量
- */
 function normalizePassengers($count): int
 {
     $count = (int)$count;
@@ -90,18 +72,12 @@ function normalizePassengers($count): int
     return $count;
 }
 
-/**
- * 验证机场代码是否有效
- */
 function isValidAirportCode($code): bool
 {
     global $AIRPORTS;
     return isset($AIRPORTS[strtoupper($code)]);
 }
 
-/**
- * 获取机场标签
- */
 function getAirportLabel($code): string
 {
     global $AIRPORTS;
@@ -109,9 +85,6 @@ function getAirportLabel($code): string
     return isset($AIRPORTS[$code]) ? $AIRPORTS[$code]['label'] : $code;
 }
 
-/**
- * 获取州名称
- */
 function getStateName($code): string
 {
     global $AIRPORTS;
@@ -119,18 +92,12 @@ function getStateName($code): string
     return isset($AIRPORTS[$code]) ? $AIRPORTS[$code]['state'] : $code;
 }
 
-/**
- * 获取搜索用的机场代码列表
- */
 function getSearchAirportCodes(): array
 {
     global $SEARCH_AIRPORT_CODES;
     return $SEARCH_AIRPORT_CODES;
 }
 
-/**
- * 获取机场的API ID
- */
 function getApiAirportCode($code): string
 {
     global $AIRPORTS;
@@ -138,11 +105,6 @@ function getApiAirportCode($code): string
     return isset($AIRPORTS[$code]) ? $AIRPORTS[$code]['api_id'] : $code . '.AIRPORT';
 }
 
-// ==================== 数据库函数 ====================
-
-/**
- * 获取数据库连接
- */
 function getDBConnection() {
     try {
         $pdo = new PDO(
@@ -158,9 +120,6 @@ function getDBConnection() {
     }
 }
 
-/**
- * 检查航班是否存在
- */
 function checkFlightExists($flightNo, $departDate, $fromCode, $toCode) {
     $pdo = getDBConnection();
     if (!$pdo) return null;
@@ -172,9 +131,6 @@ function checkFlightExists($flightNo, $departDate, $fromCode, $toCode) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-/**
- * 更新航班价格
- */
 function updateFlightPrice($flightId, $newPrice) {
     $pdo = getDBConnection();
     if (!$pdo) return false;
@@ -183,9 +139,6 @@ function updateFlightPrice($flightId, $newPrice) {
     return $stmt->execute([$newPrice, $flightId]);
 }
 
-/**
- * 插入航班
- */
 function insertFlight($data) {
     $pdo = getDBConnection();
     if (!$pdo) return false;
@@ -221,9 +174,6 @@ function insertFlight($data) {
     return $result ? $pdo->lastInsertId() : false;
 }
 
-/**
- * 根据ID获取航班
- */
 function getFlightById($id) {
     $pdo = getDBConnection();
     if (!$pdo) return null;
@@ -233,9 +183,6 @@ function getFlightById($id) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-/**
- * 根据航线获取航班
- */
 function getFlightsByRoute($fromCode, $toCode, $departDate = null) {
     $pdo = getDBConnection();
     if (!$pdo) return [];
@@ -255,9 +202,6 @@ function getFlightsByRoute($fromCode, $toCode, $departDate = null) {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-/**
- * 从本地数据查找备用航班（增强版）
- */
 function findLocalFallbackFlight($id) {
     global $all_flights;
     if (empty($all_flights)) {
@@ -271,11 +215,6 @@ function findLocalFallbackFlight($id) {
     return null;
 }
 
-// ==================== API调用函数 ====================
-
-/**
- * 调用Booking.com API
- */
 function callBookingAPI($endpoint, $params = []) {
     if (empty(RAPIDAPI_KEY)) {
         return null;
@@ -310,9 +249,6 @@ function callBookingAPI($endpoint, $params = []) {
     return json_decode($response, true);
 }
 
-/**
- * 搜索航班
- */
 function searchFlights($fromCode, $toCode, $departDate, $adults = 1, $cabinClass = 'ECONOMY') {
     $fromId = getApiAirportCode($fromCode);
     $toId = getApiAirportCode($toCode);
@@ -339,9 +275,6 @@ function searchFlights($fromCode, $toCode, $departDate, $adults = 1, $cabinClass
     return callBookingAPI('searchFlights', $params);
 }
 
-/**
- * 获取最低价格
- */
 function getMinPrice($fromCode, $toCode, $departDate, $cabinClass = 'ECONOMY') {
     $fromId = getApiAirportCode($fromCode);
     $toId = getApiAirportCode($toCode);
@@ -364,9 +297,6 @@ function getMinPrice($fromCode, $toCode, $departDate, $cabinClass = 'ECONOMY') {
     return callBookingAPI('getMinPrice', $params);
 }
 
-/**
- * 解析API返回的航班数据并存入数据库
- */
 function parseAndStoreFlights($apiResponse, $fromCode, $toCode, $departDate) {
     if (!$apiResponse || !isset($apiResponse['data']['flights'])) {
         return [];
@@ -421,9 +351,6 @@ function parseAndStoreFlights($apiResponse, $fromCode, $toCode, $departDate) {
     return $flights;
 }
 
-/**
- * 转换本地航班格式（确保所有字段都存在）
- */
 function convertLocalFlight($flight, $departDate) {
     return [
         'id' => $flight['id'] ?? rand(9000, 9999),
@@ -444,21 +371,16 @@ function convertLocalFlight($flight, $departDate) {
         'stops' => (int)($flight['stops'] ?? 0),
         'is_direct' => ((int)($flight['stops'] ?? 0) == 0) ? 1 : 0,
         'departure_date' => $departDate,
-        'reviews' => $flight['reviews'] ?? [], // 保留评论数组数据
+        'reviews' => $flight['reviews'] ?? [],
         '_source' => 'local'
     ];
 }
 
-/**
- * 加载航线航班（整合数据库、API、本地数据）
- * 保底机制：即使API和数据库都失败，也会返回本地示例数据
- */
 function loadFlightsForRoute($fromCode, $toCode, $departDate, $passengers = 1) {
     $flights = [];
     $fromCode = strtoupper($fromCode);
     $toCode = strtoupper($toCode);
     
-    // 1. 尝试从数据库获取
     try {
         $dbFlights = getFlightsByRoute($fromCode, $toCode, $departDate);
         if (!empty($dbFlights)) {
@@ -471,7 +393,6 @@ function loadFlightsForRoute($fromCode, $toCode, $departDate, $passengers = 1) {
         error_log("Database query failed: " . $e->getMessage());
     }
     
-    // 2. 尝试从API获取（仅当API Key存在）
     if (!empty(RAPIDAPI_KEY)) {
         try {
             $apiResponse = searchFlights($fromCode, $toCode, $departDate, $passengers);
@@ -489,17 +410,14 @@ function loadFlightsForRoute($fromCode, $toCode, $departDate, $passengers = 1) {
         }
     }
     
-    // 3. 保底机制：从本地数据获取
     global $all_flights;
     
-    // 3a. 精确匹配
     foreach ($all_flights as $flight) {
         if ($flight['from_code'] === $fromCode && $flight['to_code'] === $toCode) {
             $flights[] = convertLocalFlight($flight, $departDate);
         }
     }
     
-    // 3b. 如果精确匹配没有结果，尝试反向匹配
     if (empty($flights)) {
         foreach ($all_flights as $flight) {
             if ($flight['from_code'] === $toCode && $flight['to_code'] === $fromCode) {
@@ -514,7 +432,6 @@ function loadFlightsForRoute($fromCode, $toCode, $departDate, $passengers = 1) {
         }
     }
     
-    // 3c. 最后的保底：生成示例数据
     if (empty($flights)) {
         $fromState = getStateName($fromCode);
         $toState = getStateName($toCode);

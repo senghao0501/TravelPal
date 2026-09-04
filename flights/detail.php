@@ -1,5 +1,4 @@
 <?php
-// detail.php - flight detail + passenger-aware price summary + rating & comments
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -20,18 +19,14 @@ if (!in_array($cabinClass, ['ECONOMY', 'BUSINESS', 'FIRST'], true)) {
     $cabinClass = 'ECONOMY';
 }
 
-// ========== 获取出站航班 ==========
 $outbound = null;
 
-// 1. 尝试从数据库获取
 $outbound = getFlightById($flightId);
 
-// 2. 如果数据库没有，从本地数据获取
 if (!$outbound && $flightId) {
     $outbound = findLocalFallbackFlight($flightId);
 }
 
-// 3. 如果还是没有，遍历所有本地数据找匹配的ID
 if (!$outbound && $flightId) {
     global $all_flights;
     foreach ($all_flights as $flight) {
@@ -42,7 +37,6 @@ if (!$outbound && $flightId) {
     }
 }
 
-// 4. 最后的保底：使用第一个航班
 if (!$outbound) {
     global $all_flights;
     if (!empty($all_flights)) {
@@ -50,7 +44,6 @@ if (!$outbound) {
     }
 }
 
-// ========== 获取返程航班 ==========
 $return = null;
 if ($tripType === 'round_trip' && $returnId) {
     $return = getFlightById($returnId);
@@ -68,7 +61,6 @@ if ($tripType === 'round_trip' && $returnId) {
     }
 }
 
-// 如果找不到指定ID的返程航班，尝试找相同航线反向的航班
 if (!$return && $tripType === 'round_trip' && $outbound) {
     global $all_flights;
     foreach ($all_flights as $flight) {
@@ -79,7 +71,6 @@ if (!$return && $tripType === 'round_trip' && $outbound) {
     }
 }
 
-// 如果还是找不到返程，创建一个基本的返程
 if (!$return && $tripType === 'round_trip' && $outbound) {
     $return = [
         'id' => rand(9000, 9999),
@@ -103,11 +94,6 @@ if (!$return && $tripType === 'round_trip' && $outbound) {
     ];
 }
 
-/**
- * Find the price of the selected flight in a Booking.com/RapidAPI
- * cabin-specific search response. The API has changed response shapes
- * between versions, so this accepts both "flights" and "flightOffers" payloads.
- */
 function tp_find_cabin_fare($response, $flightNumber, $airline = '') {
     if (!is_array($response)) {
         return null;
@@ -202,11 +188,6 @@ function tp_find_cabin_fare($response, $flightNumber, $airline = '') {
     return $walk($response);
 }
 
-/**
- * Fetch a cabin-specific fare for one selected flight.
- * Live Booking.com/RapidAPI is tried first. A local multiplier is used only
- * when the requested cabin is unavailable in the API response.
- */
 function tp_get_cabin_fare($flight, $date, $passengers, $cabinClass) {
     $basePrice = (float)($flight['price'] ?? 0);
     $cabinClass = strtoupper($cabinClass);
@@ -251,7 +232,6 @@ function tp_get_cabin_fare($flight, $date, $passengers, $cabinClass) {
         }
     }
 
-    // Assignment fallback when the selected cabin is not returned by the API.
     $multipliers = [
         'BUSINESS' => 2.15,
         'FIRST' => 3.35
@@ -325,7 +305,6 @@ function h_detail($value): string
 
 include __DIR__ . '/../header.php';
 
-// Shared login reminder: on the detail page it opens only when Continue to Checkout is clicked.
 $loginPopupAutoShow = false;
 include __DIR__ . '/../login_popup.php';
 ?>
@@ -391,7 +370,6 @@ include __DIR__ . '/../login_popup.php';
                 <p class="detail-note">Amenities are representative for this assignment demo. Final airline conditions should be verified before real purchase.</p>
             </section>
 
-            <!-- Rating & Comments Section (Booking.com Style) -->
 <section class="info-card rating-comments-card">
     <div class="rating-section-header">
         <h3><i class="fa-solid fa-star"></i> Verified Passenger Reviews</h3>
@@ -402,7 +380,6 @@ include __DIR__ . '/../login_popup.php';
     $ratingVal = (float)($outbound['rating'] ?? 8.6);
     if ($ratingVal <= 0) $ratingVal = 8.6;
 
-    // 默认提供至少7条的高质量真实评价数据（若航班自身评价少于7条则自动补足）
     $defaultReviews = [
         ['user' => 'Lee Wei Xiang', 'type' => 'Business Traveler', 'date' => '2026-02-12', 'rating' => 9.2, 'title' => 'Punctual & Smooth Flight', 'comment' => 'Flight departed right on time. Boarding process at KLIA was quick and efficient. Legroom was quite comfortable for a short domestic trip.'],
         ['user' => 'Sarah Tan', 'type' => 'Family Trip', 'date' => '2026-02-05', 'rating' => 8.8, 'title' => 'Friendly Cabin Crew', 'comment' => 'Traveled with young kids. The flight attendants were extremely accommodating and helped us store our heavy hand baggage smoothly.'],
@@ -435,7 +412,6 @@ include __DIR__ . '/../login_popup.php';
     }
     ?>
 
-    <!-- 综合评分与多维度面板 -->
     <div class="rating-overview-dashboard">
         <div class="rating-primary-box">
             <div class="rating-score-badge">
@@ -480,7 +456,6 @@ include __DIR__ . '/../login_popup.php';
         </div>
     </div>
 
-    <!-- 评价列表 (至少7条) -->
     <div class="comments-list">
         <?php foreach ($reviewsList as $rev): ?>
             <?php 

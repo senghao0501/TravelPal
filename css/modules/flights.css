@@ -1,8 +1,4 @@
-/* =========================================================
-   TravelPal Flights
-   REAL TRAVEL / OTA UI
-   UI ONLY — PHP / JS LOGIC UNCHANGED
-   ========================================================= */
+
 
 :root {
     --primary: #006ce4;
@@ -38,11 +34,6 @@
     --radius-md: 6px;
     --radius-lg: 8px;
 }
-
-
-/* =========================================================
-   GLOBAL
-   ========================================================= */
 
 html {
     scroll-behavior: smooth;
@@ -81,11 +72,6 @@ a {
     color: inherit;
 }
 
-
-/* =========================================================
-   PAGE WIDTH
-   ========================================================= */
-
 .hero-content,
 .search-container {
     width: min(1300px, calc(100% - 48px));
@@ -103,11 +89,6 @@ a {
     margin-right: auto;
     box-sizing: border-box;
 }
-
-
-/* =========================================================
-   HERO / SEARCH AREA
-   ========================================================= */
 
 .hero-section {
     position: relative;
@@ -154,11 +135,6 @@ a {
     color: rgba(255, 255, 255, 0.82);
     font-size: 16px;
 }
-
-
-/* =========================================================
-   TRIP TYPE
-   ========================================================= */
 
 .trip-type-selector {
     display: flex;
@@ -219,11 +195,6 @@ a {
     border-radius: 50%;
     background: var(--primary);
 }
-
-
-/* =========================================================
-   SEARCH BAR
-   ========================================================= */
 
 .filter-bar {
     display: grid;
@@ -349,11 +320,6 @@ a {
     cursor: pointer;
 }
 
-
-/* =========================================================
-   SWAP BUTTON
-   ========================================================= */
-
 .swap-button {
     align-self: center;
     justify-self: center;
@@ -391,11 +357,6 @@ a {
     border-color: var(--primary);
     transform: rotate(180deg);
 }
-
-
-/* =========================================================
-   SEARCH BUTTON
-   ========================================================= */
 
 .btn-search,
 .btn-select-flight,
@@ -451,20 +412,10 @@ a {
     font-size: 12px;
 }
 
-
-/* =========================================================
-   MAIN CONTENT
-   ========================================================= */
-
 .main-content {
     margin-top: 34px;
     margin-bottom: 70px;
 }
-
-
-/* =========================================================
-   ALERT
-   ========================================================= */
 
 .search-alert {
     display: flex;
@@ -490,11 +441,6 @@ a {
 .search-alert p {
     margin: 0;
 }
-
-
-/* =========================================================
-   RESULTS HEADER
-   ========================================================= */
 
 .search-results-section {
     margin-bottom: 48px;
@@ -562,11 +508,6 @@ a {
     border: 1px solid #e0e4ea;
 }
 
-
-/* =========================================================
-   SORT
-   ========================================================= */
-
 .sort-form {
     display: flex;
     align-items: center;
@@ -605,25 +546,11 @@ a {
     border-color: var(--primary);
 }
 
-
-/* =========================================================
-   FLIGHT RESULT LIST
-   ========================================================= */
-
 .flight-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
-
-
-/*
-   IMPORTANT:
-   This is intentionally flatter than the previous design.
-
-   Real airline / OTA result cards don't need huge rounded
-   floating containers.
-*/
 
 .hotel-style-card {
     display: flex;
@@ -649,22 +576,12 @@ a {
     box-shadow: var(--shadow-hover);
 }
 
-
-/* =========================================================
-   FLIGHT CARD MAIN
-   ========================================================= */
-
 .flight-card-main {
     flex: 1;
     min-width: 0;
 
     padding: 22px 24px;
 }
-
-
-/* =========================================================
-   AIRLINE
-   ========================================================= */
 
 .airline-brand-box {
     display: flex;
@@ -733,11 +650,6 @@ a {
     border: 1px solid #c5eadb;
     color: var(--success);
 }
-
-
-/* =========================================================
-   LEG
-   ========================================================= */
 
 .leg-label {
     display: block;
@@ -876,11 +788,6 @@ a {
     letter-spacing: 0.07em;
 }
 
-
-/* =========================================================
-   RETURN LEG
-   ========================================================= */
-
 .return-leg-summary {
     display: flex;
     align-items: center;
@@ -918,11 +825,6 @@ a {
     font-size: 12px;
     font-weight: 700;
 }
-
-
-/* =========================================================
-   PRICE SIDE
-   ========================================================= */
 
 .flight-card-side {
     width: 220px;
@@ -986,11 +888,6 @@ a {
     font-size: 13px;
 }
 
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
 .empty-state {
     padding: 58px 25px;
 
@@ -1026,11 +923,6 @@ a {
 
     font-size: 13px;
 }
-
-
-/* =========================================================
-   DESTINATION GALLERY
-   ========================================================= */
 
 .gallery-section {
     margin-bottom: 48px;
@@ -1128,11 +1020,6 @@ a {
     font-size: 11px;
 }
 
-
-/* =========================================================
-   FEATURES
-   ========================================================= */
-
 .features-section {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1204,11 +1091,6 @@ a {
     font-size: 14px;
     line-height: 1.55;
 }
-
-
-/* =========================================================
-   POPULAR ROUTES
-   ========================================================= */
 
 .routes-section {
     padding: 25px;
@@ -1397,11 +1279,6 @@ a {
     font-size: 10px;
 }
 
-
-/* =========================================================
-   DETAIL PAGE
-   ========================================================= */
-
 .detail-page-container {
     margin-top: 35px;
     margin-bottom: 70px;
@@ -1469,11 +1346,6 @@ a {
     align-items: start;
 }
 
-
-/* =========================================================
-   DETAIL CARDS
-   ========================================================= */
-
 .info-card,
 .booking-card {
     background: #ffffff;
@@ -1509,11 +1381,6 @@ a {
     color: #68788c;
     font-size: 15px;
 }
-
-
-/* =========================================================
-   DETAIL OVERVIEW
-   ========================================================= */
 
 .overview-box {
     display: grid;
@@ -1569,11 +1436,6 @@ a {
     font-weight: 650;
 }
 
-
-/* =========================================================
-   RETURN FLIGHT
-   ========================================================= */
-
 .return-flight-header {
     display: flex;
     align-items: center;
@@ -1614,11 +1476,6 @@ a {
     line-height: 1.55;
 }
 
-
-/* =========================================================
-   AMENITIES
-   ========================================================= */
-
 .amenity-grid {
     display: grid;
 
@@ -1656,11 +1513,6 @@ a {
 
     text-align: center;
 }
-
-
-/* =========================================================
-   BOOKING SUMMARY
-   ========================================================= */
 
 .booking-card {
     position: sticky;
@@ -1782,11 +1634,6 @@ a {
     font-size: 13px;
 }
 
-
-/* =========================================================
-   REVIEWS
-   ========================================================= */
-
 .rating-comments-card {
     padding: 23px;
 }
@@ -1816,11 +1663,6 @@ a {
 
     font-size: 11px;
 }
-
-
-/* =========================================================
-   RATING OVERVIEW
-   ========================================================= */
 
 .rating-overview-dashboard {
     display: grid;
@@ -1903,11 +1745,6 @@ a {
     display: none;
 }
 
-
-/* =========================================================
-   RATING BREAKDOWN
-   ========================================================= */
-
 .rating-breakdown-grid {
     display: grid;
 
@@ -1954,11 +1791,6 @@ a {
 
     border-radius: 2px;
 }
-
-
-/* =========================================================
-   COMMENTS
-   ========================================================= */
 
 .comments-list {
     display: flex;
@@ -2135,32 +1967,20 @@ a {
     color: #00875a;
 }
 
-
-/* =========================================================
-   DESKTOP WIDTH CONTROL
-   ========================================================= */
-
 @media (min-width: 1300px) {
 
-    /* Hero text + Search Bar */
     .hero-content,
     .search-container {
         width: 1300px;
         max-width: 1300px;
     }
 
-    /* Wider content below Hero */
     .main-content,
     .detail-page-container {
         width: 1400px;
         max-width: 1400px;
     }
 }
-
-
-/* =========================================================
-   1050px
-   ========================================================= */
 
 @media (max-width: 1050px) {
 
@@ -2192,11 +2012,6 @@ a {
             290px;
     }
 }
-
-
-/* =========================================================
-   900px
-   ========================================================= */
 
 @media (max-width: 900px) {
 
@@ -2272,11 +2087,6 @@ a {
         grid-template-columns: 200px 1fr;
     }
 }
-
-
-//* =========================================================
-   760px
-   ========================================================= */
 
 @media (max-width: 760px) {
 
@@ -2506,12 +2316,6 @@ a {
     }
 }
 
-
-/* =========================================================
-   560px
-   ========================================================= */
-
-
 @media (max-width: 560px) {
 
     .hero-content,
@@ -2631,12 +2435,258 @@ a {
     }
 }
 
+@media (max-width: 760px) {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .navbar {
+        height: auto;
+        min-height: 0;
+        padding: 0;
+    }
+
+    .navbar-container {
+        position: relative;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px;
+        padding: 8px 12px 10px;
+    }
+
+    .navbar .logo {
+        align-self: center;
+    }
+
+    .navbar .logo img {
+        height: 46px;
+    }
+
+    .navbar .nav-links {
+        display: grid !important;
+        width: 100%;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+    }
+
+    .navbar .nav-links > a {
+        display: flex;
+        min-width: 0;
+        min-height: 38px;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 5px !important;
+        border-radius: 7px;
+        font-size: 12px;
+        line-height: 1.15;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .navbar .nav-links > a.tp-nav-current:not(.btn-login)::after {
+        right: 18%;
+        left: 18%;
+    }
+
+    .navbar .btn-login {
+        border-radius: 7px;
+    }
+
+    .navbar .avatar-dropdown-container {
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        padding: 0;
+    }
+
+    .hero-section {
+        padding: 30px 0 28px;
+    }
+
+    .hero-content,
+    .search-container,
+    .main-content,
+    .detail-page-container {
+        width: calc(100% - 28px);
+        max-width: none;
+    }
+
+    .hero-content {
+        margin-bottom: 22px;
+    }
+
+    .hero-content h1 {
+        font-size: clamp(26px, 8vw, 32px);
+        line-height: 1.13;
+    }
+
+    .trip-type-selector {
+        flex-wrap: wrap;
+        gap: 12px 22px;
+    }
+
+    .filter-bar {
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 5px;
+        padding: 8px;
+    }
+
+    .input-group {
+        width: 100%;
+        min-width: 0;
+        min-height: 64px;
+        padding: 9px 11px;
+        border: 1px solid var(--border-light);
+        border-radius: 6px;
+    }
+
+    .input-group select,
+    .input-group input {
+        min-width: 0;
+        font-size: 16px;
+    }
+
+    .swap-button {
+        grid-column: 1;
+        justify-self: center;
+        width: 42px;
+        height: 42px;
+        margin: -1px 0;
+        transform: rotate(90deg);
+    }
+
+    .swap-button:hover {
+        transform: rotate(90deg);
+    }
+
+    .swap-button.swapped {
+        transform: rotate(270deg);
+    }
+
+    .departure-date-group,
+    .return-date-group,
+    .passenger-group,
+    .btn-search {
+        grid-column: 1;
+    }
+
+    .btn-search {
+        width: 100%;
+        min-width: 0;
+        min-height: 54px;
+        font-size: 15px;
+    }
+
+    .search-results-header {
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .search-results-header h2 {
+        font-size: 23px;
+        line-height: 1.15;
+    }
+
+    .sort-form {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .sort-form select {
+        width: 100%;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .flight-result-card {
+        width: 100%;
+        flex-direction: column;
+        border-radius: 9px;
+    }
+
+    .flight-card-main {
+        width: 100%;
+        padding: 16px;
+    }
+
+    .flight-route-timeline {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 88px minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+    }
+
+    .duration-block {
+        width: auto;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .time-block.destination {
+        text-align: right;
+    }
+
+    .flight-card-side {
+        width: 100%;
+        flex-basis: auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 14px;
+        padding: 16px;
+        border-top: 1px solid var(--border-light);
+        border-left: 0;
+    }
+
+    .price-box {
+        align-items: flex-start;
+    }
+
+    .btn-select-flight {
+        width: 100%;
+        min-width: 0;
+        min-height: 46px;
+    }
+
+    .features-section,
+    .routes-grid,
+    .detail-grid,
+    .gallery-grid,
+    .amenity-grid,
+    .rating-overview-dashboard,
+    .rating-breakdown-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 380px) {
+    .navbar .nav-links > a {
+        font-size: 11px;
+    }
+
+    .hero-content,
+    .search-container,
+    .main-content,
+    .detail-page-container {
+        width: calc(100% - 20px);
+    }
+
+    .flight-card-main,
+    .flight-card-side {
+        padding: 14px;
+    }
+
+    .flight-route-timeline {
+        grid-template-columns: minmax(0, 1fr) 74px minmax(0, 1fr);
+        gap: 5px;
+    }
+}
+
 .flight-favorite-button{margin-top:14px;border:1px solid #d6dce5;background:#fff;color:#314158;border-radius:8px;padding:9px 14px;font-weight:700;cursor:pointer}.flight-favorite-button i{color:#e43e5b;margin-right:5px}.flight-favorite-button.active{background:#fff0f3;border-color:#ef9cac;color:#c72b49}
-
-
-/* =========================================================
-   MEMBER STAYCATION BANNER
-   ========================================================= */
 
 .staycation-member-banner {
     display: flex;
@@ -2769,11 +2819,6 @@ a {
     }
 }
 
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
 button:focus-visible,
 a:focus-visible,
 select:focus-visible,
@@ -2781,11 +2826,6 @@ input:focus-visible {
     outline: 2px solid rgba(0, 108, 228, 0.45);
     outline-offset: 2px;
 }
-
-
-/* =========================================================
-   REDUCE EXCESSIVE MOTION
-   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -2797,13 +2837,7 @@ input:focus-visible {
         animation-duration: 0.01ms !important;
     }
 }
-/* =========================================================
-   TRAVELPAL SEARCH BAR / CABIN SELECTOR OVERRIDES
-   Keeps the existing PHP/JS flow intact while fixing the
-   desktop search-bar proportions and adding realistic cabin UI.
-   ========================================================= */
 
-/* Desktop: keep the search bar anchored to the same left edge in every browser. */
 .search-container {
     width: min(1360px, calc(100% - 32px));
     max-width: 1360px;
@@ -2840,7 +2874,6 @@ input:focus-visible {
     white-space: nowrap;
 }
 
-/* Cabin class selector in the booking summary. */
 .cabin-form-group {
     margin-top: 2px;
 }
@@ -2923,14 +2956,12 @@ input:focus-visible {
     cursor: wait;
 }
 
-/* Keep the booking summary comfortable after adding three cabin choices. */
 .booking-card {
     padding: 21px;
 }
 
 @media (min-width: 1300px) {
     .search-container {
-        /* Use the same content column as the hero and main section. */
         width: min(1360px, calc(100% - 32px));
         max-width: 1360px;
         margin-left: auto;

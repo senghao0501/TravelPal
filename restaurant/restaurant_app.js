@@ -43,17 +43,39 @@ function isRestaurantSaved(id) {
     return readRestaurantFavorites().some(item => String(item.id) === String(id));
 }
 
+function restaurantSpendEstimate(item = {}) {
+    const suppliedAverage = Number(item.estimatedPrice);
+    const suppliedRange = String(item.priceRange || item.price || '').trim();
+    if (Number.isFinite(suppliedAverage) && suppliedAverage > 0) {
+        return {average: Math.round(suppliedAverage), range: suppliedRange || `RM ${Math.round(suppliedAverage)}`};
+    }
+
+    const rangeValues = (suppliedRange.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+    if (rangeValues.length) {
+        const lastValue = rangeValues[rangeValues.length - 1];
+        return {average: Math.round((rangeValues[0] + lastValue) / 2), range: suppliedRange};
+    }
+
+    const levels = String(item.summary || item.description || '').match(/\${1,4}/g) || [];
+    const priceLevels = {1: [15, 30], 2: [30, 65], 3: [65, 130], 4: [130, 220]};
+    const first = priceLevels[Math.min(4, levels[0]?.length || 2)];
+    const last = priceLevels[Math.min(4, levels.at(-1)?.length || levels[0]?.length || 2)];
+    return {average: Math.round((first[0] + last[1]) / 2), range: `RM ${first[0]}–${last[1]}`};
+}
+
 function toggleRestaurantFavorite(item) {
     if (!window.TravelPalLoginPopup || !window.TravelPalLoginPopup.isLoggedIn) {
         window.TravelPalLoginPopup?.open();
         return false;
     }
+    const spend = restaurantSpendEstimate(item);
+    const pricedItem = {...item, estimatedPrice: spend.average, priceRange: spend.range};
     const items = readRestaurantFavorites();
     const index = items.findIndex(saved => String(saved.id) === String(item.id));
     if (index >= 0) {
         items.splice(index, 1);
     } else {
-        items.unshift(item);
+        items.unshift(pricedItem);
     }
     writeRestaurantFavorites(items);
     const saved = index < 0;
@@ -62,8 +84,12 @@ function toggleRestaurantFavorite(item) {
         body: JSON.stringify({
             action: saved ? 'save' : 'remove', item_type: 'restaurant', item_key: 'restaurant-' + item.id,
             title: item.name || 'Restaurant', subtitle: [item.city, item.state].filter(Boolean).join(', '),
-            image_url: item.image || '', unit_price: Number(item.estimatedPrice || item.price || 45) * Math.max(1, Number(item.party || 2)),
-            metadata: {guests: Math.max(1, Number(item.party || 2))}
+            image_url: item.image || '', unit_price: spend.average,
+            metadata: {
+                guests: Math.max(1, Number(item.party || 2)),
+                average_spend: spend.average,
+                price_range: spend.range
+            }
         })
     }).catch(() => {});
     return index < 0;
@@ -84,6 +110,7 @@ function restaurantCardMarkup(item, citySlug = '') {
         ? `<img src="${escapeRestaurantHtml(item.image)}" alt="${escapeRestaurantHtml(item.name)}" loading="lazy">`
         : '<span class="rp-gallery__empty"><i class="fa-solid fa-utensils"></i></span>';
     const party = Math.max(1, Math.min(8, Number(item.party || 2)));
+    const spend = restaurantSpendEstimate(item);
     const detailUrl = `detail.php?id=${encodeURIComponent(item.id)}&city=${encodeURIComponent(citySlug || item.citySlug || '')}&party=${party}`;
     return `<article class="rp-card" data-name="${escapeRestaurantHtml(item.name.toLowerCase())}" data-summary="${escapeRestaurantHtml((item.summary || '').toLowerCase())}" data-rating="${Number(item.rating || 0)}">
         <a class="rp-card__photo" href="${detailUrl}">${image}${item.badge ? `<span class="rp-card__badge">${escapeRestaurantHtml(item.badge)}</span>` : ''}</a>
@@ -92,6 +119,11 @@ function restaurantCardMarkup(item, citySlug = '') {
             <div class="rp-card__place"><i class="fa-solid fa-location-dot"></i> ${escapeRestaurantHtml(item.city)}${item.state ? `, ${escapeRestaurantHtml(item.state)}` : ''}</div>
             <h2><a href="${detailUrl}">${escapeRestaurantHtml(item.name)}</a></h2>
             <p class="rp-card__summary">${escapeRestaurantHtml(item.summary || 'Restaurant')}</p>
+            <div class="rp-card__spend">
+                <span><i class="fa-solid fa-wallet"></i> Average spend</span>
+                <strong>RM ${spend.average} per person</strong>
+                <small>${escapeRestaurantHtml(spend.range)} typical range</small>
+            </div>
             <div class="rp-card__meta">
                 ${item.rating ? `<span class="rp-rating">★ ${escapeRestaurantHtml(item.rating)}</span>` : '<span>Not rated</span>'}
                 ${item.reviewCount ? `<span>${escapeRestaurantHtml(item.reviewCount)} reviews</span>` : ''}

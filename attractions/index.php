@@ -656,7 +656,7 @@ const ticketCounts = {
 
 function updateTicket(type, change) {
     const minimum = type === 'adults' ? 1 : 0;
-    const maximum = 15;
+    const maximum = 9;
     const nextValue = ticketCounts[type] + change;
 
     if (nextValue < minimum || nextValue > maximum) {

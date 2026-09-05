@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-// 引入上一级的 header
+
 include '../header.php'; 
 ?>
 
@@ -92,7 +92,7 @@ include '../header.php';
     margin: 0;
 }
 
-/* 响应式 */
+
 @media (max-width: 992px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .team-grid { grid-template-columns: 1fr; } }
 </style>
@@ -105,7 +105,7 @@ include '../header.php';
 
     <section class="team-container">
         <div class="team-grid">
-            <!-- Team Member 1 -->
+        
             <div class="team-card">
                 <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=500&q=80" alt="Team Member" class="team-img">
                 <div class="team-info">
@@ -114,7 +114,7 @@ include '../header.php';
                     <p class="team-desc">Ensures everything runs smoothly and keeps the team focused on delivering the best user experience.</p>
                 </div>
             </div>
-            <!-- Team Member 2 -->
+           
             <div class="team-card">
                 <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&q=80" alt="Team Member" class="team-img">
                 <div class="team-info">
@@ -123,7 +123,7 @@ include '../header.php';
                     <p class="team-desc">The architect behind our fast hotel search API and secure user authentication system.</p>
                 </div>
             </div>
-            <!-- Team Member 3 -->
+        
             <div class="team-card">
                 <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&q=80" alt="Team Member" class="team-img">
                 <div class="team-info">
@@ -132,7 +132,7 @@ include '../header.php';
                     <p class="team-desc">Crafts the beautiful interfaces, green themes, and pixel-perfect layouts you see every day.</p>
                 </div>
             </div>
-            <!-- Team Member 4 -->
+       
             <div class="team-card">
                 <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?w=500&q=80" alt="Team Member" class="team-img">
                 <div class="team-info">

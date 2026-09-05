@@ -1,8 +1,5 @@
-/* ==========================================================================
-   TravelPal - Settings Page Styling (Unified with Hotels & Flights UI)
-   ========================================================================== */
 
-/* 1. 主容器布局：统一宽度与呼吸间距 */
+
 .settings-container {
     max-width: 1180px !important;
     margin: 45px auto 80px auto !important;
@@ -53,7 +50,7 @@
     border-color: #fecaca;
 }
 
-/* 2. Booking.com 风格的 Help Center / 登录引导大卡片 */
+
 .help-center-card {
     background: #ffffff !important;
     border: 1px solid var(--border, #d9dee7) !important;
@@ -78,7 +75,6 @@
     margin: 0 0 24px 0;
 }
 
-/* 客服选项两列网格布局 */
 .help-options-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -116,7 +112,7 @@
     line-height: 1.4;
 }
 
-/* 主 Sign In 按钮 */
+
 .btn-help-signin {
     display: flex;
     align-items: center;
@@ -138,7 +134,6 @@
     background: var(--primary-dark, #065f46);
 }
 
-/* 底部辅助链接 */
 .help-footer-link {
     text-align: center;
 }
@@ -154,7 +149,6 @@
     text-decoration: underline;
 }
 
-/* 3. 标准设置卡片框架 */
 .settings-card {
     background: #ffffff !important;
     border: 1px solid var(--border, #d9dee7) !important;
@@ -195,7 +189,7 @@
     color: #047857;
 }
 
-/* 4. 表单元素区 */
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -245,7 +239,7 @@
     color: var(--text-muted, #6b7280);
 }
 
-/* 复选框样式 */
+
 .form-group-checkbox {
     display: flex;
     align-items: center;
@@ -269,7 +263,6 @@
     letter-spacing: normal;
 }
 
-/* 5. 底部操作按钮区域 */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -315,7 +308,7 @@
     background: #fecaca;
 }
 
-/* 响应式适配 */
+
 @media (max-width: 760px) {
     .help-options-grid {
         grid-template-columns: 1fr;

@@ -64,10 +64,9 @@ include '../header.php';
 ?>
 
 
-<!-- 引入全局样式与专属 CSS 样式表 -->
 <link rel="stylesheet" href="/TravelPal/style.css?v=2026">
 <link rel="stylesheet" href="/TravelPal/settings/style.css?v=2026">
-<!-- 引入 FontAwesome 图标库支持 -->
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="settings-container">
@@ -88,7 +87,7 @@ include '../header.php';
         </div>
     <?php endif; ?>
 
-    <!-- 未登录 (Guest) 专属：Booking.com 风格的 Help Center / 登录引导卡片 -->
+
     <?php if (!$isLoggedIn): ?>
         <div class="help-center-card">
             <div class="help-header-text">
@@ -96,7 +95,6 @@ include '../header.php';
                 <p>Sign in to contact Customer Service – we're available 24 hours a day</p>
             </div>
 
-            <!-- 客服选项两列布局 -->
             <div class="help-options-grid">
                 <div class="help-option-item">
                     <div class="help-icon"><i class="fa-solid fa-comments"></i></div>
@@ -115,20 +113,19 @@ include '../header.php';
                 </div>
             </div>
 
-            <!-- 主按钮：Sign in (正确链接到 auth/login.php) -->
             <a href="../auth/login.php" class="btn-help-signin">Sign In</a>
 
-            <!-- 底部辅助链接：游客继续浏览 -->
+
             <div class="help-footer-link">
                 <a href="../index.php">Continue without an account</a>
             </div>
         </div>
     <?php endif; ?>
 
-    <!-- 设置表单提交入口 -->
+
     <form class="settings-form" method="POST" action="update_settings.php">
         
-        <!-- 模块 1: 偏好设置 (未登录 & 已登录 均可调，已移除多余货币) -->
+      
         <div class="settings-card">
             <div class="card-title">
                 <h2>Preferences</h2>
@@ -146,7 +143,6 @@ include '../header.php';
             </div>
         </div>
 
-        <!-- 模块 2: 通知设置 (未登录 & 已登录 均可调) -->
         <div class="settings-card">
             <div class="card-title">
                 <h2>Notifications</h2>
@@ -161,7 +157,6 @@ include '../header.php';
             </div>
         </div>
 
-        <!-- 模块 3: 账号与个人资料 (仅限已登录展示) -->
         <?php if ($isLoggedIn): ?>
             <div class="settings-card">
                 <div class="card-title">
@@ -179,7 +174,7 @@ include '../header.php';
                 </div>
             </div>
 
-            <!-- 模块 4: 安全与密码 (仅限已登录展示) -->
+    
             <div class="settings-card">
                 <div class="card-title">
                     <h2>Security</h2>
@@ -195,7 +190,7 @@ include '../header.php';
             </div>
         <?php endif; ?>
 
-        <!-- 底部提交操作区 -->
+     
         <div class="form-actions">
             <button type="submit" class="btn-save-settings">Save Changes</button>
             <?php if ($isLoggedIn): ?>
@@ -206,5 +201,5 @@ include '../header.php';
     </form>
 </div>
 
-<!-- 3. 引入根目录下的 footer.php -->
+
 <?php include '../footer.php'; ?>  

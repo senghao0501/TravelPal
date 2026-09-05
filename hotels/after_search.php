@@ -280,7 +280,7 @@ function applySort() {
     window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
 
-<script>
+
 document.addEventListener("DOMContentLoaded", function () {
     const today = new Date().toISOString().split('T')[0];
     const checkIn = document.getElementById('check_in');
@@ -299,7 +299,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-</script>
+
 </script>
 
 

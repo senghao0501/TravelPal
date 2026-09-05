@@ -1,6 +1,6 @@
 <?php
 
-define('HOTEL_RAPIDAPI_KEY', 'b982361cbdmsha64336d3492549fp15ed91jsnd2566fd6498c');
+define('HOTEL_RAPIDAPI_KEY', '8447371573msh2102b6d7df1ec29p16da6cjsnc5ec41493522');
 define('HOTEL_RAPIDAPI_HOST', 'booking-com.p.rapidapi.com');
 
 function callHotelAPI($endpoint, $params) {
@@ -31,8 +31,8 @@ function callHotelAPI($endpoint, $params) {
 
 function searchLiveHotels($query, $checkIn, $checkOut, $adults, $rooms) {
     
-    $apiCheckIn = date('Y-m-d', time() + (86400 * 14));
-    $apiCheckOut = date('Y-m-d', time() + (86400 * 15));
+$apiCheckIn = $checkIn;
+$apiCheckOut = $checkOut;
 
     $destRes = callHotelAPI('locations', ['name' => $query, 'locale' => 'en-gb']);
     

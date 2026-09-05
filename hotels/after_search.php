@@ -21,6 +21,7 @@ $filtered_hotels = [];
 
 if (!empty($query)) {
     $apiHotels = searchLiveHotels($query, $check_in, $check_out, $adults, $rooms);
+ 
     if (!empty($apiHotels)) {
         $filtered_hotels = $apiHotels;
         $liveApiUsed = true;
@@ -86,19 +87,19 @@ $guest_summary_initial = "$adults Adults" . ($children > 0 ? ", $children Childr
                 </div>
             </div>
 
-            <div class="input-group">
-                <div class="input-wrapper">
-                    <label>Check-in Date</label>
-                    <input type="date" name="check_in" value="<?php echo htmlspecialchars($check_in); ?>" required>
-                </div>
-            </div>
+           <div class="input-group">
+    <div class="input-wrapper">
+        <label>Check-in Date</label>
+        <input type="date" name="check_in" id="check_in" value="<?php echo htmlspecialchars($check_in); ?>" min="<?php echo date('Y-m-d'); ?>" required>
+    </div>
+</div>
 
-            <div class="input-group">
-                <div class="input-wrapper">
-                    <label>Check-out Date</label>
-                    <input type="date" name="check_out" value="<?php echo htmlspecialchars($check_out); ?>" required>
-                </div>
-            </div>
+<div class="input-group">
+    <div class="input-wrapper">
+        <label>Check-out Date</label>
+        <input type="date" name="check_out" id="check_out" value="<?php echo htmlspecialchars($check_out); ?>" min="<?php echo date('Y-m-d', strtotime('+1 day')); ?>" required>
+    </div>
+</div>
 
             <div class="input-group guest-selector-group">
                 <div class="input-wrapper" id="guestInputTrigger" style="cursor: pointer;">
@@ -278,6 +279,27 @@ function applySort() {
     urlParams.set('sort', select.value);
     window.location.href = window.location.pathname + '?' + urlParams.toString();
 }
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date().toISOString().split('T')[0];
+    const checkIn = document.getElementById('check_in');
+    const checkOut = document.getElementById('check_out');
+    
+    checkIn.setAttribute('min', today);
+    
+    checkIn.addEventListener('change', function() {
+        const selectedDate = this.value;
+        const nextDay = new Date(selectedDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        const nextDayStr = nextDay.toISOString().split('T')[0];
+        checkOut.setAttribute('min', nextDayStr);
+        if (checkOut.value && checkOut.value <= selectedDate) {
+            checkOut.value = nextDayStr;
+        }
+    });
+});
+</script>
 </script>
 
 

@@ -43,6 +43,9 @@ $placeholderSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="
 
 $placeholderImage = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($placeholderSvg);
 
+$loginPopupAutoShow = true;
+$loginPopupMessage = 'Sign in or create a TravelPal account to save your favorite attractions and organize your travel plans.';
+
 include '../header.php';
 ?>
 

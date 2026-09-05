@@ -37,7 +37,7 @@ $loginPopupLoggedIn = !empty($_SESSION['user_id']);
             <h2 id="travelpalLoginTitle">Sign in to continue</h2>
 
             <p>
-                Sign in or create a TravelPal account to save your flights and continue with your travel plans.
+                <?= htmlspecialchars($loginPopupMessage ?? 'Sign in or create a TravelPal account to save your flights and continue with your travel plans.', ENT_QUOTES, 'UTF-8') ?>
             </p>
 
             <a href="/TravelPal/auth/login.php" class="travelpal-login-button">

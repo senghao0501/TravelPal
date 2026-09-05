@@ -264,7 +264,6 @@ async function loadSpotlights() {
         renderSpotlight(spotlightIndex);
         startSpotlightTimer();
     } catch (error) {
-        // The prepared city spotlights remain visible when the live service is unavailable.
     }
 }
 

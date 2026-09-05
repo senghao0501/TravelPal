@@ -6,7 +6,7 @@ $cities = require __DIR__ . '/api/city_data.php';
 $selectedCity = $cities[$citySlug] ?? ['city' => '', 'state' => ''];
 include '../header.php';
 ?>
-<link rel="stylesheet" href="restaurants.css?v=4">
+<link rel="stylesheet" href="restaurants.css?v=5">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <div class="rp-page">
@@ -17,7 +17,7 @@ include '../header.php';
     </div>
 </div>
 
-<script src="restaurant_app.js?v=2"></script>
+<script src="restaurant_app.js?v=3"></script>
 <script>
 const restaurantId = <?php echo json_encode($id); ?>;
 const restaurantCitySlug = <?php echo json_encode($citySlug); ?>;
@@ -52,6 +52,7 @@ function renderReviews(reviews) {
 }
 
 function renderDetail(item) {
+    const spend = restaurantSpendEstimate(item);
     currentRestaurant = {
         id: item.id || restaurantId,
         name: item.name,
@@ -62,7 +63,9 @@ function renderDetail(item) {
         city: restaurantCity,
         state: restaurantState,
         citySlug: restaurantCitySlug,
-        party: restaurantParty
+        party: restaurantParty,
+        estimatedPrice: spend.average,
+        priceRange: spend.range
     };
     const saved = isRestaurantSaved(currentRestaurant.id);
     const addressMap = item.latitude && item.longitude
@@ -83,7 +86,7 @@ function renderDetail(item) {
             <section class="rp-panel"><span class="rp-kicker">About this restaurant</span><h2>What travelers can expect</h2><p>${escapeRestaurantHtml(item.description || item.summary || 'More information is available from the restaurant provider.')}</p>${item.cuisines?.length ? `<h3>Cuisines</h3><div class="rp-chip-list">${item.cuisines.map(value => `<span class="rp-chip">${escapeRestaurantHtml(value)}</span>`).join('')}</div>` : ''}${item.serves?.length ? `<h3>Meals</h3><div class="rp-chip-list">${item.serves.map(value => `<span class="rp-chip">${escapeRestaurantHtml(value)}</span>`).join('')}</div>` : ''}</section>
             ${menu.length ? `<section class="rp-panel"><span class="rp-kicker">Menu preview</span><h2>Popular menu items</h2>${menu.map(entry => `<article class="rp-menu-item"><h3>${escapeRestaurantHtml(entry.name)} ${entry.price ? `<span class="rp-rating">${escapeRestaurantHtml(entry.price)}</span>` : ''}</h3>${entry.description ? `<p>${escapeRestaurantHtml(entry.description)}</p>` : ''}</article>`).join('')}</section>` : ''}
             <section class="rp-panel"><span class="rp-kicker">Community notes</span><h2>Traveler comments</h2>${renderReviews(item.reviews || [])}</section>
-        </main><aside><section class="rp-panel"><span class="rp-kicker">Plan your visit</span><h2>Restaurant information</h2>${infoItems ? `<ul class="rp-info-list">${infoItems}</ul>` : '<p>Contact and location information was not returned.</p>'}${item.tripadvisorUrl ? `<p style="margin-top:20px">${externalLink(item.tripadvisorUrl, 'View source listing')}</p>` : ''}</section></aside></div>`;
+        </main><aside><section class="rp-panel"><span class="rp-kicker">Plan your visit</span><h2>Restaurant information</h2><div class="rp-detail-spend"><small>Average spend per person</small><strong>RM ${spend.average}</strong><span>${escapeRestaurantHtml(spend.range)} typical range</span></div>${infoItems ? `<ul class="rp-info-list">${infoItems}</ul>` : '<p>Contact and location information was not returned.</p>'}${item.tripadvisorUrl ? `<p style="margin-top:20px">${externalLink(item.tripadvisorUrl, 'View source listing')}</p>` : ''}</section></aside></div>`;
     detailRoot.hidden = false;
     detailState.hidden = true;
     document.title = `${item.name} | TravelPal`;

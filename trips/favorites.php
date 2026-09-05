@@ -128,6 +128,16 @@ include __DIR__ . '/../header.php';
                                     ?? $metadata['nights']
                                     ?? 1
                                 ));
+                                $unitPrice = (float) $item['unit_price'];
+                                if ($type === 'restaurant') {
+                                    if (!empty($metadata['average_spend'])) {
+                                        $unitPrice = (float) $metadata['average_spend'];
+                                    } elseif ($unitPrice > 0 && $quantity > 1) {
+                                        $unitPrice /= $quantity;
+                                    } elseif ($unitPrice <= 0) {
+                                        $unitPrice = 48;
+                                    }
+                                }
                                 $durationHours = max(1, min(24, (int) (
                                     $metadata['duration_hours'] ?? 0
                                 )));
@@ -135,7 +145,7 @@ include __DIR__ . '/../header.php';
                                     'item_type' => $item['item_type'],
                                     'item_key' => $item['item_key'],
                                     'title' => $item['title'],
-                                    'unit_price' => (float) $item['unit_price'],
+                                    'unit_price' => $unitPrice,
                                     'quantity' => $quantity,
                                     'duration_hours' => $durationHours,
                                 ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
@@ -160,11 +170,15 @@ include __DIR__ . '/../header.php';
                                     <div>
                                         <strong><?= tp_h($item['title']) ?></strong>
                                         <small><?= tp_h($item['subtitle']) ?></small>
-                                        <em>
-                                            RM <?= number_format((float) $item['unit_price'], 2) ?>
-                                            <?php if ($type === 'restaurant'): ?> est.<?php endif; ?>
-                                            <?php if ($type === 'attraction'): ?> / ticket<?php endif; ?>
-                                        </em>
+                                        <?php if ($type === 'restaurant'): ?>
+                                            <em>Avg. RM <?= number_format($unitPrice, 2) ?> / person</em>
+                                            <small>Est. RM <?= number_format($unitPrice * $quantity, 2) ?> for <?= $quantity ?> <?= $quantity === 1 ? 'diner' : 'diners' ?></small>
+                                        <?php else: ?>
+                                            <em>
+                                                RM <?= number_format($unitPrice, 2) ?>
+                                                <?php if ($type === 'attraction'): ?> / ticket<?php endif; ?>
+                                            </em>
+                                        <?php endif; ?>
                                     </div>
 
                                     <button type="button" class="favorite-remove" aria-label="Remove <?= tp_h($item['title']) ?> from favorites"><i class="fa-solid fa-trash"></i></button>

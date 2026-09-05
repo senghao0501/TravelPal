@@ -1,9 +1,6 @@
 <?php
-// flights_data.php - 马来西亚国内航班真实价格参考数据
-// 价格参考：https://www.wego.com.my/ (AirAsia), https://my.trip.com/ (Firefly), Expedia (Batik Air)
 
 $all_flights = [
-    // ==================== 吉隆坡/雪兰莪 (KUL/SZB) → 槟城 (PEN) ====================
     [
         'id' => 1001,
         'airline' => 'AirAsia',
@@ -15,7 +12,7 @@ $all_flights = [
         'departure_time' => '07:25 AM',
         'arrival_time' => '08:30 AM',
         'duration' => '1h 05m',
-        'price' => 114.00,  // 参考 Wego [citation:5]
+        'price' => 114.00,
         'rating' => 8.8,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -37,7 +34,7 @@ $all_flights = [
         'departure_time' => '08:35 AM',
         'arrival_time' => '09:35 AM',
         'duration' => '1h 00m',
-        'price' => 159.00,  // 参考 Malaysia Airlines MATTA Fair [citation:2]
+        'price' => 159.00,
         'rating' => 9.2,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
@@ -59,7 +56,7 @@ $all_flights = [
         'departure_time' => '09:00 AM',
         'arrival_time' => '10:00 AM',
         'duration' => '1h 00m',
-        'price' => 171.00,  // 参考 Trip.com [citation:3]
+        'price' => 171.00,
         'rating' => 8.9,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?w=800&q=80',
@@ -79,7 +76,7 @@ $all_flights = [
         'departure_time' => '10:15 AM',
         'arrival_time' => '11:15 AM',
         'duration' => '1h 00m',
-        'price' => 155.00,  // 参考 Batik Air 价格范围
+        'price' => 155.00,
         'rating' => 8.6,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?w=800&q=80',
@@ -89,7 +86,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 吉隆坡 (KUL) → 沙巴亚庇 (BKI) ====================
     [
         'id' => 1010,
         'airline' => 'AirAsia',
@@ -101,7 +97,7 @@ $all_flights = [
         'departure_time' => '07:00 AM',
         'arrival_time' => '09:35 AM',
         'duration' => '2h 35m',
-        'price' => 272.00,  // 参考 Wego [citation:5]
+        'price' => 272.00,
         'rating' => 8.6,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -121,7 +117,7 @@ $all_flights = [
         'departure_time' => '09:15 AM',
         'arrival_time' => '11:50 AM',
         'duration' => '2h 35m',
-        'price' => 339.00,  // 参考 Malaysia Airlines 促销价 [citation:10]
+        'price' => 339.00,
         'rating' => 9.0,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
@@ -131,7 +127,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 吉隆坡 (KUL) → 砂拉越古晋 (KCH) ====================
     [
         'id' => 1020,
         'airline' => 'AirAsia',
@@ -143,7 +138,7 @@ $all_flights = [
         'departure_time' => '08:00 AM',
         'arrival_time' => '09:45 AM',
         'duration' => '1h 45m',
-        'price' => 186.00,  // 参考 Wego [citation:5]
+        'price' => 186.00,
         'rating' => 8.5,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -163,7 +158,7 @@ $all_flights = [
         'departure_time' => '10:30 AM',
         'arrival_time' => '12:15 PM',
         'duration' => '1h 45m',
-        'price' => 339.00,  // 参考 Malaysia Airlines 促销价 [citation:10]
+        'price' => 339.00,
         'rating' => 8.9,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
@@ -173,7 +168,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 槟城 (PEN) → 新山 (JHB) ====================
     [
         'id' => 1030,
         'airline' => 'AirAsia',
@@ -205,7 +199,7 @@ $all_flights = [
         'departure_time' => '01:00 PM',
         'arrival_time' => '02:10 PM',
         'duration' => '1h 10m',
-        'price' => 301.00,  // 参考 Expedia [citation:8]
+        'price' => 301.00,
         'rating' => 8.7,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1506015391300-4802dc74de2e?w=800&q=80',
@@ -215,7 +209,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 吉隆坡 (KUL) → 浮罗交怡 (LGK) ====================
     [
         'id' => 1040,
         'airline' => 'AirAsia',
@@ -227,7 +220,7 @@ $all_flights = [
         'departure_time' => '09:30 AM',
         'arrival_time' => '10:30 AM',
         'duration' => '1h 00m',
-        'price' => 135.00,  // 参考 Wego [citation:5]
+        'price' => 135.00,
         'rating' => 8.3,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -237,7 +230,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 吉隆坡 (KUL) → 哥打巴鲁 (KBR) ====================
     [
         'id' => 1050,
         'airline' => 'AirAsia',
@@ -249,7 +241,7 @@ $all_flights = [
         'departure_time' => '08:30 AM',
         'arrival_time' => '09:30 AM',
         'duration' => '1h 00m',
-        'price' => 106.00,  // 参考 Wego [citation:5]
+        'price' => 106.00,
         'rating' => 8.1,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -259,7 +251,6 @@ $all_flights = [
         'reviews' => []
     ],
 
-    // ==================== 返回航线 (反向) ====================
     [
         'id' => 1060,
         'airline' => 'AirAsia',
@@ -271,7 +262,7 @@ $all_flights = [
         'departure_time' => '09:00 AM',
         'arrival_time' => '10:05 AM',
         'duration' => '1h 05m',
-        'price' => 114.00,  // 参考 Wego [citation:5]
+        'price' => 114.00,
         'rating' => 8.7,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',
@@ -291,7 +282,7 @@ $all_flights = [
         'departure_time' => '10:30 AM',
         'arrival_time' => '11:30 AM',
         'duration' => '1h 00m',
-        'price' => 159.00,  // 参考 Malaysia Airlines [citation:2]
+        'price' => 159.00,
         'rating' => 9.1,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80',
@@ -311,7 +302,7 @@ $all_flights = [
         'departure_time' => '10:00 AM',
         'arrival_time' => '12:35 PM',
         'duration' => '2h 35m',
-        'price' => 272.00,  // 参考 Wego [citation:5]
+        'price' => 272.00,
         'rating' => 8.6,
         'class_type' => 'Economy',
         'logo_url' => 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80',

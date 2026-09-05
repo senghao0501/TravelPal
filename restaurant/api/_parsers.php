@@ -19,6 +19,27 @@ function restaurant_plain_text(?string $value): string
     return trim(html_entity_decode(strip_tags($value), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 }
 
+function restaurant_price_estimate(string $summary): array
+{
+    preg_match_all('/\${1,4}/', $summary, $matches);
+    $levels = array_map('strlen', $matches[0] ?? []);
+    $firstLevel = max(1, min(4, $levels[0] ?? 2));
+    $lastLevel = max(1, min(4, $levels[count($levels) - 1] ?? $firstLevel));
+    $ranges = [
+        1 => [15, 30],
+        2 => [30, 65],
+        3 => [65, 130],
+        4 => [130, 220],
+    ];
+    $minimum = $ranges[$firstLevel][0];
+    $maximum = $ranges[$lastLevel][1];
+
+    return [
+        'priceRange' => 'RM ' . $minimum . '–' . $maximum,
+        'estimatedPrice' => (int)round(($minimum + $maximum) / 2),
+    ];
+}
+
 function restaurant_walk(array $node, callable $visitor): void
 {
     $visitor($node);
@@ -46,10 +67,12 @@ function restaurant_parse_list(array $raw, array $city): array
                 return;
             }
 
+            $summary = trim((string)($node['primaryInfo']['text'] ?? 'Restaurant'));
+            $priceEstimate = restaurant_price_estimate($summary);
             $results[$id] = [
                 'id' => $id,
                 'name' => $name,
-                'summary' => trim((string)($node['primaryInfo']['text'] ?? 'Restaurant')),
+                'summary' => $summary,
                 'status' => trim((string)($node['secondaryInfo']['text'] ?? '')),
                 'rating' => isset($node['bubbleRating']['rating']) ? (float)$node['bubbleRating']['rating'] : null,
                 'reviewCount' => preg_replace('/[^0-9,.]/', '', (string)($node['bubbleRating']['numberReviews']['string'] ?? '')),
@@ -57,6 +80,8 @@ function restaurant_parse_list(array $raw, array $city): array
                 'badge' => isset($node['badge']['type']) ? ucwords(strtolower(str_replace('_', ' ', (string)$node['badge']['type']))) : '',
                 'state' => $city['state'],
                 'city' => $city['city'],
+                'priceRange' => $priceEstimate['priceRange'],
+                'estimatedPrice' => $priceEstimate['estimatedPrice'],
             ];
         });
     }
@@ -194,6 +219,10 @@ function restaurant_parse_detail(array $raw): array
             }
         }
     }
+
+    $priceEstimate = restaurant_price_estimate($detail['summary'] . ' ' . $detail['description']);
+    $detail['priceRange'] = $priceEstimate['priceRange'];
+    $detail['estimatedPrice'] = $priceEstimate['estimatedPrice'];
 
     return $detail;
 }

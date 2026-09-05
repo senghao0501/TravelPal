@@ -128,7 +128,7 @@ function attractionWriteCache(string $key, array $data, int $seconds): void
     }
 }
 
-function callAttractionAPI(
+	function callAttractionAPI(
     string $endpoint,
     array $params = [],
     int $cacheSeconds = 900

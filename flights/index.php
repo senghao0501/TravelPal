@@ -1,5 +1,4 @@
 <?php
-// flights.php - TravelPal domestic flight search page
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -52,12 +51,10 @@ if ($tripType === 'round_trip' && $returnDate < $departDate) {
 if ($isSearched && !$errors) {
     $outboundFlights = loadFlightsForRoute($origin, $destination, $departDate, $passengers);
 
-    // Round-trip is a real two-leg search, not just a UI label.
     if ($tripType === 'round_trip') {
         $returnFlights = loadFlightsForRoute($destination, $origin, $returnDate, $passengers);
     }
 
-    // Pair each outbound flight with the same airline where possible.
     foreach ($outboundFlights as $outbound) {
         $returnFlight = null;
 
@@ -104,14 +101,11 @@ if ($isSearched && !$errors) {
                 $aPrice = (float)$a['total_price'];
                 $bPrice = (float)$b['total_price'];
 
-                // Recommended = rating matters first, then total price.
                 return ($bRating <=> $aRating) ?: ($aPrice <=> $bPrice);
             });
             break;
     }
 
-    // The module uses fallback automatically if live API + DB both fail.
-    // This tag means "the current dataset contains at least one API result".
     foreach ($outboundFlights as $flight) {
         if (($flight['_source'] ?? '') === 'api') {
             $liveApiUsed = true;
@@ -144,8 +138,6 @@ function buildSearchUrl(array $overrides = []): string
     return htmlspecialchars($_SERVER['PHP_SELF'] . '?' . http_build_query($params), ENT_QUOTES, 'UTF-8');
 }
 
-// The shared popup is rendered by header.php. Set this before including it so
-// guests see the reminder, while signed-in members do not.
 $loginPopupAutoShow = true;
 include __DIR__ . '/../header.php';
 ?>
@@ -420,19 +412,21 @@ include __DIR__ . '/../header.php';
             </div>
         </section>
 
-        <section class="staycation-member-banner" aria-labelledby="staycation-member-title">
-            <div class="staycation-banner-icon" aria-hidden="true">
-                <i class="fa-solid fa-tags"></i>
-            </div>
-            <div class="staycation-banner-copy">
-                <h2 id="staycation-member-title">Unlock Member Flight Benefits</h2>
-    <p>Sign in to access member-only fares, saved flight preferences and faster booking.</p>
-            </div>
-            <div class="staycation-banner-actions">
-                <a href="/TravelPal/auth/login.php" class="staycation-btn staycation-btn-primary">Sign In</a>
-                <a href="/TravelPal/auth/register.php" class="staycation-btn staycation-btn-secondary">Register Free</a>
-            </div>
-        </section>
+        <?php if (!$travelPalLoggedIn): ?>
+            <section class="staycation-member-banner" aria-labelledby="staycation-member-title">
+                <div class="staycation-banner-icon" aria-hidden="true">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <div class="staycation-banner-copy">
+                    <h2 id="staycation-member-title">Unlock Member Flight Benefits</h2>
+                    <p>Sign in to access member-only fares, saved flight preferences and faster booking.</p>
+                </div>
+                <div class="staycation-banner-actions">
+                    <a href="/TravelPal/auth/login.php" class="staycation-btn staycation-btn-primary">Sign In</a>
+                    <a href="/TravelPal/auth/register.php" class="staycation-btn staycation-btn-secondary">Register Free</a>
+                </div>
+            </section>
+        <?php endif; ?>
 
         <section class="features-section">
             <div class="feature-item"><div class="feature-icon-wrapper"><i class="fa-solid fa-route"></i></div><div class="feature-info"><h4>Route-aware Search</h4><p>Change origin, destination and travel dates directly in the search bar.</p></div></div>
